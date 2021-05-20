@@ -1,9 +1,9 @@
 package Plugins
 
 import (
-	"NTLM/log"
-	"NTLM/model"
 	"bytes"
+	"cube/log"
+	"cube/model"
 	"fmt"
 	"net"
 	"strconv"

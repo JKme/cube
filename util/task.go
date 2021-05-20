@@ -1,11 +1,10 @@
 package util
 
 import (
-	"NTLM/log"
-	"NTLM/model"
-
+	"cube/log"
+	"cube/model"
 	//"fmt"
-	"NTLM/Plugins"
+	"cube/plugins"
 	"sync"
 	"time"
 )
@@ -27,7 +26,6 @@ func executeTask(taskChan chan model.Task, wg *sync.WaitGroup){
 		//fmt.Println("Hello")
 		fn := Plugins.ScanFuncMap[task.ScanPlugin]
 		saveReport(fn(task))
-
 	}
 
 }

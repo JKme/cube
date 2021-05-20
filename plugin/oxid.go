@@ -1,8 +1,8 @@
 package Plugins
 
 import (
-	"NTLM/model"
 	"bytes"
+	"cube/model"
 	"strings"
 	//"errors"
 	"fmt"

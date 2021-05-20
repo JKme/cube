@@ -1,4 +1,4 @@
-# fscanPlus
+# cubeScan
 
 利用Go的继承和重写分类模块： https://mp.weixin.qq.com/s/3atC9Bt6SInM56kCysMEhw
 

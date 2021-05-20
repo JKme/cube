@@ -1,7 +1,7 @@
 package Plugins
 
 import (
-	"NTLM/model"
+	"cube/model"
 )
 
 type ScanFunc func(task model.Task) (taskResult model.TaskResult)

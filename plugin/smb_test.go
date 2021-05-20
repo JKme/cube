@@ -1,7 +1,7 @@
 package Plugins
 
 import (
-	"NTLM/model"
+	"cube/model"
 	"fmt"
 	"testing"
 )

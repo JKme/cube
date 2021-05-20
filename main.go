@@ -1,8 +1,8 @@
 package main
 
 import (
-	"NTLM/log"
-	"NTLM/util"
+	"cube/log"
+	"cube/util"
 	"flag"
 )
 

@@ -1,7 +1,7 @@
 package util
 
 import (
-	"NTLM/model"
+	"cube/model"
 	"fmt"
 	"strings"
 )

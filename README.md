@@ -20,3 +20,5 @@ https://github.com/checkymander/Sharp-SMBExec/blob/master/SharpInvoke-SMBExec/Pr
 
 例子：
 https://www.cnblogs.com/sparkdev/p/10856077.html
+
+解析，组合，运行

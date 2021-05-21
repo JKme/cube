@@ -1,4 +1,4 @@
-package Plugins
+package probe
 
 import (
 	"cube/model"
@@ -9,7 +9,7 @@ import (
 
 func TestName(t *testing.T) {
 	task := model.Task{Ip: "192.168.2.226 ", Port: 135, ScanPlugin: "OXID"}
-	r:= oxidScan(task)
+	r := OxidScan(task)
 	fmt.Println(reflect.TypeOf(r.Result))
 	fmt.Printf("Get Result: %v\n", r.Result)
 

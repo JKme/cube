@@ -1,4 +1,4 @@
-package Plugins
+package probe
 
 import (
 	"bytes"
@@ -9,8 +9,8 @@ import (
 	"net"
 )
 
-func oxidScan(task model.Task) (result model.TaskResult) {
-	result = model.TaskResult{Task: task, Result: "", Err:nil}
+func OxidProbe(task model.Task) (result model.TaskResult) {
+	result = model.TaskResult{Task: task, Result: "", Err: nil}
 	//log.Printf("Oxid Running Debug: %s", task.Ip)
 	dl := net.Dialer{Timeout: model.TIMEOUT}
 	t := fmt.Sprintf("%s:%d", task.Ip, model.ScanPluginMapPort[task.ScanPlugin])
@@ -32,7 +32,6 @@ func oxidScan(task model.Task) (result model.TaskResult) {
 
 	// IOXIDResolve start
 	conn.Write([]byte("\x05\x00\x00\x03\x10\x00\x00\x00\x18\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x05\x00"))
-
 
 	r := make([]byte, 4096)
 	_, err = conn.Read(r)

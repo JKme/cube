@@ -1,4 +1,4 @@
-package Plugins
+package probe
 
 import (
 	"cube/model"
@@ -8,7 +8,7 @@ import (
 
 func TestSMB(t *testing.T) {
 	task := model.Task{Ip: "172.20.40.124", Port: 445, ScanPlugin: "SMB"}
-	r:=smbScan2(task)
+	r := smbScan2(task)
 	fmt.Printf("Get Result: %v\n", r.Result)
 }
 

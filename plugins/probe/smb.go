@@ -1,4 +1,4 @@
-package Plugins
+package probe
 
 import (
 	"bytes"
@@ -178,7 +178,6 @@ type NbnsName struct {
 	osversion string
 }
 
-
 func smbScan2(task model.Task) (result model.TaskResult) {
 	result = model.TaskResult{Task: task, Result: "", Err: nil}
 	realhost := fmt.Sprintf("%s:%v", task.Ip, task.Port)
@@ -212,8 +211,6 @@ func smbScan2(task model.Task) (result model.TaskResult) {
 
 	//_, err = conn.Write(NtlmV2)
 
-
-
 	num1, err := bytetoint(ret[43:44][0])
 	if err != nil {
 		return
@@ -231,17 +228,15 @@ func smbScan2(task model.Task) (result model.TaskResult) {
 
 	R := bytes.ReplaceAll(ret, []byte{0x00}, []byte{})
 	rs := []rune(string(R)) // 将字符串转为字节rune切片
-	fmt.Println(rs)          // 输出rune切片
-	fmt.Println(string(rs))  // 将rune切片转为字符串
-
+	fmt.Println(rs)         // 输出rune切片
+	fmt.Println(string(rs)) // 将rune切片转为字符串
 
 	return result
 }
 
-func smbScan(task model.Task) (result model.TaskResult) {
-	result = model.TaskResult{Task: task, Result: "", Err:nil}
+func SmbProbe(task model.Task) (result model.TaskResult) {
+	result = model.TaskResult{Task: task, Result: "", Err: nil}
 	nbname, _ := NetBIOS1(task)
-
 
 	var msg, isdc string
 	//result.Result = nbname
@@ -275,7 +270,7 @@ func NetBIOS1(task model.Task) (nbname NbnsName, err error) {
 		log.Debug(err)
 		return
 	}
-	err = conn.SetDeadline(time.Now().Add(5*time.Second))
+	err = conn.SetDeadline(time.Now().Add(5 * time.Second))
 	if err != nil {
 		return
 	}
@@ -326,8 +321,6 @@ func NetBIOS1(task model.Task) (nbname NbnsName, err error) {
 	}
 
 	//_, err = conn.Write(NtlmV2)
-
-
 
 	num1, err := bytetoint(ret[43:44][0])
 	if err != nil {
@@ -397,8 +390,8 @@ func NetBIOS1(task model.Task) (nbname NbnsName, err error) {
 	return nbname, err
 }
 
-func wmi(task model.Task){
-	data1 := []byte{ 5, 0, 11, 3, 16, 0, 0, 0, 120, 0, 40, 0, 3, 0, 0, 0, 184, 16, 184, 16, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 160, 1, 0, 0, 0, 0, 0, 0, 192, 0, 0, 0, 0, 0, 0, 70, 0, 0, 0, 0, 4, 93, 136, 138, 235, 28, 201, 17, 159, 232, 8, 0, 43, 16, 72, 96, 2, 0, 0, 0, 10, 2, 0, 0, 0, 0, 0, 0, 78, 84, 76, 77, 83, 83, 80, 0, 1, 0, 0, 0, 7, 130, 8, 162, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 1, 177, 29, 0, 0, 0, 15 }
+func wmi(task model.Task) {
+	data1 := []byte{5, 0, 11, 3, 16, 0, 0, 0, 120, 0, 40, 0, 3, 0, 0, 0, 184, 16, 184, 16, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 160, 1, 0, 0, 0, 0, 0, 0, 192, 0, 0, 0, 0, 0, 0, 70, 0, 0, 0, 0, 4, 93, 136, 138, 235, 28, 201, 17, 159, 232, 8, 0, 43, 16, 72, 96, 2, 0, 0, 0, 10, 2, 0, 0, 0, 0, 0, 0, 78, 84, 76, 77, 83, 83, 80, 0, 1, 0, 0, 0, 7, 130, 8, 162, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 1, 177, 29, 0, 0, 0, 15}
 	realhost := fmt.Sprintf("%s:%v", task.Ip, 135)
 	conn, _ := net.DialTimeout("tcp", realhost, 3*time.Second)
 	conn.Write(data1)

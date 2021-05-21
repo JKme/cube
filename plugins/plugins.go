@@ -2,16 +2,24 @@ package Plugins
 
 import (
 	"cube/model"
+	"cube/plugins/crack"
+	"cube/plugins/probe"
 )
 
-type ScanFunc func(task model.Task) (taskResult model.TaskResult)
+type ProbeFunc func(task model.Task) (taskResult model.TaskResult)
+type CrackFunc func(task model.Task) (taskResult model.TaskResult)
 
 var (
-	ScanFuncMap map[string]ScanFunc
+	ProbeFuncMap map[string]ProbeFunc
+	CrackFuncMap map[string]CrackFunc
 )
 
-func init(){
-	ScanFuncMap = make(map[string]ScanFunc)
-	ScanFuncMap["OXID"] = oxidScan
-	ScanFuncMap["SMB"]  = smbScan
+func init() {
+	ProbeFuncMap = make(map[string]ProbeFunc)
+	ProbeFuncMap["OXID"] = probe.OxidProbe
+	ProbeFuncMap["SMB"] = probe.SmbProbe
+
+	CrackFuncMap = make(map[string]CrackFunc)
+	CrackFuncMap["SSH"] = crack.SshCrack
+
 }

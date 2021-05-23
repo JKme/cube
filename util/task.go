@@ -9,34 +9,32 @@ import (
 	"time"
 )
 
-
-
-func generateTasks(ipList []string, port int, scanPlugin string)(tasks []model.Task){
+func generateTasks(ipList []string, port int, scanPlugin string) (tasks []model.Task) {
 	tasks = make([]model.Task, 0)
 	for _, ip := range ipList {
-		service := model.Task{Ip:ip, Port: port, ScanPlugin: scanPlugin}
+		service := model.Task{Ip: ip, Port: port, ScanPlugin: scanPlugin}
 		tasks = append(tasks, service)
 	}
 	return tasks
 }
 
-func executeTask(taskChan chan model.Task, wg *sync.WaitGroup){
+func executeTask(taskChan chan model.Task, wg *sync.WaitGroup) {
 	defer wg.Done()
-	for task :=range taskChan{
+	for task := range taskChan {
 		//fmt.Println("Hello")
-		fn := Plugins.ScanFuncMap[task.ScanPlugin]
+		fn := Plugins.ProbeFuncMap[task.ScanPlugin]
 		saveReport(fn(task))
 	}
 
 }
 
-func runTasks(tasks []model.Task, scanNum int, timeout int){
-	tasksChan := make(chan model.Task, scanNum * 2)
+func runTasks(tasks []model.Task, scanNum int, timeout int) {
+	tasksChan := make(chan model.Task, scanNum*2)
 	var wg sync.WaitGroup
 
 	//消费者
 	wg.Add(scanNum)
-	for i:=0;i<scanNum;i++{
+	for i := 0; i < scanNum; i++ {
 		go executeTask(tasksChan, &wg)
 	}
 
@@ -51,12 +49,11 @@ func runTasks(tasks []model.Task, scanNum int, timeout int){
 	}
 	close(tasksChan)
 
-
 	//wg.Wait()
-	waitTimeout(&wg, time.Duration(timeout) * time.Second)
+	waitTimeout(&wg, time.Duration(timeout)*time.Second)
 }
 
-func Scan(scanPlugin string, scanTargets string, scanTargetsFile string, scanPort int, timeout int, scanNum int){
+func Scan(scanPlugin string, scanTargets string, scanTargetsFile string, scanPort int, timeout int, scanNum int) {
 	ips, err := ParseIP(scanTargets, scanTargetsFile)
 	if err != nil {
 		log.Error(err)

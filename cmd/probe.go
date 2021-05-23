@@ -5,7 +5,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
 func init() {
 	rootCmd.AddCommand(probeCmd)
 }
@@ -15,9 +14,11 @@ func runProbe(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-
 var probeCmd = &cobra.Command{
 	Use:   "probe",
 	Short: "collect pentest environment information",
-	RunE: runProbe,
+	RunE:  runProbe,
 }
+
+//var propeOption = new(model.ProbeOptions)
+//propeOption := model.ProbeOptions{}

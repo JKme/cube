@@ -8,10 +8,14 @@ type globalOptions struct {
 	Plugin  string
 }
 
-type probeOptions struct {
+type ProbeOptions struct {
 	Target     string
 	TargetFile string
 	Port       int
+}
+
+func NewProbeOptions() *ProbeOptions {
+	return &ProbeOptions{}
 }
 
 type crackOptions struct {

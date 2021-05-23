@@ -9,10 +9,10 @@ import (
 	"time"
 )
 
-func generateTasks(ipList []string, port int, scanPlugin string) (tasks []model.Task) {
+func generateTasks(ipList []string, port int, scanPlugin string, scanFunc string) (tasks []model.Task) {
 	tasks = make([]model.Task, 0)
 	for _, ip := range ipList {
-		service := model.Task{Ip: ip, Port: port, ScanPlugin: scanPlugin}
+		service := model.Task{Ip: ip, Port: port, ScanPlugin: scanPlugin, ScanFunc: scanFunc}
 		tasks = append(tasks, service)
 	}
 	return tasks

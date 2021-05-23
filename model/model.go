@@ -4,6 +4,7 @@ type Task struct {
 	Ip         string
 	Port       int
 	ScanPlugin string
+	ScanFunc   string
 }
 
 type TaskResult struct {

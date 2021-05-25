@@ -1,11 +1,11 @@
 package model
 
-type globalOptions struct {
+type GlobalOptions struct {
 	Threads int
 	Timeout int
 	Verbose bool
 	Output  string
-	Plugin  string
+	//Plugin  string
 }
 
 type ProbeOptions struct {
@@ -16,6 +16,10 @@ type ProbeOptions struct {
 
 func NewProbeOptions() *ProbeOptions {
 	return &ProbeOptions{}
+}
+
+func NewGlobalOptions() *GlobalOptions {
+	return &GlobalOptions{}
 }
 
 type crackOptions struct {

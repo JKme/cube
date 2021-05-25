@@ -12,6 +12,7 @@ type ProbeOptions struct {
 	Target     string
 	TargetFile string
 	Port       int
+	ScanFunc   string
 }
 
 func NewProbeOptions() *ProbeOptions {

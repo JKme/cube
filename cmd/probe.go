@@ -16,7 +16,7 @@ var probeCmd *cobra.Command
 //var propeOption = new(model.ProbeOptions)
 //propeOption := model.ProbeOptions{}
 
-func parseProbeOptions() (*model.ProbeOptions, *model.GlobalOptions, error) {
+func parseProbeOptions() (*model.GlobalOptions, *model.ProbeOptions, error) {
 	globalOpts, err := parseGlobalOptions()
 	if err != nil {
 		return nil, nil, err
@@ -24,10 +24,22 @@ func parseProbeOptions() (*model.ProbeOptions, *model.GlobalOptions, error) {
 	propePlugin := model.NewProbeOptions()
 
 	propePlugin.Port, err = probeCmd.Flags().GetInt("port")
+	if err != nil {
+		return nil, nil, fmt.Errorf("invalid value for scan port: %v", err)
+	}
 	propePlugin.Port, err = probeCmd.Flags().GetInt("func")
+	if err != nil {
+		return nil, nil, fmt.Errorf("invalid value for func: %v", err)
+	}
 	propePlugin.Port, err = probeCmd.Flags().GetInt("target-ip")
+	if err != nil {
+		return nil, nil, fmt.Errorf("invalid value for target-ip: %w", err)
+	}
 	propePlugin.Port, err = probeCmd.Flags().GetInt("target-file")
-
+	if err != nil {
+		return nil, nil, fmt.Errorf("invalid value for target-file: %w", err)
+	}
+	return globalOpts, propePlugin, nil
 }
 
 func init() {

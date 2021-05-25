@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"cube/model"
 	"fmt"
 	"github.com/spf13/cobra"
 )
@@ -22,3 +23,7 @@ var probeCmd = &cobra.Command{
 
 //var propeOption = new(model.ProbeOptions)
 //propeOption := model.ProbeOptions{}
+
+func parseProbeOptions()(*model.ProbeOptions, *model.GlobalOptions){
+	globalopts,
+}

@@ -2,6 +2,7 @@ package probe
 
 import (
 	"bytes"
+	probe2 "cube/cubelib/probe"
 	"cube/log"
 	"cube/model"
 	"fmt"
@@ -178,8 +179,8 @@ type NbnsName struct {
 	osversion string
 }
 
-func smbScan2(task model.Task) (result model.TaskResult) {
-	result = model.TaskResult{Task: task, Result: "", Err: nil}
+func smbScan2(task probe2.Task) (result probe2.TaskResult) {
+	result = probe2.TaskResult{Task: task, Result: "", Err: nil}
 	realhost := fmt.Sprintf("%s:%v", task.Ip, task.Port)
 	conn, err := net.DialTimeout("tcp", realhost, 3*time.Second)
 	if err != nil {
@@ -234,8 +235,8 @@ func smbScan2(task model.Task) (result model.TaskResult) {
 	return result
 }
 
-func SmbProbe(task model.Task) (result model.TaskResult) {
-	result = model.TaskResult{Task: task, Result: "", Err: nil}
+func SmbProbe(task probe2.Task) (result probe2.TaskResult) {
+	result = probe2.TaskResult{Task: task, Result: "", Err: nil}
 	nbname, _ := NetBIOS1(task)
 
 	var msg, isdc string
@@ -255,7 +256,7 @@ func SmbProbe(task model.Task) (result model.TaskResult) {
 	return result
 }
 
-func NetBIOS1(task model.Task) (nbname NbnsName, err error) {
+func NetBIOS1(task probe2.Task) (nbname NbnsName, err error) {
 	nbname, err = GetNbnsname(task)
 	var payload0 []byte
 	if err == nil {
@@ -400,7 +401,7 @@ func wmi(task model.Task) {
 	fmt.Println(start)
 }
 
-func GetNbnsname(task model.Task) (nbname NbnsName, err error) {
+func GetNbnsname(task probe2.Task) (nbname NbnsName, err error) {
 	senddata1 := []byte{102, 102, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 32, 67, 75, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 0, 0, 33, 0, 1}
 	realhost := fmt.Sprintf("%s:%v", task.Ip, 137)
 	conn, err := net.DialTimeout("udp", realhost, 3*time.Second)

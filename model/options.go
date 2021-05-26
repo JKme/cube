@@ -1,6 +1,6 @@
 package model
 
-type globalOptions struct {
+type GlobalOptions struct {
 	Threads int
 	Timeout int
 	Verbose bool
@@ -14,9 +14,13 @@ type ProbeOptions struct {
 	Port       int
 }
 
-func NewProbeOptions() *ProbeOptions {
-	return &ProbeOptions{}
+func NewGlobalOptions() *GlobalOptions {
+	return &GlobalOptions{}
 }
+
+//func NewGlobalOptions() *ProbeOptions {
+//	return &ProbeOptions{}
+//}
 
 type crackOptions struct {
 	Target     string

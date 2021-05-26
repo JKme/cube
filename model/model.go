@@ -1,10 +1,22 @@
 package model
 
+type ProbeTask struct {
+	Ip         string
+	Port       int
+	ScanPlugin string
+}
+
+type ProbeTaskResult struct {
+	ProbeTask ProbeTask
+	Result    string
+	Err       error
+}
+
 type Task struct {
 	Ip         string
 	Port       int
 	ScanPlugin string
-	ScanFunc   string
+	ScanMode   string
 }
 
 type TaskResult struct {

@@ -1,17 +1,19 @@
 package cmd
 
 import (
+	"cube/cubelib/probe"
 	"cube/model"
 	"fmt"
 	"github.com/spf13/cobra"
 )
 
-func runProbe(cmd *cobra.Command, args []string) error {
-	fmt.Println("hello Probe")
-	return nil
-}
-
 var probeCmd *cobra.Command
+
+func runProbe(cmd *cobra.Command, args []string) {
+	globalopts, opt, _ := parseProbeOptions()
+
+	probe.Run(opt, globalopts)
+}
 
 //var propeOption = new(model.ProbeOptions)
 //propeOption := model.ProbeOptions{}
@@ -27,15 +29,16 @@ func parseProbeOptions() (*model.GlobalOptions, *model.ProbeOptions, error) {
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for scan port: %v", err)
 	}
-	propePlugin.Port, err = probeCmd.Flags().GetInt("func")
+	propePlugin.ScanPlugin, err = probeCmd.Flags().GetString("plugin")
 	if err != nil {
-		return nil, nil, fmt.Errorf("invalid value for func: %v", err)
+		return nil, nil, fmt.Errorf("invalid value for plugin: %v", err)
 	}
-	propePlugin.Port, err = probeCmd.Flags().GetInt("target-ip")
+
+	propePlugin.Target, err = probeCmd.Flags().GetString("target-ip")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for target-ip: %w", err)
 	}
-	propePlugin.Port, err = probeCmd.Flags().GetInt("target-file")
+	propePlugin.TargetFile, err = probeCmd.Flags().GetString("target-file")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for target-file: %w", err)
 	}

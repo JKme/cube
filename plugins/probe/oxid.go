@@ -2,6 +2,7 @@ package probe
 
 import (
 	"bytes"
+	probe2 "cube/cubelib/probe"
 	"cube/model"
 	"strings"
 	//"errors"
@@ -9,8 +10,8 @@ import (
 	"net"
 )
 
-func OxidProbe(task model.Task) (result model.TaskResult) {
-	result = model.TaskResult{Task: task, Result: "", Err: nil}
+func OxidProbe(task probe2.Task) (result probe2.TaskResult) {
+	result = probe2.TaskResult{Task: task, Result: "", Err: nil}
 	//log.Printf("Oxid Running Debug: %s", task.Ip)
 	dl := net.Dialer{Timeout: model.TIMEOUT}
 	t := fmt.Sprintf("%s:%d", task.Ip, model.ScanPluginMapPort[task.ScanPlugin])

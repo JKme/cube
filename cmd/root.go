@@ -1,7 +1,6 @@
 package cmd
 
 import (
-
 	"context"
 	"cube/model"
 	"fmt"
@@ -15,7 +14,6 @@ var rootCmd = &cobra.Command{
 	Use:          "cube",
 	SilenceUsage: true,
 }
-
 
 var mainContext context.Context
 

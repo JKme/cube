@@ -50,9 +50,10 @@ func init() {
 	}
 
 	probeCmd.Flags().StringP("port", "p", "", "target port")
-	probeCmd.Flags().StringP("func", "f", "", "func to scan")
-	probeCmd.Flags().StringP("target-ip", "i", "192.168.1.1/24", "ip range to probe for)")
-	probeCmd.Flags().StringP("target-file", "I", "ip.txt", "File to probe for")
+	probeCmd.Flags().StringP("plugin", "x", "", "plugin to scan(e.g. OXID)")
+	probeCmd.Flags().StringP("all-plugin", "X", "", "all plugin to scan(e.g. OXID)")
+	probeCmd.Flags().StringP("target-ip", "i", "", "ip range to probe for(e.g. 192.168.1.1/24)")
+	probeCmd.Flags().StringP("target-file", "I", "", "File to probe for(e.g. ip.txt)")
 
 	rootCmd.AddCommand(probeCmd)
 }

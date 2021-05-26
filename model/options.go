@@ -5,22 +5,20 @@ type GlobalOptions struct {
 	Timeout int
 	Verbose bool
 	Output  string
-	Plugin  string
+	//Plugin  string
 }
 
 type ProbeOptions struct {
 	Target     string
 	TargetFile string
 	Port       int
+	ScanFunc   string
 }
 
 func NewGlobalOptions() *GlobalOptions {
 	return &GlobalOptions{}
 }
 
-//func NewGlobalOptions() *ProbeOptions {
-//	return &ProbeOptions{}
-//}
 
 type crackOptions struct {
 	Target     string

@@ -12,7 +12,7 @@ type ProbeOptions struct {
 	Target     string
 	TargetFile string
 	Port       int
-	ScanFunc   string
+	ScanPlugin string
 }
 
 func NewGlobalOptions() *GlobalOptions {

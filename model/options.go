@@ -19,6 +19,9 @@ func NewGlobalOptions() *GlobalOptions {
 	return &GlobalOptions{}
 }
 
+func NewProbeOptions() *ProbeOptions {
+	return &ProbeOptions{}
+}
 
 type crackOptions struct {
 	Target     string

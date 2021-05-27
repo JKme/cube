@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"cube/cli"
+	//"cube/log"
 	"cube/model"
 	"fmt"
 	"github.com/spf13/cobra"
@@ -43,7 +44,7 @@ func parseProbeOptions() (*model.GlobalOptions, *model.ProbeOptions, error) {
 }
 
 func init() {
-	var probeCmd = &cobra.Command{
+	probeCmd = &cobra.Command{
 		Use:   "probe",
 		Short: "collect pentest environment information",
 		Run:   runProbe,
@@ -53,8 +54,14 @@ func init() {
 	probeCmd.Flags().StringP("plugin", "x", "", "plugin to scan(e.g. OXID)")
 	probeCmd.Flags().StringP("target-ip", "i", "", "ip range to probe for(e.g. 192.168.1.1/24)")
 	probeCmd.Flags().StringP("target-file", "I", "", "File to probe for(e.g. ip.txt)")
+
+	//if err := probeCmd.MarkPersistentFlagRequired("plugin"); err != nil {
+	//	log.Fatalf("on marking flag as required: %v", err)
+	//	//log.Fatalf("error on marking flag as required: %v", err)
+	//}
+
 	//probeCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
-	//	configureGlobalOptions()
+	//
 	//}
 	rootCmd.AddCommand(probeCmd)
 }

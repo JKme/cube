@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"cube/cubelib/probe"
+	"cube/cli"
 	"cube/model"
 	"fmt"
 	"github.com/spf13/cobra"
@@ -11,8 +11,7 @@ var probeCmd *cobra.Command
 
 func runProbe(cmd *cobra.Command, args []string) {
 	globalopts, opt, _ := parseProbeOptions()
-
-	probe.Run(opt, globalopts)
+	cli.StartProbeTask(opt, globalopts)
 }
 
 //var propeOption = new(model.ProbeOptions)
@@ -49,7 +48,7 @@ func init() {
 	var probeCmd = &cobra.Command{
 		Use:   "probe",
 		Short: "collect pentest environment information",
-		RunE:  runProbe,
+		Run:   runProbe,
 	}
 
 	probeCmd.Flags().StringP("port", "p", "", "target port")
@@ -57,6 +56,8 @@ func init() {
 	probeCmd.Flags().StringP("all-plugin", "X", "", "all plugin to scan(e.g. OXID)")
 	probeCmd.Flags().StringP("target-ip", "i", "", "ip range to probe for(e.g. 192.168.1.1/24)")
 	probeCmd.Flags().StringP("target-file", "I", "", "File to probe for(e.g. ip.txt)")
-
+	probeCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
+		configureGlobalOptions()
+	}
 	rootCmd.AddCommand(probeCmd)
 }

@@ -1,6 +1,6 @@
 package main
 
-import "cube/cmd"
+import "cube/cli/cmd"
 
 func main() {
 	//var (

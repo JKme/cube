@@ -10,6 +10,7 @@ import (
 var probeCmd *cobra.Command
 
 func runProbe(cmd *cobra.Command, args []string) {
+	fmt.Println("hello")
 	globalopts, opt, _ := parseProbeOptions()
 	cli.StartProbeTask(opt, globalopts)
 }

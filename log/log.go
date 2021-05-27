@@ -2,10 +2,10 @@
 package log
 
 import (
-"fmt"
-"io"
-"log"
-"os"
+	"fmt"
+	"io"
+	"log"
+	"os"
 )
 
 type Level int
@@ -34,13 +34,13 @@ var (
 	}
 )
 
-func init()  {
+func init() {
 	InitLog("debug")
 
 }
 
 func InitLog(l string) {
-	formatLogger = newLog(os.Stdout).setLevel(levelMap[l]).setFlags(log.Lshortfile)
+	formatLogger = newLog(os.Stdout).setLevel(levelMap[l]).setFlags(log.Ldate).setFlags(log.Lshortfile)
 }
 
 type Logger struct {
@@ -94,6 +94,11 @@ func Error(v ...interface{}) {
 
 func Errorf(format string, v ...interface{}) {
 	formatLogger.doLogf(LevelError, format, v...)
+}
+
+func Fatalf(format string, v ...interface{}) {
+	formatLogger.doLogf(LevelError, format, v...)
+	os.Exit(2)
 }
 
 func Warnf(format string, v ...interface{}) {

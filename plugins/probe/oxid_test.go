@@ -8,8 +8,8 @@ import (
 )
 
 func TestName(t *testing.T) {
-	task := model.Task{Ip: "192.168.2.226 ", Port: 135, ScanPlugin: "OXID"}
-	r := OxidScan(task)
+	task := model.ProbeTask{Ip: "192.168.2.226 ", Port: 135, ScanPlugin: "OXID"}
+	r := OxidProbe(task)
 	fmt.Println(reflect.TypeOf(r.Result))
 	fmt.Printf("Get Result: %v\n", r.Result)
 

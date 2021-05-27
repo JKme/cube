@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"time"
 )
 
 var rootCmd = &cobra.Command{
@@ -66,7 +65,7 @@ func parseGlobalOptions() (*model.GlobalOptions, error) {
 	globalopts.Threads = threads
 
 	globalopts.Timeout, _ = rootCmd.Flags().GetInt("timeout")
-	if time.Duration(globalopts.Timeout) < model.TIMEOUT {
+	if globalopts.Timeout < 3 {
 		return nil, fmt.Errorf("timeout must be bigger than default vaule(default: %v)", model.TIMEOUT)
 	}
 

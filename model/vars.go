@@ -3,6 +3,6 @@ package model
 import "time"
 
 const (
-	DefaultTime = 3
-	TIMEOUT     = time.Duration(DefaultTime) * time.Second
+	TIMEUNIT = 3
+	TIMEOUT  = time.Duration(TIMEUNIT) * time.Second
 )

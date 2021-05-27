@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"cube/log"
 	"cube/model"
 	"fmt"
 	"github.com/spf13/cobra"
@@ -71,6 +72,11 @@ func parseGlobalOptions() (*model.GlobalOptions, error) {
 	verbose, err := rootCmd.Flags().GetBool("verbose")
 	if err != nil {
 		return nil, fmt.Errorf("invalid value for verbose: %w", err)
+	}
+	if verbose {
+		log.InitLog("debug")
+	} else {
+		log.InitLog("error")
 	}
 	globalopts.Verbose = verbose
 

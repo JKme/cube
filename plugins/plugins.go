@@ -1,18 +1,17 @@
 package Plugins
 
 import (
-	probe2 "cube/cubelib/probe"
 	"cube/model"
-	"cube/plugins/crack"
 	"cube/plugins/probe"
 )
 
-type ProbeFunc func(task probe2.Task) (taskResult probe2.TaskResult)
-type CrackFunc func(task model.Task) (taskResult model.TaskResult)
+type ProbeFunc func(task model.ProbeTask) (taskResult model.ProbeTaskResult)
+
+//type CrackFunc func(task model.Task) (taskResult model.TaskResult)
 
 var (
 	ProbeFuncMap map[string]ProbeFunc
-	CrackFuncMap map[string]CrackFunc
+	//CrackFuncMap map[string]CrackFunc
 )
 
 func init() {
@@ -20,7 +19,7 @@ func init() {
 	ProbeFuncMap["OXID"] = probe.OxidProbe
 	ProbeFuncMap["SMB"] = probe.SmbProbe
 
-	CrackFuncMap = make(map[string]CrackFunc)
-	CrackFuncMap["SSH"] = crack.SshCrack
+	//CrackFuncMap = make(map[string]CrackFunc)
+	//CrackFuncMap["SSH"] = crack.SshCrack
 
 }

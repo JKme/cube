@@ -5,6 +5,7 @@ import (
 	"cube/model"
 	"fmt"
 	"github.com/spf13/cobra"
+	"log"
 	"os"
 	"os/signal"
 	"time"
@@ -50,6 +51,12 @@ func Execute() {
 	}
 }
 
+func configureGlobalOptions() {
+	if err := rootCmd.MarkPersistentFlagRequired("plugin"); err != nil {
+		log.Fatalf("error on marking flag as required: %v", err)
+	}
+}
+
 func parseGlobalOptions() (*model.GlobalOptions, error) {
 	globalopts := model.NewGlobalOptions()
 	threads, _ := rootCmd.Flags().GetInt("threads")
@@ -69,6 +76,12 @@ func parseGlobalOptions() (*model.GlobalOptions, error) {
 	}
 	globalopts.Verbose = verbose
 
+	plugin, err := rootCmd.Flags().GetString("plugin")
+	if err != nil {
+		return nil, fmt.Errorf("invalid value for verbose: %w", err)
+	}
+	globalopts.Plugin = plugin
+
 	return globalopts, nil
 }
 
@@ -77,4 +90,5 @@ func init() {
 	rootCmd.PersistentFlags().DurationP("timeout", "t", 5, "Timeout each thread waits")
 	rootCmd.PersistentFlags().StringP("output", "o", "", "Output file to write results to (defaults to stdout)")
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Verbose output (errors)")
+	rootCmd.PersistentFlags().BoolP("plugin", "x", false, "plugin to scan")
 }

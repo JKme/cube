@@ -1,16 +1,15 @@
 package model
 
-type Task struct {
+type ProbeTask struct {
 	Ip         string
 	Port       int
 	ScanPlugin string
-	ScanMode   string
 }
 
-type TaskResult struct {
-	Task   Task
-	Result string
-	Err    error
+type ProbeTaskResult struct {
+	ProbeTask ProbeTask
+	Result    string
+	Err       error
 }
 
 //type ScanFunc func(task Task) (err error, taskResult TaskResult)

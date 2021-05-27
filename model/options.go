@@ -5,7 +5,6 @@ type GlobalOptions struct {
 	Timeout int
 	Verbose bool
 	Output  string
-	Plugin  string
 	//Plugin  string
 }
 

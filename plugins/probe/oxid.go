@@ -63,7 +63,7 @@ func OxidProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	r1, _ := gbkToUtf8(r)
 	fmt.Println(r1)
 	fmt.Println(string(r1))
-
+	//https://play.golang.org/p/M7sc7cGv4l3
 	//http://cs50mu.github.io/blog/2019/05/19/a-encoding-problem-in-golang/
 	//https://github.com/animesh-server-dot-files/go/blob/381c0dd07cb51c5607b4a8e66b814292f2225fd6/v1.16.4/source/src/unicode/utf8/example_test.go
 	//results := []string{}

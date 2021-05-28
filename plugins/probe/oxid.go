@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"cube/model"
 	"fmt"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
+	"io/ioutil"
 	"net"
 	"strings"
 )
@@ -49,16 +52,30 @@ func OxidProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	//	return errors.New("Not Found")
 	//}
 	r = r[:index]
+	fmt.Println("hello")
+	fmt.Printf("%v", r)
+	s := string(r)
+	//for _, r := range s {
+	//	fmt.Println(r)
+	//}
+	rs := []rune(s)
+	fmt.Println(rs)
+	r1, _ := gbkToUtf8(r)
+	fmt.Println(r1)
+	fmt.Println(string(r1))
+
+	//http://cs50mu.github.io/blog/2019/05/19/a-encoding-problem-in-golang/
+	//https://github.com/animesh-server-dot-files/go/blob/381c0dd07cb51c5607b4a8e66b814292f2225fd6/v1.16.4/source/src/unicode/utf8/example_test.go
 	//results := []string{}
 	var results []string
 
 	for {
-		if len(r) == 0 {
+		if len(r1) == 0 {
 			break
 		}
-		index = bytes.Index(r, []byte("\x00\x00\x00"))
-		results = append(results, dataGet(r[:index+3]))
-		r = r[index+3:]
+		index = bytes.Index(r1, []byte("\x00\x00\x00"))
+		results = append(results, dataGet(r1[:index+3]))
+		r1 = r1[index+3:]
 	}
 	if len(results) > 0 {
 		//fmt.Println(results)
@@ -71,6 +88,7 @@ func OxidProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 		//	fmt.Println("\t" + v)
 		//}
 		//fmt.Println(results)
+		//String str = new String(results, "UTF-8");
 		result.Result = strings.Join(results, "\n")
 	}
 	return result
@@ -81,4 +99,13 @@ func dataGet(data []byte) string {
 		return string(data[:len(data)-3])
 	}
 	return ""
+}
+
+func gbkToUtf8(s []byte) ([]byte, error) {
+	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewDecoder())
+	d, err := ioutil.ReadAll(reader)
+	if err != nil {
+		return nil, err
+	}
+	return d, nil
 }

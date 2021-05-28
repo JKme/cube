@@ -85,7 +85,7 @@ func parseGlobalOptions() (*model.GlobalOptions, error) {
 
 func init() {
 	rootCmd.PersistentFlags().IntP("threads", "n", 20, "Number of concurrent threads")
-	rootCmd.PersistentFlags().IntP("timeout", "t", 5, "Timeout each thread waits")
+	rootCmd.PersistentFlags().IntP("timeout", "", 5, "Timeout each thread waits")
 	rootCmd.PersistentFlags().StringP("output", "o", "", "Output file to write results to (defaults to stdout)")
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Verbose output (errors)")
 }

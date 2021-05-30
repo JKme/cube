@@ -2,6 +2,11 @@ package cmd
 
 import (
 	"cube/cli"
+	"cube/log"
+	Plugins "cube/plugins"
+	"os"
+	"strings"
+
 	//"cube/log"
 	"cube/model"
 	"fmt"
@@ -12,6 +17,11 @@ var probeCmd *cobra.Command
 
 func runProbe(cmd *cobra.Command, args []string) {
 	globalopts, opt, _ := parseProbeOptions()
+	_, key := Plugins.ProbeFuncMap[opt.ScanPlugin]
+	if !key {
+		log.Fatalf("Available Plugins: %s", strings.Join(Plugins.ProbeKeys, ","))
+		os.Exit(2)
+	}
 	cli.StartProbeTask(opt, globalopts)
 }
 

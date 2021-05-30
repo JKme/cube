@@ -11,6 +11,7 @@ type ProbeFunc func(task model.ProbeTask) (taskResult model.ProbeTaskResult)
 
 var (
 	ProbeFuncMap map[string]ProbeFunc
+	ProbeKeys    []string
 	//CrackFuncMap map[string]CrackFunc
 )
 
@@ -19,7 +20,14 @@ func init() {
 	ProbeFuncMap["OXID"] = probe.OxidProbe
 	ProbeFuncMap["SMB"] = probe.SmbProbe
 
+	ProbeKeys = append(ProbeKeys, "ALL")
+	for k := range ProbeFuncMap {
+		ProbeKeys = append(ProbeKeys, k)
+	}
 	//CrackFuncMap = make(map[string]CrackFunc)
 	//CrackFuncMap["SSH"] = crack.SshCrack
-
+	//var keys []string
+	//for k := range ProbeFuncMap {
+	//	keys = append(keys, k)
+	//}
 }

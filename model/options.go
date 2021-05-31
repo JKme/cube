@@ -15,12 +15,25 @@ type ProbeOptions struct {
 	ScanPlugin string
 }
 
+type SqlcmdOptions struct {
+	Ip          string
+	Port        int
+	User        string
+	Password    string
+	CrackPlugin string
+	Query       string
+}
+
 func NewGlobalOptions() *GlobalOptions {
 	return &GlobalOptions{}
 }
 
 func NewProbeOptions() *ProbeOptions {
 	return &ProbeOptions{}
+}
+
+func NewSqlcmdOptions() *SqlcmdOptions {
+	return &SqlcmdOptions{}
 }
 
 type crackOptions struct {
@@ -31,10 +44,4 @@ type crackOptions struct {
 	Pass       string
 	PassFile   string
 	Port       int
-}
-
-type sqlcmdOptions struct {
-	Ip    string
-	Port  int
-	Query string
 }

@@ -15,7 +15,7 @@ func OxidProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	result = model.ProbeTaskResult{ProbeTask: task, Result: "", Err: nil}
 	//log.Printf("Oxid Running Debug: %s", task.Ip)
 	dl := net.Dialer{Timeout: model.TIMEOUT}
-	t := fmt.Sprintf("%s:%d", task.Ip, model.ScanPluginMapPort[task.ScanPlugin])
+	t := fmt.Sprintf("%s:%d", task.Ip, model.CommonPortMap[task.ScanPlugin])
 	conn, err := dl.Dial("tcp", t)
 
 	// defer conn.Close()

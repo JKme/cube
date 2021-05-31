@@ -27,8 +27,12 @@ type CrackTaskResult struct {
 }
 
 type SqlcmdTask struct {
-	CrackTask CrackTask
-	Query     string
+	Ip           string
+	Port         int
+	User         string
+	Password     string
+	SqlcmdPlugin string
+	Query        string
 }
 
 type SqlcmdTaskResult struct {
@@ -38,15 +42,3 @@ type SqlcmdTaskResult struct {
 }
 
 //type ScanFunc func(task Task) (err error, taskResult TaskResult)
-
-var (
-	ScanPluginMapPort map[string]int
-)
-
-func init() {
-
-	ScanPluginMapPort = make(map[string]int)
-	ScanPluginMapPort["OXID"] = 135
-	ScanPluginMapPort["SMB"] = 445
-
-}

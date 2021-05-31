@@ -2,25 +2,21 @@ package cmd
 
 import (
 	"cube/cli"
-	"cube/log"
 	"cube/model"
-	Plugins "cube/plugins"
 	"fmt"
 	"github.com/spf13/cobra"
-	"os"
-	"strings"
 )
 
 var sqlCmdCli *cobra.Command
 
 func runSqlcmd(cmd *cobra.Command, args []string) {
-	globalopts, opt, _ := parseProbeOptions()
-	_, key := Plugins.ProbeFuncMap[opt.ScanPlugin]
-	if !key {
-		log.Fatalf("Available Plugins: %s", strings.Join(Plugins.ProbeKeys, ","))
-		os.Exit(2)
-	}
-	cli.StartProbeTask(opt, globalopts)
+	globalopts, opt, _ := parseSqlcmdOptions()
+	//_, key := Plugins.ProbeFuncMap[opt.ScanPlugin]
+	//if !key {
+	//	log.Fatalf("Available Plugins: %s", strings.Join(Plugins.ProbeKeys, ","))
+	//	os.Exit(2)
+	//}
+	cli.StartSqlcmdTask(opt, globalopts)
 }
 
 func parseSqlcmdOptions() (*model.GlobalOptions, *model.SqlcmdOptions, error) {
@@ -51,7 +47,7 @@ func parseSqlcmdOptions() (*model.GlobalOptions, *model.SqlcmdOptions, error) {
 		return nil, nil, fmt.Errorf("invalid value for Password: %v", err)
 	}
 
-	sqlcmdOption.CrackPlugin, err = sqlCmdCli.Flags().GetString("plugin")
+	sqlcmdOption.SqlcmdPlugin, err = sqlCmdCli.Flags().GetString("plugin")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for target-ip: %w", err)
 	}
@@ -66,7 +62,7 @@ func init() {
 	sqlCmdCli = &cobra.Command{
 		Use:   "sqlcmd",
 		Short: "exec sql query or cmd",
-		Run:   runProbe,
+		Run:   runSqlcmd,
 	}
 
 	sqlCmdCli.Flags().StringP("ip", "i", "", "ip (e.g. 192.168.1.2)")

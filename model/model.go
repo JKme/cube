@@ -12,6 +12,31 @@ type ProbeTaskResult struct {
 	Err       error
 }
 
+type CrackTask struct {
+	Ip          string
+	Port        int
+	User        string
+	Password    string
+	CrackPlugin string
+}
+
+type CrackTaskResult struct {
+	CrackTask CrackTask
+	Result    string
+	Err       error
+}
+
+type SqlcmdTask struct {
+	CrackTask CrackTask
+	Query     string
+}
+
+type SqlcmdTaskResult struct {
+	SqlcmdTask SqlcmdTask
+	Result     string
+	Err        error
+}
+
 //type ScanFunc func(task Task) (err error, taskResult TaskResult)
 
 var (

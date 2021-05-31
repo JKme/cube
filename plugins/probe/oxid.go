@@ -52,17 +52,18 @@ func OxidProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	//	return errors.New("Not Found")
 	//}
 	r = r[:index]
-	fmt.Println("hello")
-	fmt.Printf("%v", r)
-	s := string(r)
-	//for _, r := range s {
-	//	fmt.Println(r)
-	//}
-	rs := []rune(s)
-	fmt.Println(rs)
-	r1, _ := gbkToUtf8(r)
-	fmt.Println(r1)
-	fmt.Println(string(r1))
+	//fmt.Println("hello")
+	//fmt.Printf("%v", r)
+	//s := string(r)
+	////for _, r := range s {
+	////	fmt.Println(r)
+	////}
+	//rs := []rune(s)
+	//fmt.Println(rs)
+	//r1, _ := gbkToUtf8(r)
+	//fmt.Println(r1)
+	//fmt.Println(string(r1))
+	//https://play.golang.org/p/Q93aIamc_rG
 	//https://play.golang.org/p/M7sc7cGv4l3
 	//http://cs50mu.github.io/blog/2019/05/19/a-encoding-problem-in-golang/
 	//https://github.com/animesh-server-dot-files/go/blob/381c0dd07cb51c5607b4a8e66b814292f2225fd6/v1.16.4/source/src/unicode/utf8/example_test.go
@@ -70,12 +71,12 @@ func OxidProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	var results []string
 
 	for {
-		if len(r1) == 0 {
+		if len(r) == 0 {
 			break
 		}
-		index = bytes.Index(r1, []byte("\x00\x00\x00"))
-		results = append(results, dataGet(r1[:index+3]))
-		r1 = r1[index+3:]
+		index = bytes.Index(r, []byte("\x00\x00\x00"))
+		results = append(results, dataGet(r[:index+3]))
+		r = r[index+3:]
 	}
 	if len(results) > 0 {
 		//fmt.Println(results)

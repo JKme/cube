@@ -10,11 +10,25 @@ import (
 	"time"
 )
 
-func GenerateTasks(ipList []string, port int, scanPlugin string) (tasks []model.ProbeTask) {
+func ValidPlugin(plugin string) ([]string, error) {
+	pluginList := strings.Split(plugin, ",")
+	if len(pluginList) > 1 && SliceContain("ALL", pluginList) {
+		return nil, fmt.Errorf("invalid plugin: %s", plugin)
+	}
+
+	if plugin == "ALL" {
+		pluginList = Plugins.ProbeKeys[1:]
+	}
+	return pluginList, nil
+}
+
+func GenerateTasks(ipList []string, port int, scanPlugin []string) (tasks []model.ProbeTask) {
 	tasks = make([]model.ProbeTask, 0)
-	for _, ip := range ipList {
-		service := model.ProbeTask{Ip: ip, Port: port, ScanPlugin: scanPlugin}
-		tasks = append(tasks, service)
+	for _, plugin := range scanPlugin {
+		for _, ip := range ipList {
+			service := model.ProbeTask{Ip: ip, Port: port, ScanPlugin: plugin}
+			tasks = append(tasks, service)
+		}
 	}
 	return tasks
 }

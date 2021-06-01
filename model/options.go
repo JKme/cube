@@ -15,13 +15,17 @@ type ProbeOptions struct {
 	ScanPlugin string
 }
 
+type Service struct {
+	Schema string
+	Ip     string
+	Port   int
+}
+
 type SqlcmdOptions struct {
-	Ip           string
-	Port         int
-	User         string
-	Password     string
-	SqlcmdPlugin string
-	Query        string
+	Service  string
+	User     string
+	Password string
+	Query    string
 }
 
 func NewGlobalOptions() *GlobalOptions {

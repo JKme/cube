@@ -1,12 +1,12 @@
 package cubelib
 
 import (
+	"cube/model"
 	"fmt"
-	"net"
 	"regexp"
+	"strconv"
 	"strings"
 )
-
 
 func ValidIp(ip string) bool {
 	addr := strings.Trim(ip, " ")
@@ -17,23 +17,28 @@ func ValidIp(ip string) bool {
 	return false
 }
 
-func ParseService(str string)(service string, ip string, port string){
-	//ftp://192.168.0.1
-	s := strings.Split(str, ":")
-
-	ip, port = s[0], s[1]
-	fmt.Println(ip, port)
-	return service, ip, port
-}
-
 func Split(r rune) bool {
-	return r == ':' || r == '://'
+	return strings.ContainsRune("://:", r)
 }
 
-func ParseNet(str string)(service string, ip string, port string) {
+func ParseService(str string) (service model.Service, err error) {
 	a := strings.FieldsFunc(str, Split)
+	l := len(a)
+	if l < 2 || l > 3 {
+		return service, fmt.Errorf("invalid target: %s (eg: ssh://192.168.1.1:22)", str)
+	}
+
+	service.Schema = strings.ToUpper(a[0])
+	service.Ip = a[1]
+	if !ValidIp(service.Ip) {
+		return service, fmt.Errorf("invalid ip: %s", service.Ip)
+	}
+
+	if len(a) == 2 {
+		service.Port = model.CommonPortMap[service.Schema]
+	} else {
+		service.Port, _ = strconv.Atoi(a[2])
+	}
+
+	return service, nil
 }
-
-// Split https://stackoverflow.com/questions/39862613/how-to-split-a-string-by-multiple-delimiters
-
-

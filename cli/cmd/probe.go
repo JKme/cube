@@ -4,7 +4,6 @@ import (
 	"cube/cli"
 	"cube/log"
 	Plugins "cube/plugins"
-	"os"
 	"strings"
 
 	//"cube/log"
@@ -20,7 +19,6 @@ func runProbe(cmd *cobra.Command, args []string) {
 	_, key := Plugins.ProbeFuncMap[opt.ScanPlugin]
 	if !key {
 		log.Fatalf("Available Plugins: %s", strings.Join(Plugins.ProbeKeys, ","))
-		os.Exit(2)
 	}
 	cli.StartProbeTask(opt, globalopts)
 }

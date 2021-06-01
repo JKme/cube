@@ -27,19 +27,14 @@ func parseSqlcmdOptions() (*model.GlobalOptions, *model.SqlcmdOptions, error) {
 
 	sqlcmdOption := model.NewSqlcmdOptions()
 
-	sqlcmdOption.Ip, err = sqlCmdCli.Flags().GetString("ip")
+	sqlcmdOption.Service, err = sqlCmdCli.Flags().GetString("service")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for plugin: %v", err)
 	}
 
-	sqlcmdOption.Port, err = sqlCmdCli.Flags().GetInt("port")
-	if err != nil {
-		return nil, nil, fmt.Errorf("invalid value for scan port: %v", err)
-	}
-
 	sqlcmdOption.User, err = sqlCmdCli.Flags().GetString("user")
 	if err != nil {
-		return nil, nil, fmt.Errorf("invalid value for user: %v", err)
+		return nil, nil, fmt.Errorf("invalid value for plugin: %v", err)
 	}
 
 	sqlcmdOption.Password, err = sqlCmdCli.Flags().GetString("password")
@@ -47,10 +42,6 @@ func parseSqlcmdOptions() (*model.GlobalOptions, *model.SqlcmdOptions, error) {
 		return nil, nil, fmt.Errorf("invalid value for Password: %v", err)
 	}
 
-	sqlcmdOption.SqlcmdPlugin, err = sqlCmdCli.Flags().GetString("plugin")
-	if err != nil {
-		return nil, nil, fmt.Errorf("invalid value for target-ip: %w", err)
-	}
 	sqlcmdOption.Query, err = sqlCmdCli.Flags().GetString("query")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for target-file: %w", err)
@@ -65,11 +56,9 @@ func init() {
 		Run:   runSqlcmd,
 	}
 
-	sqlCmdCli.Flags().StringP("ip", "i", "", "ip (e.g. 192.168.1.2)")
-	sqlCmdCli.Flags().IntP("port", "p", 22, "target port")
+	sqlCmdCli.Flags().StringP("service", "x", "", "ip (e.g. ssh://192.168.0.0:2200)")
 	sqlCmdCli.Flags().StringP("user", "u", "", "login account")
-	sqlCmdCli.Flags().StringP("password", "P", "", "login password")
-	sqlCmdCli.Flags().StringP("plugin", "x", "", "plugin to use(e.g. SSH)")
+	sqlCmdCli.Flags().StringP("password", "p", "", "login password")
 	sqlCmdCli.Flags().StringP("query", "e", "", "string to query or exec")
 
 	//if err := probeCmd.MarkPersistentFlagRequired("plugin"); err != nil {

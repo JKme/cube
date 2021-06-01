@@ -40,5 +40,3 @@ type SqlcmdTaskResult struct {
 	Result     string
 	Err        error
 }
-
-//type ScanFunc func(task Task) (err error, taskResult TaskResult)

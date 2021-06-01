@@ -8,7 +8,6 @@ import (
 	"golang.org/x/text/transform"
 	"io/ioutil"
 	"net"
-	"strings"
 )
 
 func OxidProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
@@ -79,18 +78,12 @@ func OxidProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 		r = r[index+3:]
 	}
 	if len(results) > 0 {
-		//fmt.Println(results)
-		//r1 := fmt.Sprintf("[+] %s\n", task.Ip)
-		//for _, v := range results {
-		//	fmt.Println("\t" + v)
-		//
-		//}
-		//for _, v := range results {
-		//	fmt.Println("\t" + v)
-		//}
-		//fmt.Println(results)
-		//String str = new String(results, "UTF-8");
-		result.Result = strings.Join(results, "\n")
+		var s string
+		for _, v := range results {
+			s = s + fmt.Sprintf("\t"+v+"\n")
+		}
+
+		result.Result = s
 	}
 	return result
 }

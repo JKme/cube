@@ -40,12 +40,16 @@ func NewSqlcmdOptions() *SqlcmdOptions {
 	return &SqlcmdOptions{}
 }
 
-type crackOptions struct {
-	Target     string
-	TargetFile string
-	User       string
-	UserFile   string
-	Pass       string
-	PassFile   string
-	Port       int
+type CrackOptions struct {
+	Ip       string
+	IpFile   string
+	User     string
+	UserFile string
+	Pass     string
+	PassFile string
+	Port     int
+}
+
+func NewCrackOptions() *CrackOptions {
+	return &CrackOptions{}
 }

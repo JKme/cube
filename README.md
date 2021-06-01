@@ -24,3 +24,6 @@ https://www.cnblogs.com/sparkdev/p/10856077.html
 解析，组合，运行
 
 Crack: phpmyadmin weblogic tomcat httpBasic
+
+1. Crack模块开发
+2. SMB和OXID输出的中文乱码问题

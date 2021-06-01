@@ -4,7 +4,6 @@ import (
 	"cube/model"
 	Plugins "cube/plugins"
 	"fmt"
-	"strings"
 	"sync"
 )
 
@@ -19,8 +18,8 @@ func executeSqlcmdTask(task model.SqlcmdTask, wg *sync.WaitGroup) {
 
 func SaveSqlcmdReport(taskResult model.SqlcmdTaskResult) {
 	if len(taskResult.Result) > 0 {
-		fmt.Println(strings.Repeat("=", 20))
-		fmt.Printf("%s:\n%s", taskResult.SqlcmdTask.Ip, taskResult.Result)
-		fmt.Println(strings.Repeat("=", 20))
+		s := fmt.Sprintf("[*]: %s\n[*]: %s:%d\n", taskResult.SqlcmdTask.SqlcmdPlugin, taskResult.SqlcmdTask.Ip, taskResult.SqlcmdTask.Port)
+		s1 := fmt.Sprintf("[output]: %s", taskResult.Result)
+		fmt.Println(s + s1)
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"cube/model"
 	Plugins "cube/plugins"
 	"cube/util"
+	"strings"
 	"sync"
 	"time"
 )
@@ -20,12 +21,17 @@ func StartProbeTask(opt *model.ProbeOptions, globalopts *model.GlobalOptions) {
 }
 
 func StartSqlcmdTask(opt *model.SqlcmdOptions, globalopts *model.GlobalOptions) {
-	//TODO 前置判断条件，比如IP正则，Plugin
-	//ips, err := util.ParseIP(opt.Target, opt.TargetFile)
-	//if err != nil {
-	//	log.Error(err)
-	//}
-	task := model.SqlcmdTask{Ip: opt.Ip, Port: opt.Port, User: opt.User, Password: opt.Password, SqlcmdPlugin: opt.SqlcmdPlugin, Query: opt.Query}
+	s, err := cubelib.ParseService(opt.Service)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, key := Plugins.SqlcmdFuncMap[s.Schema]
+	if !key {
+		log.Fatalf("Available Plugins: %s", strings.Join(Plugins.SqlcmdKeys, ","))
+	}
+
+	task := model.SqlcmdTask{Ip: s.Ip, Port: s.Port, User: opt.User, Password: opt.Password, SqlcmdPlugin: s.Schema, Query: opt.Query}
 	fn := Plugins.SqlcmdFuncMap[task.SqlcmdPlugin]
 	cubelib.SaveSqlcmdReport(fn(task))
 }

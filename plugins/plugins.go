@@ -15,7 +15,8 @@ var (
 	ProbeFuncMap  map[string]ProbeFunc
 	SqlcmdFuncMap map[string]SqlcmdFunc
 
-	ProbeKeys []string
+	ProbeKeys  []string
+	SqlcmdKeys []string
 	//CrackFuncMap map[string]CrackFunc
 )
 
@@ -30,6 +31,9 @@ func init() {
 
 	SqlcmdFuncMap = make(map[string]SqlcmdFunc)
 	SqlcmdFuncMap["SSH"] = sqlcmd.SshCmd
+	for k := range SqlcmdFuncMap {
+		SqlcmdKeys = append(SqlcmdKeys, k)
+	}
 
 	//CrackFuncMap = make(map[string]CrackFunc)
 	//CrackFuncMap["SSH"] = crack.SshCrack

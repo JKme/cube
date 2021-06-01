@@ -17,7 +17,7 @@ func SshCmd(task model.SqlcmdTask) (result model.SqlcmdTaskResult) {
 		Auth: []ssh.AuthMethod{
 			ssh.Password(task.Password),
 		},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(), //这个可以， 但是不够安全
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 		//HostKeyCallback: hostKeyCallBackFunc(h.Host),
 	}
 	conn, err := ssh.Dial("tcp", fmt.Sprintf("%s:%d", task.Ip, task.Port), config)

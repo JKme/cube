@@ -42,3 +42,53 @@ func ParseService(str string) (service model.Service, err error) {
 
 	return service, nil
 }
+
+func SliceContain(str string, slice []string) bool {
+	for _, value := range slice {
+		if str == value {
+			return true
+		}
+	}
+	return false
+}
+
+func SameStringSlice(x, y []string) bool {
+	if len(x) != len(y) {
+		return false
+	}
+	// create a map of string -> int
+	diff := make(map[string]int, len(x))
+	for _, _x := range x {
+		// 0 value for int is 0, so just increment a counter for the string
+		diff[_x]++
+	}
+	for _, _y := range y {
+		// If the string _y is not in diff bail out early
+		if _, ok := diff[_y]; !ok {
+			return false
+		}
+		diff[_y] -= 1
+		if diff[_y] == 0 {
+			delete(diff, _y)
+		}
+	}
+	return len(diff) == 0
+}
+
+func Subset(first, second []string) bool {
+	set := make(map[string]int)
+	for _, value := range second {
+		set[value] += 1
+	}
+
+	for _, value := range first {
+		if count, found := set[value]; !found {
+			return false
+		} else if count < 1 {
+			return false
+		} else {
+			set[value] = count - 1
+		}
+	}
+	return true
+}

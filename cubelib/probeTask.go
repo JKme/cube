@@ -35,9 +35,9 @@ func GenerateTasks(ipList []string, port int, scanPlugin []string) (tasks []mode
 
 func saveReport(taskResult model.ProbeTaskResult) {
 	if len(taskResult.Result) > 0 {
-		fmt.Println(strings.Repeat("=", 20))
-		fmt.Printf("%s:\n%s", taskResult.ProbeTask.Ip, taskResult.Result)
-		fmt.Println(strings.Repeat("=", 20))
+		s := fmt.Sprintf("[*]: %s\n[*]: %s:%d\n", taskResult.ProbeTask.ScanPlugin, taskResult.ProbeTask.Ip, taskResult.ProbeTask.Port)
+		s1 := fmt.Sprintf("[*]: %s", taskResult.Result)
+		fmt.Println(s + s1)
 	}
 }
 

@@ -17,5 +17,7 @@ func init() {
 	CommonPortMap["FTP"] = 21
 	CommonPortMap["SSH"] = 22
 	CommonPortMap["SMB"] = 445
+	CommonPortMap["MSSQL"] = 1433
+	CommonPortMap["REDIS"] = 6379
 
 }

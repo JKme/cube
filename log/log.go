@@ -92,6 +92,11 @@ func Error(v ...interface{}) {
 	formatLogger.doLog(LevelError, v...)
 }
 
+func Fatal(v ...interface{}) {
+	formatLogger.doLog(LevelError, v...)
+	os.Exit(2)
+}
+
 func Errorf(format string, v ...interface{}) {
 	formatLogger.doLogf(LevelError, format, v...)
 }

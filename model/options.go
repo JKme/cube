@@ -47,7 +47,7 @@ type CrackOptions struct {
 	UserFile string
 	Pass     string
 	PassFile string
-	Port     int
+	Port     string
 }
 
 func NewCrackOptions() *CrackOptions {

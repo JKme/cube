@@ -48,6 +48,22 @@ func parseCrackOptions() (*model.GlobalOptions, *model.CrackOptions, error) {
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for target-file: %w", err)
 	}
+
+	crackOption.Pass, err = sqlCmdCli.Flags().GetString("passwd")
+	if err != nil {
+		return nil, nil, fmt.Errorf("invalid value for target-file: %w", err)
+	}
+
+	crackOption.PassFile, err = sqlCmdCli.Flags().GetString("user-file")
+	if err != nil {
+		return nil, nil, fmt.Errorf("invalid value for target-file: %w", err)
+	}
+
+	crackOption.Port, err = sqlCmdCli.Flags().GetString("port")
+	if err != nil {
+		return nil, nil, fmt.Errorf("invalid value for target-file: %w", err)
+	}
+
 	return globalOpts, crackOption, nil
 }
 

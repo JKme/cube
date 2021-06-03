@@ -27,3 +27,10 @@ Crack: phpmyadmin weblogic tomcat httpBasic
 
 1. Crack模块开发
 2. SMB和OXID输出的中文乱码问题
+
+https://o-my-chenjian.com/2017/09/20/Using-Cobra-With-Golang/
+https://monkeywie.cn/2019/10/10/go-cross-compile/
+
+## Context
+http://beangogo.cn/2021/03/08/golang-context%E5%BA%94%E7%94%A8/
+https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-context/

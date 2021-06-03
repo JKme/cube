@@ -1,8 +1,11 @@
 package cubelib
 
 import (
+	"cube/log"
 	"cube/model"
 	Plugins "cube/plugins"
+	"cube/util"
+
 	//Plugins "cube/plugins"
 	"fmt"
 	"strings"
@@ -67,25 +70,12 @@ func RunTasks(tasks []model.ProbeTask, scanNum int, timeout int) {
 	//}()
 
 	for _, task := range tasks {
-		//log.Debugf("Put Task Channel: %s", task.Ip)
 		tasksChan <- task
 	}
 	close(tasksChan)
 
-	//wg.Wait()
 	waitTimeout(&wg, time.Duration(timeout)*time.Second)
 }
-
-//func Scan(scanPlugin string, scanTargets string, scanTargetsFile string, scanPort int, timeout int, scanNum int) {
-//	ips, err := ParseIP(scanTargets, scanTargetsFile)
-//	if err != nil {
-//		log.Error(err)
-//	}
-//	tasks := generateTasks(ips, scanPort, scanPlugin)
-//	runTasks(tasks, scanNum, timeout)
-//
-//	//aliveIpList := CheckAlive(scanTargets)
-//}
 
 func waitTimeout(wg *sync.WaitGroup, timeout time.Duration) bool {
 	c := make(chan struct{})
@@ -99,4 +89,21 @@ func waitTimeout(wg *sync.WaitGroup, timeout time.Duration) bool {
 	case <-time.After(timeout):
 		return true // timed out
 	}
+}
+
+func StartProbeTask(opt *model.ProbeOptions, globalopts *model.GlobalOptions) {
+	ips, err := util.ParseIP(opt.Target, opt.TargetFile)
+	if err != nil {
+		log.Error(err)
+	}
+	pluginList, err := ValidPlugin(opt.ScanPlugin)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if !Subset(pluginList, Plugins.ProbeKeys) {
+		log.Fatalf("plugins not found: %s", pluginList)
+	}
+
+	tasks := GenerateTasks(ips, opt.Port, pluginList)
+	RunTasks(tasks, globalopts.Threads, globalopts.Timeout)
 }

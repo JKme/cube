@@ -1,20 +1,12 @@
 package cubelib
 
 import (
+	"cube/log"
 	"cube/model"
 	Plugins "cube/plugins"
 	"fmt"
-	"sync"
+	"strings"
 )
-
-func executeSqlcmdTask(task model.SqlcmdTask, wg *sync.WaitGroup) {
-	defer wg.Done()
-
-	//fmt.Println("Hello")
-	fn := Plugins.SqlcmdFuncMap[task.SqlcmdPlugin]
-	SaveSqlcmdReport(fn(task))
-
-}
 
 func SaveSqlcmdReport(taskResult model.SqlcmdTaskResult) {
 	if len(taskResult.Result) > 0 {
@@ -22,4 +14,20 @@ func SaveSqlcmdReport(taskResult model.SqlcmdTaskResult) {
 		s1 := fmt.Sprintf("[output]:\n %s", taskResult.Result)
 		fmt.Println(s + s1)
 	}
+}
+
+func StartSqlcmdTask(opt *model.SqlcmdOptions, globalopts *model.GlobalOptions) {
+	s, err := ParseService(opt.Service)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, key := Plugins.SqlcmdFuncMap[s.Schema]
+	if !key {
+		log.Fatalf("Available Plugins: %s", strings.Join(Plugins.SqlcmdKeys, ","))
+	}
+
+	task := model.SqlcmdTask{Ip: s.Ip, Port: s.Port, User: opt.User, Password: opt.Password, SqlcmdPlugin: s.Schema, Query: opt.Query}
+	fn := Plugins.SqlcmdFuncMap[task.SqlcmdPlugin]
+	SaveSqlcmdReport(fn(task))
 }

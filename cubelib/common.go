@@ -1,8 +1,10 @@
 package cubelib
 
 import (
+	"bufio"
 	"cube/model"
 	"fmt"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -50,6 +52,25 @@ func SliceContain(str string, slice []string) bool {
 		}
 	}
 	return false
+}
+
+func FileReader(filename string) ([]string, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		fmt.Printf("Open file %s error, %v\n", filename, err)
+		os.Exit(0)
+	}
+	defer file.Close()
+	var content []string
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
+	for scanner.Scan() {
+		text := strings.TrimSpace(scanner.Text())
+		if text != "" {
+			content = append(content, scanner.Text())
+		}
+	}
+	return content, nil
 }
 
 func SameStringSlice(x, y []string) bool {

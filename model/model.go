@@ -14,7 +14,7 @@ type ProbeTaskResult struct {
 
 type CrackTask struct {
 	Ip          string
-	Port        int
+	Port        string
 	User        string
 	Password    string
 	CrackPlugin string

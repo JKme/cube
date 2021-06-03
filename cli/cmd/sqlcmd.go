@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"cube/cli"
+	"cube/cubelib"
 	"cube/model"
 	"fmt"
 	"github.com/spf13/cobra"
@@ -16,7 +16,7 @@ func runSqlcmd(cmd *cobra.Command, args []string) {
 	//	log.Fatalf("Available Plugins: %s", strings.Join(Plugins.ProbeKeys, ","))
 	//	os.Exit(2)
 	//}
-	cli.StartSqlcmdTask(opt, globalopts)
+	cubelib.StartSqlcmdTask(opt, globalopts)
 }
 
 func parseSqlcmdOptions() (*model.GlobalOptions, *model.SqlcmdOptions, error) {

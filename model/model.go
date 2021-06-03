@@ -12,11 +12,14 @@ type ProbeTaskResult struct {
 	Err       error
 }
 
+type Auth struct {
+	User     string
+	Password string
+}
 type CrackTask struct {
 	Ip          string
 	Port        string
-	User        string
-	Password    string
+	Auth        *Auth
 	CrackPlugin string
 }
 

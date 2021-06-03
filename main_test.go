@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 )
 
 type A struct {
@@ -59,6 +61,21 @@ func sameStringSlice(x, y []string) bool {
 	return len(diff) == 0
 }
 
-func TestsameStringSlice(t *testing.T) {
+func reqTask(ctx context.Context, name string) {
+	for {
+		select {
+		case <-ctx.Done():
+			fmt.Println("stop", name)
+			return
+		default:
+			fmt.Println(name, "send request")
+			time.Sleep(1 * time.Second)
+		}
+	}
+}
 
+func TestContext(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	go reqTask(ctx, "hello")
+	cancel()
 }

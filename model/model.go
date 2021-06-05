@@ -19,7 +19,7 @@ type Auth struct {
 type CrackTask struct {
 	Ip          string
 	Port        string
-	Auth        *Auth
+	Auth        Auth
 	CrackPlugin string
 }
 

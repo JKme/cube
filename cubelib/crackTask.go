@@ -51,7 +51,7 @@ func generateAuth(user []string, password []string) (authList []model.Auth) {
 
 func saveCrackReport(taskResult model.CrackTaskResult) {
 	if len(taskResult.Result) > 0 {
-		s := fmt.Sprintf("[*]: %s\n[*]: %s:%d\n", taskResult.CrackTask.CrackPlugin, taskResult.CrackTask.Ip, taskResult.CrackTask.Port)
+		s := fmt.Sprintf("[*]: %s\n[*]: %s:%s\n", taskResult.CrackTask.CrackPlugin, taskResult.CrackTask.Ip, taskResult.CrackTask.Port)
 		s1 := fmt.Sprintf("[*]: %s", taskResult.Result)
 		fmt.Println(s + s1)
 	}
@@ -104,7 +104,7 @@ func executeUnitTask(taskChan chan model.CrackTask, wg *sync.WaitGroup) {
 
 }
 
-func runCrackTask(ctx context.Context, taskChan chan model.CrackTask) {
+func runCrackTask(ctx context.Context, taskChan chan model.CrackTask, resultChan chan model.CrackTaskResult) {
 	for {
 		select {
 		case <-ctx.Done():
@@ -116,27 +116,76 @@ func runCrackTask(ctx context.Context, taskChan chan model.CrackTask) {
 			fn := Plugins.CrackFuncMap[task.CrackPlugin]
 			r := fn(task)
 			if len(r.Result) > 0 {
-				return
+				resultChan <- r
 			}
-			saveCrackReport(r)
 		}
 	}
 }
 
-func runCrack(plugins []string, ips []string, authList []model.Auth, g model.GlobalOptions) {
-	//ctx, cancel := context.WithCancel(context.Background())
-	ctx := context.Background()
-	for _, ip := range ips {
-		taskChan := make(chan model.CrackTask)
+func executeIp(ctx context.Context, ip string, authList []model.Auth, plugins []string, resultChan chan model.CrackTaskResult) {
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			taskChan := make(chan model.CrackTask)
 
-		for i := 0; i < g.Threads; i++ {
-			go runCrackTask(ctx, taskChan)
+			tasks := unitTask(ip, authList, plugins)
+
+			for i := 0; i < 10; i++ {
+				go runCrackTask(ctx, taskChan, resultChan)
+			}
+
+			for _, task := range tasks {
+				taskChan <- task
+			}
+
 		}
-
-		tasks := unitTask(ip, authList, plugins)
-		for _, task := range tasks {
-			taskChan <- task
-		}
-
 	}
+}
+
+func runCrack(plugins []string, ips []string, authList []model.Auth) {
+	ctx, cancel := context.WithCancel(context.Background())
+	resultChan := make(chan model.CrackTaskResult, 1)
+	//ctx := context.Background()
+	fmt.Println(resultChan)
+	ipChan := make(chan string)
+	for _, ip := range ips {
+		ipChan <- ip
+		fmt.Println("Hello")
+	}
+
+	go func() {
+		for {
+			select {
+			case ip, ok := <-ipChan:
+				if ok {
+					fmt.Println(ip)
+					cancel()
+				}
+				if ok {
+					go executeIp(ctx, ip, authList, plugins, resultChan)
+					data, ok := <-resultChan
+					if ok {
+						cancel()
+						fmt.Println(data)
+					}
+				}
+			case <-ctx.Done():
+				return
+			}
+		}
+
+	}()
+
+	//
+	//for _, ip := range ips {
+	//	go executeIp(ctx, ip, authList, plugins, resultChan)
+	//
+	//	data, ok := <- resultChan
+	//	if ok {
+	//		cancel()
+	//		fmt.Println(data)
+	//	}
+	//}
 }

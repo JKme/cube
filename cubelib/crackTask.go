@@ -123,20 +123,31 @@ func runCrackTask(ctx context.Context, taskChan chan model.CrackTask, resultChan
 }
 
 func executeIp(ctx context.Context, ip string, authList []model.Auth, plugins []string, resultChan chan model.CrackTaskResult) {
+	childCtx, childCancel := context.WithCancel(ctx)
+	defer childCancel()
 	for {
 		select {
-		case <-ctx.Done():
+		case <-childCtx.Done():
 			return
+
+		case data, ok := <-resultChan:
+			if ok {
+				fmt.Printf("Get Magic Bean %s\n", data)
+				//fmt.Println(data)
+				childCancel()
+				return
+			}
 		default:
 			taskChan := make(chan model.CrackTask)
 
 			tasks := unitTask(ip, authList, plugins)
 
 			for i := 0; i < 10; i++ {
-				go runCrackTask(ctx, taskChan, resultChan)
+				go runCrackTask(childCtx, taskChan, resultChan)
 			}
 
 			for _, task := range tasks {
+				//fmt.Printf("Put Task: %s\n", task)
 				taskChan <- task
 			}
 
@@ -150,20 +161,6 @@ func runCrack(plugins []string, ips []string, authList []model.Auth) {
 	defer cancel()
 
 	for _, ip := range ips {
-		go func() {
-			for {
-				select {
-				case data, ok := <-resultChan:
-					if ok {
-						fmt.Println(data)
-						cancel()
-					}
-
-				}
-			}
-
-		}()
-
 		executeIp(ctx, ip, authList, plugins, resultChan)
 	}
 

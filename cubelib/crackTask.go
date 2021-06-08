@@ -147,45 +147,24 @@ func executeIp(ctx context.Context, ip string, authList []model.Auth, plugins []
 func runCrack(plugins []string, ips []string, authList []model.Auth) {
 	ctx, cancel := context.WithCancel(context.Background())
 	resultChan := make(chan model.CrackTaskResult, 1)
-	//ctx := context.Background()
-	fmt.Println(resultChan)
-	ipChan := make(chan string)
+	defer cancel()
+
 	for _, ip := range ips {
-		ipChan <- ip
-		fmt.Println("Hello")
+		go func() {
+			for {
+				select {
+				case data, ok := <-resultChan:
+					if ok {
+						fmt.Println(data)
+						cancel()
+					}
+
+				}
+			}
+
+		}()
+
+		executeIp(ctx, ip, authList, plugins, resultChan)
 	}
 
-	go func() {
-		for {
-			select {
-			case ip, ok := <-ipChan:
-				if ok {
-					fmt.Println(ip)
-					cancel()
-				}
-				if ok {
-					go executeIp(ctx, ip, authList, plugins, resultChan)
-					data, ok := <-resultChan
-					if ok {
-						cancel()
-						fmt.Println(data)
-					}
-				}
-			case <-ctx.Done():
-				return
-			}
-		}
-
-	}()
-
-	//
-	//for _, ip := range ips {
-	//	go executeIp(ctx, ip, authList, plugins, resultChan)
-	//
-	//	data, ok := <- resultChan
-	//	if ok {
-	//		cancel()
-	//		fmt.Println(data)
-	//	}
-	//}
 }

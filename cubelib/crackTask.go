@@ -122,7 +122,23 @@ func runCrackTask(ctx context.Context, taskChan chan model.CrackTask, resultChan
 	}
 }
 
+func runTask(task model.CrackTask, resultChan chan model.CrackTaskResult) {
+	fn := Plugins.CrackFuncMap[task.CrackPlugin]
+	r := fn(task)
+	if len(r.Result) > 0 {
+		resultChan <- r
+
+	}
+}
+
 func executeIp(ctx context.Context, ip string, authList []model.Auth, plugins []string, resultChan chan model.CrackTaskResult) {
+	tasks := unitTask(ip, authList, plugins)
+	taskChan := make(chan model.CrackTask)
+	for _, task := range tasks {
+		//fmt.Printf("Put Task: %s\n", task)
+		taskChan <- task
+	}
+
 	childCtx, childCancel := context.WithCancel(ctx)
 	defer childCancel()
 	for {
@@ -137,19 +153,17 @@ func executeIp(ctx context.Context, ip string, authList []model.Auth, plugins []
 		//		childCancel()
 		//		return
 		//	}
-		default:
-			taskChan := make(chan model.CrackTask)
-
-			tasks := unitTask(ip, authList, plugins)
-
-			for i := 0; i < 2; i++ {
-				go runCrackTask(childCtx, taskChan, resultChan)
+		case task, ok:= <- taskChan:
+			if ok {
+				for i := 0; i < 2; i++ {
+						go runTask(task, resultChan)
+					}
+				}
 			}
 
-			for _, task := range tasks {
-				//fmt.Printf("Put Task: %s\n", task)
-				taskChan <- task
-			}
+
+
+
 
 		}
 	}

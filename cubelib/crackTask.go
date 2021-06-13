@@ -122,45 +122,104 @@ func runCrackTask(ctx context.Context, taskChan chan model.CrackTask, resultChan
 	}
 }
 
-func executeIp(ctx context.Context, ip string, authList []model.Auth, plugins []string, resultChan chan model.CrackTaskResult) {
-	childCtx, childCancel := context.WithCancel(ctx)
-	defer childCancel()
-	for {
-		select {
-		case <-childCtx.Done():
-			return
-
-		//case data, ok := <-resultChan:
-		//	if ok {
-		//		fmt.Printf("Get Magic Bean %s\n", data)
-		//		//fmt.Println(data)
-		//		childCancel()
-		//		return
-		//	}
-		default:
-			taskChan := make(chan model.CrackTask)
-
-			tasks := unitTask(ip, authList, plugins)
-
-			for i := 0; i < 2; i++ {
-				go runCrackTask(childCtx, taskChan, resultChan)
-			}
-
-			for _, task := range tasks {
-				//fmt.Printf("Put Task: %s\n", task)
-				taskChan <- task
-			}
-
+func runTask(taskChan chan model.CrackTask, resultChan chan model.CrackTaskResult, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for task := range taskChan {
+		fn := Plugins.CrackFuncMap[task.CrackPlugin]
+		r := fn(task)
+		if len(r.Result) > 0 {
+			fmt.Println(r)
+			resultChan <- r
 		}
+
 	}
+
 }
 
+func executeIp(ctx context.Context, ip string, authList []model.Auth, plugins []string, resultChan chan model.CrackTaskResult) {
+
+	tasks := unitTask(ip, authList, plugins)
+	taskChan := make(chan model.CrackTask, 10)
+	//childCtx, childCancel := context.WithCancel(ctx)
+	//defer childCancel()
+	//var wg sync.WaitGroup
+	//wg.Add(2)
+	//go func() {
+	//
+	//	for {
+	//		select {
+	//		case <-childCtx.Done():
+	//			return
+	//		//case data, ok := <-resultChan:
+	//		//	if ok {
+	//		//		fmt.Printf("Get Magic Bean %s\n", data)
+	//		//		//fmt.Println(data)
+	//		//		childCancel()
+	//		//		return
+	//		//	}
+	//		case task, ok:= <- taskChan:
+	//			if ok {
+	//for i := 0; i < 2; i++ {
+
+	//for i := 0; i < 3; i++ {
+	//	go runTask(taskChan, resultChan)
+	//}
+
+	for _, task := range tasks {
+		taskChan <- task
+	}
+	close(taskChan)
+	//runTask(taskChan, resultChan)
+}
+
+//func runCrack(plugins []string, ips []string, authList []model.Auth) {
+//
+//	resultChan := make(chan model.CrackTaskResult, 10)
+//	var wg sync.WaitGroup
+//
+//
+//	for _, ip := range ips {
+//		Task:
+//			for {
+//				select {
+//				case data, ok := <-resultChan:
+//					if ok {
+//						fmt.Printf("Get Magic Bean %s\n", data)
+//						//fmt.Println(data)
+//						break Task
+//					}
+//				default:
+//					tasks := unitTask(ip, authList, plugins)
+//					taskChan := make(chan model.CrackTask, 10)
+//
+//
+//					for i:=0;i<3;i++ {
+//						wg.Add(1)
+//						go runTask(taskChan, resultChan, &wg)
+//					}
+//
+//
+//					for _, task := range tasks {
+//						fmt.Printf("Put Task: %s\n", task.Auth)
+//						taskChan <- task
+//					}
+//					close(taskChan)
+//					wg.Wait()
+//				}
+//			}
+//	}
+//
+//}
+
 func runCrack(plugins []string, ips []string, authList []model.Auth) {
+
+	resultChan := make(chan model.CrackTaskResult, 10)
+	var wg sync.WaitGroup
 	ctx, cancel := context.WithCancel(context.Background())
-	resultChan := make(chan model.CrackTaskResult, 1)
 	defer cancel()
 
 	for _, ip := range ips {
+
 		go func() {
 			for {
 				select {
@@ -169,14 +228,27 @@ func runCrack(plugins []string, ips []string, authList []model.Auth) {
 						fmt.Printf("Get Magic Bean %s\n", data)
 						//fmt.Println(data)
 						cancel()
-						//return
+						return
 					}
-				default:
-
 				}
 			}
 		}()
-		executeIp(ctx, ip, authList, plugins, resultChan)
-	}
 
+		tasks := unitTask(ip, authList, plugins)
+		taskChan := make(chan model.CrackTask, 10)
+
+		for i := 0; i < 3; i++ {
+			wg.Add(1)
+			go runCrackTask(ctx, taskChan, resultChan)
+		}
+
+		for _, task := range tasks {
+			fmt.Printf("Put Task: %s\n", task.Auth)
+			taskChan <- task
+		}
+		close(taskChan)
+		wg.Wait()
+	}
 }
+
+// https://stackoverflow.com/questions/45500836/close-multiple-goroutine-if-an-error-occurs-in-one-in-go

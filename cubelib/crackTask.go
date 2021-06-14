@@ -218,22 +218,22 @@ func runCrack(plugins []string, ips []string, authList []model.Auth) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	for _, ip := range ips {
-
-		go func() {
-			for {
-				select {
-				case data, ok := <-resultChan:
-					if ok {
-						fmt.Printf("Get Magic Bean %s\n", data)
-						//fmt.Println(data)
-						cancel()
-						return
-					}
+	go func() {
+		for {
+			select {
+			case data, ok := <-resultChan:
+				if ok {
+					fmt.Printf("Get Magic Bean %s\n", data)
+					cancel()
+					//return
 				}
-			}
-		}()
+			default:
 
+			}
+		}
+	}()
+
+	for _, ip := range ips {
 		tasks := unitTask(ip, authList, plugins)
 		taskChan := make(chan model.CrackTask, 10)
 

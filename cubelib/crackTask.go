@@ -5,6 +5,7 @@ import (
 	"cube/model"
 	Plugins "cube/plugins"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 )
@@ -120,20 +121,34 @@ func runCrackTask(ctx context.Context, taskChan chan model.CrackTask, resultChan
 			}
 		}
 	}
+}
 
+func monitorResult(done chan bool, resultChan chan model.CrackTaskResult) {
+	for r := range resultChan {
+		if r.Result != "" {
+			fmt.Printf(strings.Repeat("+", 20) + "\n")
+			fmt.Printf("Crack Pass Success:%s\n", r)
+			fmt.Printf(strings.Repeat("+", 20) + "\n")
+			done <- true
+		}
+	}
+	done <- true
+	close(done)
+}
 
-func runTask(taskChan chan model.CrackTask, resultChan chan model.CrackTaskResult, wg *sync.WaitGroup) {
-	defer wg.Done()
+func runTask(taskChan chan model.CrackTask, resultChan chan model.CrackTaskResult, done chan bool) {
+	//defer wg.Done()
 	for task := range taskChan {
 		fn := Plugins.CrackFuncMap[task.CrackPlugin]
 		r := fn(task)
 		if len(r.Result) > 0 {
 			fmt.Println(r)
 			resultChan <- r
+			done <- true
 		}
 
 	}
-
+	done <- true
 }
 
 func executeIp(ctx context.Context, ip string, authList []model.Auth, plugins []string, resultChan chan model.CrackTaskResult) {
@@ -214,40 +229,47 @@ func executeIp(ctx context.Context, ip string, authList []model.Auth, plugins []
 func runCrack(plugins []string, ips []string, authList []model.Auth) {
 
 	resultChan := make(chan model.CrackTaskResult, 10)
-	var wg sync.WaitGroup
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	var done = make(chan bool)
+	//
+	//var wg sync.WaitGroup
 
-	go func() {
-		for {
-			select {
-			case data, ok := <-resultChan:
-				if ok {
-					fmt.Printf("Get Magic Bean %s\n", data)
-					cancel()
-					//return
-				}
-			default:
+	//ctx, cancel := context.WithCancel(context.Background())
+	//defer cancel()
 
-			}
-		}
-	}()
+	//go func() {
+	//	for {
+	//		select {
+	//		case data, ok := <-resultChan:
+	//			if ok {
+	//				fmt.Printf("Get Magic Bean %s\n", data)
+	//				cancel()
+	//				//return
+	//			}
+	//		default:
+	//
+	//		}
+	//	}
+	//}()
 
 	for _, ip := range ips {
 		tasks := unitTask(ip, authList, plugins)
 		taskChan := make(chan model.CrackTask, 10)
 
-		for i := 0; i < 3; i++ {
-			wg.Add(1)
-			go runCrackTask(ctx, taskChan, resultChan)
-		}
+		go func() {
+			for i := 0; i < 3; i++ {
+				go runTask(taskChan, resultChan, done)
+			}
+		}()
+
+		go monitorResult(done, resultChan)
 
 		for _, task := range tasks {
 			fmt.Printf("Put Task: %s\n", task.Auth)
 			taskChan <- task
 		}
 		close(taskChan)
-		wg.Wait()
+		//wg.Wait()
+		<-done
 	}
 }
 

@@ -5,6 +5,7 @@ import (
 	"cube/model"
 	Plugins "cube/plugins"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 )
@@ -49,14 +50,6 @@ func generateAuth(user []string, password []string) (authList []model.Auth) {
 	return authList
 }
 
-func saveCrackReport(taskResult model.CrackTaskResult) {
-	if len(taskResult.Result) > 0 {
-		s := fmt.Sprintf("[*]: %s\n[*]: %s:%s\n", taskResult.CrackTask.CrackPlugin, taskResult.CrackTask.Ip, taskResult.CrackTask.Port)
-		s1 := fmt.Sprintf("[*]: %s", taskResult.Result)
-		fmt.Println(s + s1)
-	}
-}
-
 func executeCrackTask(taskChan chan model.CrackTask, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for task := range taskChan {
@@ -90,50 +83,66 @@ func RunCrackTasks(tasks []model.CrackTask, scanNum int, timeout int) {
 	waitTimeout(&wg, time.Duration(timeout)*time.Second)
 }
 
-func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
-
-}
-
-func executeUnitTask(taskChan chan model.CrackTask, wg *sync.WaitGroup) {
-	defer wg.Done()
-	for task := range taskChan {
-		//fmt.Println("Hello")
-		fn := Plugins.CrackFuncMap[task.CrackPlugin]
-		saveCrackReport(fn(task))
-	}
-
-}
-
-func runCrackTask(ctx context.Context, taskChan chan model.CrackTask, resultChan chan model.CrackTaskResult) {
+func runCrackTask(ctx context.Context, taskChan chan model.CrackTask, resultChan chan model.CrackTaskResult, done chan bool) {
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		case task, ok := <-taskChan:
 			if !ok {
+				done <- true
 				return
 			}
 			fn := Plugins.CrackFuncMap[task.CrackPlugin]
 			r := fn(task)
 			if len(r.Result) > 0 {
 				resultChan <- r
+				done <- true
 			}
 		}
 	}
 }
 
-func runTask(taskChan chan model.CrackTask, resultChan chan model.CrackTaskResult, wg *sync.WaitGroup) {
-	defer wg.Done()
+func monitorResult(done chan bool, resultChan chan model.CrackTaskResult) {
+	for r := range resultChan {
+		if r.Result != "" {
+			fmt.Printf(strings.Repeat("+", 20) + "\n")
+			fmt.Printf("Crack Pass Success:%s\n", r)
+			fmt.Printf(strings.Repeat("+", 20) + "\n")
+			done <- true
+		}
+	}
+}
+
+func saveCrackReport(taskResult model.CrackTaskResult) {
+	k := fmt.Sprintf("%v-%v-%v", taskResult.CrackTask.Ip, taskResult.CrackTask.Port, taskResult.CrackTask.CrackPlugin)
+	h := MakeTaskHash(k)
+	SetTaskHask(h)
+	if len(taskResult.Result) > 0 {
+		s := fmt.Sprintf("[*]: %s\n[*]: %s:%s\n", taskResult.CrackTask.CrackPlugin, taskResult.CrackTask.Ip, taskResult.CrackTask.Port)
+		s1 := fmt.Sprintf("[*]: %s", taskResult.Result)
+		fmt.Println(s + s1)
+	}
+}
+
+func runTask(taskChan chan model.CrackTask, wg *sync.WaitGroup) {
 	for task := range taskChan {
-		fn := Plugins.CrackFuncMap[task.CrackPlugin]
-		r := fn(task)
-		if len(r.Result) > 0 {
-			fmt.Println(r)
-			resultChan <- r
+
+		k := fmt.Sprintf("%v-%v-%v", task.Ip, task.Port, task.CrackPlugin)
+		h := MakeTaskHash(k)
+		if CheckTashHash(h) {
+			wg.Done()
+			continue
 		}
 
+		fn := Plugins.CrackFuncMap[task.CrackPlugin]
+		r := fn(task)
+		saveCrackReport(r)
+		if len(r.Result) > 0 {
+			fmt.Println(r)
+		}
+		wg.Done()
 	}
-
 }
 
 func executeIp(ctx context.Context, ip string, authList []model.Auth, plugins []string, resultChan chan model.CrackTaskResult) {
@@ -213,42 +222,27 @@ func executeIp(ctx context.Context, ip string, authList []model.Auth, plugins []
 
 func runCrack(plugins []string, ips []string, authList []model.Auth) {
 
-	resultChan := make(chan model.CrackTaskResult, 10)
-	var wg sync.WaitGroup
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	for _, ip := range ips {
+		var wg sync.WaitGroup
+		tasks := unitTask(ip, authList, plugins)
+		taskChan := make(chan model.CrackTask, 10)
 
-	go func() {
-		for {
-			select {
-			case data, ok := <-resultChan:
-				if ok {
-					fmt.Printf("Get Magic Bean %s\n", data)
-					cancel()
-					//return
-				}
-			default:
-
+		go func() {
+			for i := 0; i < 4; i++ {
+				//go runCrackTask(ctx, taskChan, resultChan,done)
+				go runTask(taskChan, &wg)
 			}
+		}()
+
+		//go func() {
+		for _, task := range tasks {
+			fmt.Printf("Put Task: %s\n", task.Auth)
+			taskChan <- task
 		}
-	}()
+		//close(taskChan)
+		wg.Wait()
+	}
 
-		for _, ip := range ips {
-			tasks := unitTask(ip, authList, plugins)
-			taskChan := make(chan model.CrackTask, 10)
-
-			for i := 0; i < 3; i++ {
-				wg.Add(1)
-				go runCrackTask(ctx, taskChan, resultChan)
-			}
-
-			for _, task := range tasks {
-				fmt.Printf("Put Task: %s\n", task.Auth)
-				taskChan <- task
-			}
-			close(taskChan)
-			wg.Wait()
-		}
 }
 
 // https://stackoverflow.com/questions/45500836/close-multiple-goroutine-if-an-error-occurs-in-one-in-go

@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"sync"
+	"time"
+)
 
 const (
 	TIMEUNIT = 3
@@ -9,9 +12,13 @@ const (
 
 var (
 	CommonPortMap map[string]int
+	SuccessHash   map[string]bool
+	Mutex         sync.Mutex
 )
 
 func init() {
+
+	SuccessHash = make(map[string]bool)
 
 	CommonPortMap = make(map[string]int)
 	CommonPortMap["FTP"] = 21

@@ -120,7 +120,7 @@ func runCrackTask(ctx context.Context, taskChan chan model.CrackTask, resultChan
 			}
 		}
 	}
-}
+
 
 func runTask(taskChan chan model.CrackTask, resultChan chan model.CrackTaskResult, wg *sync.WaitGroup) {
 	defer wg.Done()

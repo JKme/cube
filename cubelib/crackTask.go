@@ -233,22 +233,22 @@ func runCrack(plugins []string, ips []string, authList []model.Auth) {
 		}
 	}()
 
-	for _, ip := range ips {
-		tasks := unitTask(ip, authList, plugins)
-		taskChan := make(chan model.CrackTask, 10)
+		for _, ip := range ips {
+			tasks := unitTask(ip, authList, plugins)
+			taskChan := make(chan model.CrackTask, 10)
 
-		for i := 0; i < 3; i++ {
-			wg.Add(1)
-			go runCrackTask(ctx, taskChan, resultChan)
-		}
+			for i := 0; i < 3; i++ {
+				wg.Add(1)
+				go runCrackTask(ctx, taskChan, resultChan)
+			}
 
-		for _, task := range tasks {
-			fmt.Printf("Put Task: %s\n", task.Auth)
-			taskChan <- task
+			for _, task := range tasks {
+				fmt.Printf("Put Task: %s\n", task.Auth)
+				taskChan <- task
+			}
+			close(taskChan)
+			wg.Wait()
 		}
-		close(taskChan)
-		wg.Wait()
-	}
 }
 
 // https://stackoverflow.com/questions/45500836/close-multiple-goroutine-if-an-error-occurs-in-one-in-go

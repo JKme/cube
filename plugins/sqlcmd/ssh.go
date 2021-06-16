@@ -6,14 +6,13 @@ import (
 	"fmt"
 	"golang.org/x/crypto/ssh"
 	"os"
-	"time"
 )
 
 func SshCmd(task model.SqlcmdTask) (result model.SqlcmdTaskResult) {
 	result = model.SqlcmdTaskResult{SqlcmdTask: task, Result: "", Err: nil}
 	config := &ssh.ClientConfig{
-		Timeout: time.Second, //ssh 连接time out 时间一秒钟, 如果ssh验证错误 会在一秒内返回
-		User:    task.User,
+		//Timeout: time.Second, //ssh 连接time out 时间一秒钟, 如果ssh验证错误 会在一秒内返回
+		User: task.User,
 		Auth: []ssh.AuthMethod{
 			ssh.Password(task.Password),
 		},

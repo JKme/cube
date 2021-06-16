@@ -64,6 +64,11 @@ func parseCrackOptions() (*model.GlobalOptions, *model.CrackOptions, error) {
 		return nil, nil, fmt.Errorf("invalid value for target-file: %w", err)
 	}
 
+	crackOption.CrackPlugin, err = sqlCmdCli.Flags().GetString("plugin")
+	if err != nil {
+		return nil, nil, fmt.Errorf("invalid value for scan plugin: %w", err)
+	}
+
 	return globalOpts, crackOption, nil
 }
 
@@ -81,10 +86,10 @@ func init() {
 	crackCli.Flags().StringP("passwd", "p", "", "login password")
 	crackCli.Flags().StringP("passwd-file", "P", "", "string to query or exec")
 	crackCli.Flags().StringP("port", "", "", "login password")
+	crackCli.Flags().StringP("plugin", "x", "", "crack plugin")
 
-	//if err := probeCmd.MarkPersistentFlagRequired("plugin"); err != nil {
+	//if err := crackCli.MarkPersistentFlagRequired("plugin"); err != nil {
 	//	log.Fatalf("on marking flag as required: %v", err)
-	//	//log.Fatalf("error on marking flag as required: %v", err)
 	//}
 
 	//probeCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {

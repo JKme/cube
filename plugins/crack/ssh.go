@@ -10,7 +10,7 @@ func SshCrack(task model.CrackTask) (result model.CrackTaskResult) {
 	result = model.CrackTaskResult{CrackTask: task, Result: "", Err: nil}
 	fmt.Printf("Receive Task: %s\n", task)
 	time.Sleep(2 * time.Second)
-	if task.Auth.Password == "root2" {
+	if task.Auth.Password == "root0" {
 		result.Result = "[*]: SSH Crack Plugin Done"
 	}
 	return result

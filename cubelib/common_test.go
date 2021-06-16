@@ -30,5 +30,5 @@ func TestSameStringSlice(t *testing.T) {
 }
 
 func TestColor(t *testing.T) {
-	fmt.Println(Fata("hello, world!"))
+	fmt.Println(Fata("hello, world!\n222"))
 }

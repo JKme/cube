@@ -23,12 +23,14 @@ import (
 //	return tasks
 //}
 
-func unitTask(ip string, auths []model.Auth, plugins []string) (tasks []model.CrackTask) {
+func unitTask(ips []string, auths []model.Auth, plugins []string) (tasks []model.CrackTask) {
 	tasks = make([]model.CrackTask, 0)
-	for _, auth := range auths {
-		for _, p := range plugins {
-			s := model.CrackTask{Ip: ip, Auth: auth, CrackPlugin: p}
-			tasks = append(tasks, s)
+	for _, ip := range ips {
+		for _, auth := range auths {
+			for _, p := range plugins {
+				s := model.CrackTask{Ip: ip, Auth: auth, CrackPlugin: p}
+				tasks = append(tasks, s)
+			}
 		}
 	}
 	return tasks
@@ -115,18 +117,19 @@ func monitorResult(done chan bool, resultChan chan model.CrackTaskResult) {
 }
 
 func saveCrackReport(taskResult model.CrackTaskResult) {
-	k := fmt.Sprintf("%v-%v-%v", taskResult.CrackTask.Ip, taskResult.CrackTask.Port, taskResult.CrackTask.CrackPlugin)
-	h := MakeTaskHash(k)
-	SetTaskHask(h)
+
 	if len(taskResult.Result) > 0 {
+		k := fmt.Sprintf("%v-%v-%v", taskResult.CrackTask.Ip, taskResult.CrackTask.Port, taskResult.CrackTask.CrackPlugin)
+		h := MakeTaskHash(k)
+		SetTaskHash(h)
 		s := fmt.Sprintf("[*]: %s\n[*]: %s:%s\n", taskResult.CrackTask.CrackPlugin, taskResult.CrackTask.Ip, taskResult.CrackTask.Port)
 		s1 := fmt.Sprintf("[*]: %s", taskResult.Result)
 		fmt.Println(s + s1)
 	}
 }
 
-func runTask(taskChan chan model.CrackTask, wg *sync.WaitGroup) {
-	for task := range taskChan {
+func runUnitTask(tasks chan model.CrackTask, wg *sync.WaitGroup) {
+	for task := range tasks {
 
 		k := fmt.Sprintf("%v-%v-%v", task.Ip, task.Port, task.CrackPlugin)
 		h := MakeTaskHash(k)
@@ -138,110 +141,34 @@ func runTask(taskChan chan model.CrackTask, wg *sync.WaitGroup) {
 		fn := Plugins.CrackFuncMap[task.CrackPlugin]
 		r := fn(task)
 		saveCrackReport(r)
+		wg.Done()
 		if len(r.Result) > 0 {
 			fmt.Println(r)
 		}
-		wg.Done()
+
 	}
 }
 
-func executeIp(ctx context.Context, ip string, authList []model.Auth, plugins []string, resultChan chan model.CrackTaskResult) {
+func runCrack(tasks []model.CrackTask) {
 
-	tasks := unitTask(ip, authList, plugins)
-	taskChan := make(chan model.CrackTask, 10)
-	//childCtx, childCancel := context.WithCancel(ctx)
-	//defer childCancel()
-	//var wg sync.WaitGroup
-	//wg.Add(2)
-	//go func() {
-	//
-	//	for {
-	//		select {
-	//		case <-childCtx.Done():
-	//			return
-	//		//case data, ok := <-resultChan:
-	//		//	if ok {
-	//		//		fmt.Printf("Get Magic Bean %s\n", data)
-	//		//		//fmt.Println(data)
-	//		//		childCancel()
-	//		//		return
-	//		//	}
-	//		case task, ok:= <- taskChan:
-	//			if ok {
-	//for i := 0; i < 2; i++ {
+	var wg sync.WaitGroup
+	taskChan := make(chan model.CrackTask, 8)
 
-	//for i := 0; i < 3; i++ {
-	//	go runTask(taskChan, resultChan)
-	//}
+	for i := 0; i < 3; i++ {
+		go runUnitTask(taskChan, &wg)
+	}
 
 	for _, task := range tasks {
+		wg.Add(1)
 		taskChan <- task
 	}
-	close(taskChan)
-	//runTask(taskChan, resultChan)
+	//wg.Wait()
+	waitTimeout(&wg, model.TIMEOUT)
 }
 
-//func runCrack(plugins []string, ips []string, authList []model.Auth) {
-//
-//	resultChan := make(chan model.CrackTaskResult, 10)
-//	var wg sync.WaitGroup
-//
-//
-//	for _, ip := range ips {
-//		Task:
-//			for {
-//				select {
-//				case data, ok := <-resultChan:
-//					if ok {
-//						fmt.Printf("Get Magic Bean %s\n", data)
-//						//fmt.Println(data)
-//						break Task
-//					}
-//				default:
-//					tasks := unitTask(ip, authList, plugins)
-//					taskChan := make(chan model.CrackTask, 10)
-//
-//
-//					for i:=0;i<3;i++ {
-//						wg.Add(1)
-//						go runTask(taskChan, resultChan, &wg)
-//					}
-//
-//
-//					for _, task := range tasks {
-//						fmt.Printf("Put Task: %s\n", task.Auth)
-//						taskChan <- task
-//					}
-//					close(taskChan)
-//					wg.Wait()
-//				}
-//			}
-//	}
-//
-//}
-
-func runCrack(plugins []string, ips []string, authList []model.Auth) {
-
-	for _, ip := range ips {
-		var wg sync.WaitGroup
-		tasks := unitTask(ip, authList, plugins)
-		taskChan := make(chan model.CrackTask, 10)
-
-		go func() {
-			for i := 0; i < 4; i++ {
-				//go runCrackTask(ctx, taskChan, resultChan,done)
-				go runTask(taskChan, &wg)
-			}
-		}()
-
-		//go func() {
-		for _, task := range tasks {
-			fmt.Printf("Put Task: %s\n", task.Auth)
-			taskChan <- task
-		}
-		//close(taskChan)
-		wg.Wait()
-	}
+func startCrackTask(plugins []string, ips []string, authList []model.Auth) {
+	tasks := unitTask(ips, authList, plugins)
+	runCrack(tasks)
 
 }
 

@@ -169,7 +169,6 @@ func runCrack(tasks []model.CrackTask) {
 func startCrackTask(plugins []string, ips []string, authList []model.Auth) {
 	tasks := unitTask(ips, authList, plugins)
 	runCrack(tasks)
-
 }
 
 // https://stackoverflow.com/questions/45500836/close-multiple-goroutine-if-an-error-occurs-in-one-in-go

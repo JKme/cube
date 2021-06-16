@@ -22,5 +22,5 @@ func TestName(t *testing.T) {
 			Password: d,
 		})
 	}
-	runCrack(plugins, ips, authList)
+	startCrackTask(plugins, ips, authList)
 }

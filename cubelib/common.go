@@ -3,6 +3,7 @@ package cubelib
 import (
 	"bufio"
 	"crypto/md5"
+	"cube/log"
 	"cube/model"
 	"fmt"
 	"io"
@@ -59,8 +60,7 @@ func SliceContain(str string, slice []string) bool {
 func FileReader(filename string) ([]string, error) {
 	file, err := os.Open(filename)
 	if err != nil {
-		fmt.Printf("Open file %s error, %v\n", filename, err)
-		os.Exit(0)
+		log.Fatalf("Open file %s error, %v\n", filename, err)
 	}
 	defer file.Close()
 	var content []string

@@ -157,7 +157,7 @@ func CheckTashHash(hash string) bool {
 	return ok
 }
 
-func SetTaskHask(hash string) {
+func SetTaskHash(hash string) {
 	model.Mutex.Lock()
 	model.SuccessHash[hash] = true
 	model.Mutex.Unlock()

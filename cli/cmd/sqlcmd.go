@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var sqlCmdCli *cobra.Command
+var sqlCli *cobra.Command
 
 func runSqlcmd(cmd *cobra.Command, args []string) {
 	globalopts, opt, _ := parseSqlcmdOptions()
@@ -27,22 +27,22 @@ func parseSqlcmdOptions() (*model.GlobalOptions, *model.SqlcmdOptions, error) {
 
 	sqlcmdOption := model.NewSqlcmdOptions()
 
-	sqlcmdOption.Service, err = sqlCmdCli.Flags().GetString("service")
+	sqlcmdOption.Service, err = sqlCli.Flags().GetString("service")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for plugin: %v", err)
 	}
 
-	sqlcmdOption.User, err = sqlCmdCli.Flags().GetString("user")
+	sqlcmdOption.User, err = sqlCli.Flags().GetString("user")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for plugin: %v", err)
 	}
 
-	sqlcmdOption.Password, err = sqlCmdCli.Flags().GetString("password")
+	sqlcmdOption.Password, err = sqlCli.Flags().GetString("password")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for Password: %v", err)
 	}
 
-	sqlcmdOption.Query, err = sqlCmdCli.Flags().GetString("query")
+	sqlcmdOption.Query, err = sqlCli.Flags().GetString("query")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for target-file: %w", err)
 	}
@@ -50,16 +50,16 @@ func parseSqlcmdOptions() (*model.GlobalOptions, *model.SqlcmdOptions, error) {
 }
 
 func init() {
-	sqlCmdCli = &cobra.Command{
+	sqlCli = &cobra.Command{
 		Use:   "sqlcmd",
 		Short: "exec sql query or cmd",
 		Run:   runSqlcmd,
 	}
 
-	sqlCmdCli.Flags().StringP("service", "x", "", "ip (e.g. ssh://192.168.0.0:2200)")
-	sqlCmdCli.Flags().StringP("user", "u", "", "login account")
-	sqlCmdCli.Flags().StringP("password", "p", "", "login password")
-	sqlCmdCli.Flags().StringP("query", "e", "", "string to query or exec")
+	sqlCli.Flags().StringP("service", "x", "", "ip (e.g. ssh://192.168.0.0:2200 or ssh://127.0.0.1))")
+	sqlCli.Flags().StringP("user", "u", "", "login account")
+	sqlCli.Flags().StringP("password", "p", "", "login password")
+	sqlCli.Flags().StringP("query", "e", "", "string to query or exec")
 
 	//if err := probeCmd.MarkPersistentFlagRequired("plugin"); err != nil {
 	//	log.Fatalf("on marking flag as required: %v", err)
@@ -69,5 +69,5 @@ func init() {
 	//probeCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
 	//
 	//}
-	rootCmd.AddCommand(sqlCmdCli)
+	rootCmd.AddCommand(sqlCli)
 }

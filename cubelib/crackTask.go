@@ -10,6 +10,26 @@ import (
 	"time"
 )
 
+func loadDefaultDict(p string) map[string][]model.Auth {
+	authSlice := make([]model.Auth, 0)
+	r := make(map[string][]model.Auth, 0)
+	for _, user := range model.UserDict[p] {
+		for _, pass := range model.PassDict {
+			pass = strings.Replace(pass, "{user}", user, -1)
+			authSlice = append(authSlice, model.Auth{
+				User:     user,
+				Password: pass,
+			})
+		}
+	}
+	r[p] = authSlice
+	return r
+}
+
+func genDefaultTask() {
+
+}
+
 func unitTask(ips []string, auths []model.Auth, plugins []string) (tasks []model.CrackTask) {
 	tasks = make([]model.CrackTask, 0)
 	for _, ip := range ips {
@@ -119,7 +139,6 @@ func runCrack(tasks []model.CrackTask) {
 		wg.Add(1)
 		taskChan <- task
 	}
-	//wg.Wait()
 	waitTimeout(&wg, model.TIMEOUT)
 }
 

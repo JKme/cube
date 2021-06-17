@@ -44,4 +44,8 @@ func init() {
 	for k := range ProbeFuncMap {
 		CrackKeys = append(CrackKeys, k)
 	}
+
+	CrackPluginKeys := make(map[string][]string)
+	CrackPluginKeys["all"] = CrackKeys
+
 }

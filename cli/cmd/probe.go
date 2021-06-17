@@ -9,20 +9,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var probeCmd *cobra.Command
+var probeCli *cobra.Command
 
 func runProbe(cmd *cobra.Command, args []string) {
 	globalopts, opt, _ := parseProbeOptions()
-	//pluginList, err := validPlugin(opt.ScanPlugin)
-	//
-	//if err != nil{
-	//	log.Fatal(err)
-	//}
-	//
-	//_, key := Plugins.ProbeFuncMap[opt.ScanPlugin]
-	//if !key {
-	//	log.Fatalf("Available Plugins: %s", strings.Join(Plugins.ProbeKeys, ","))
-	//}
+
 	cubelib.StartProbeTask(opt, globalopts)
 }
 
@@ -33,21 +24,21 @@ func parseProbeOptions() (*model.GlobalOptions, *model.ProbeOptions, error) {
 	}
 	probeOption := model.NewProbeOptions()
 
-	probeOption.ScanPlugin, err = probeCmd.Flags().GetString("plugin")
+	probeOption.ScanPlugin, err = probeCli.Flags().GetString("plugin")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for plugin: %v", err)
 	}
 
-	probeOption.Port, err = probeCmd.Flags().GetInt("port")
+	probeOption.Port, err = probeCli.Flags().GetInt("port")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for scan port: %v", err)
 	}
 
-	probeOption.Target, err = probeCmd.Flags().GetString("target-ip")
+	probeOption.Target, err = probeCli.Flags().GetString("target-ip")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for target-ip: %w", err)
 	}
-	probeOption.TargetFile, err = probeCmd.Flags().GetString("target-file")
+	probeOption.TargetFile, err = probeCli.Flags().GetString("target-file")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for target-file: %w", err)
 	}
@@ -55,24 +46,24 @@ func parseProbeOptions() (*model.GlobalOptions, *model.ProbeOptions, error) {
 }
 
 func init() {
-	probeCmd = &cobra.Command{
+	probeCli = &cobra.Command{
 		Use:   "probe",
 		Short: "collect pentest environment information",
 		Run:   runProbe,
 	}
 
-	probeCmd.Flags().IntP("port", "p", 135, "target port")
-	probeCmd.Flags().StringP("plugin", "x", "", "plugin to scan(e.g. OXID)")
-	probeCmd.Flags().StringP("target-ip", "i", "", "ip range to probe for(e.g. 192.168.1.1/24)")
-	probeCmd.Flags().StringP("target-file", "I", "", "File to probe for(e.g. ip.txt)")
+	probeCli.Flags().IntP("port", "p", 135, "target port")
+	probeCli.Flags().StringP("plugin", "x", "", "plugin to scan(e.g. OXID)")
+	probeCli.Flags().StringP("target-ip", "i", "", "ip range to probe for(e.g. 192.168.1.1/24)")
+	probeCli.Flags().StringP("target-file", "I", "", "File to probe for(e.g. ip.txt)")
 
-	//if err := probeCmd.MarkPersistentFlagRequired("plugin"); err != nil {
+	//if err := probeCli.MarkPersistentFlagRequired("plugin"); err != nil {
 	//	log.Fatalf("on marking flag as required: %v", err)
 	//	//log.Fatalf("error on marking flag as required: %v", err)
 	//}
 
-	//probeCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
+	//probeCli.PersistentPreRun = func(cmd *cobra.Command, args []string) {
 	//
 	//}
-	rootCmd.AddCommand(probeCmd)
+	rootCmd.AddCommand(probeCli)
 }

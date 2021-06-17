@@ -1,4 +1,4 @@
-# cubeScan
+# cube
 
 利用Go的继承和重写分类模块： https://mp.weixin.qq.com/s/3atC9Bt6SInM56kCysMEhw
 
@@ -41,3 +41,9 @@ SMB弱口令
 REDIS未授权
 ZOOKEEPER未授权
 MS17010
+
+- [ ] 增加内置词典
+- [ ] 增加输出到文件
+- [ ] 增加请求间隔延迟 --delay 
+- [ ] probe的时候做一个大的分类， poc对应ms17010, info对应信息收集， all表示全部
+- [ ] 变量名和函数名优化

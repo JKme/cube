@@ -29,3 +29,8 @@ func TestOpt2slice(t *testing.T) {
 	r := opt2slice("111", "222")
 	fmt.Println(r)
 }
+
+func TestLoadDict(t *testing.T) {
+	r := loadDefaultDict("mysql")
+	fmt.Println(r)
+}

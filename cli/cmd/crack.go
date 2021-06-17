@@ -29,42 +29,42 @@ func parseCrackOptions() (*model.GlobalOptions, *model.CrackOptions, error) {
 
 	crackOption := model.NewCrackOptions()
 
-	crackOption.Ip, err = sqlCmdCli.Flags().GetString("ip")
+	crackOption.Ip, err = crackCli.Flags().GetString("ip")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for plugin: %v", err)
 	}
 
-	crackOption.IpFile, err = sqlCmdCli.Flags().GetString("ip-file")
+	crackOption.IpFile, err = crackCli.Flags().GetString("ip-file")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for plugin: %v", err)
 	}
 
-	crackOption.User, err = sqlCmdCli.Flags().GetString("user")
+	crackOption.User, err = crackCli.Flags().GetString("user")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for Password: %v", err)
 	}
 
-	crackOption.UserFile, err = sqlCmdCli.Flags().GetString("user-file")
+	crackOption.UserFile, err = crackCli.Flags().GetString("user-file")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for target-file: %w", err)
 	}
 
-	crackOption.Pass, err = sqlCmdCli.Flags().GetString("passwd")
+	crackOption.Pass, err = crackCli.Flags().GetString("passwd")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for target-file: %w", err)
 	}
 
-	crackOption.PassFile, err = sqlCmdCli.Flags().GetString("user-file")
+	crackOption.PassFile, err = crackCli.Flags().GetString("user-file")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for target-file: %w", err)
 	}
 
-	crackOption.Port, err = sqlCmdCli.Flags().GetString("port")
+	crackOption.Port, err = crackCli.Flags().GetString("port")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for target-file: %w", err)
 	}
 
-	crackOption.CrackPlugin, err = sqlCmdCli.Flags().GetString("plugin")
+	crackOption.CrackPlugin, err = crackCli.Flags().GetString("plugin")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for scan plugin: %w", err)
 	}
@@ -76,10 +76,10 @@ func init() {
 	crackCli = &cobra.Command{
 		Use:   "crack",
 		Short: "crack service password (e.g. ssh,mssql,redis,mysql)",
-		Run:   runSqlcmd,
+		Run:   runCrack,
 	}
 
-	crackCli.Flags().StringP("ip", "i", "", "ip (e.g. ssh://192.168.0.0:2200)")
+	crackCli.Flags().StringP("ip", "i", "", "ip (e.g. 192.168.2.1")
 	crackCli.Flags().StringP("ip-file", "I", "", "login account")
 	crackCli.Flags().StringP("user", "u", "", "login password")
 	crackCli.Flags().StringP("user-file", "U", "", "string to query or exec")

@@ -2,9 +2,9 @@ package util
 
 import (
 	"bufio"
+	"cube/log"
 	"errors"
 	"fmt"
-	"log"
 	"net"
 	"os"
 	"regexp"
@@ -12,11 +12,9 @@ import (
 	"strings"
 )
 
-
-func CheckErr(logError string, err error){
+func CheckErr(logError string, err error) {
 	//log.SetPrefix("[Plugin]")
-	log.SetFlags(log.LstdFlags | log.Lshortfile |log.LUTC)
-	log.Fatalf("%v: %v", logError, err)
+	log.Errorf("%s %s", logError, err)
 }
 
 var ParseIPErr = errors.New(" host parsing error\n" +

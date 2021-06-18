@@ -19,12 +19,12 @@ func SaveSqlcmdReport(taskResult model.SqlcmdTaskResult) {
 func StartSqlcmdTask(opt *model.SqlcmdOptions, globalopts *model.GlobalOptions) {
 	s, err := ParseService(opt.Service)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 	}
 
 	_, key := Plugins.SqlcmdFuncMap[s.Schema]
 	if !key {
-		log.Fatalf("Available Plugins: %s", strings.Join(Plugins.SqlcmdKeys, ","))
+		log.Errorf("Available Plugins: %s", strings.Join(Plugins.SqlcmdKeys, ","))
 	}
 
 	task := model.SqlcmdTask{Ip: s.Ip, Port: s.Port, User: opt.User, Password: opt.Password, SqlcmdPlugin: s.Schema, Query: opt.Query}

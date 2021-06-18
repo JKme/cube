@@ -27,7 +27,7 @@ func loadDefaultDict(p string) map[string][]model.Auth {
 	return r
 }
 
-func genDefaultTask(ips []string, plugins []string) (tasks []model.CrackTask) {
+func genDefaultTasks(ips []string, plugins []string) (tasks []model.CrackTask) {
 	tasks = make([]model.CrackTask, 0)
 	for _, ip := range ips {
 		for _, plugin := range plugins {
@@ -44,7 +44,7 @@ func genDefaultTask(ips []string, plugins []string) (tasks []model.CrackTask) {
 	return tasks
 }
 
-func unitTask(ips []string, auths []model.Auth, plugins []string) (tasks []model.CrackTask) {
+func genCrackTasks(plugins []string, ips []string, auths []model.Auth) (tasks []model.CrackTask) {
 	tasks = make([]model.CrackTask, 0)
 	for _, ip := range ips {
 		for _, auth := range auths {
@@ -132,7 +132,6 @@ func runCrack(ctx context.Context, tasks []model.CrackTask) {
 		wg.Add(1)
 		taskChan <- task
 	}
-	//wg.Wait()
 	waitTimeout(&wg, model.T)
 }
 
@@ -148,7 +147,7 @@ func opt2slice(str string, file string) []string {
 func genPlugins(plugin string) []string {
 	pluginList := strings.Split(plugin, ",")
 	if len(pluginList) > 1 && SliceContain("ALL", pluginList) {
-		log.Fatalf("invalid plugin: %s", plugin)
+		log.Errorf("invalid plugin: %s", plugin)
 	}
 
 	if plugin == "ALL" {
@@ -157,7 +156,7 @@ func genPlugins(plugin string) []string {
 	return pluginList
 }
 
-func parseOpt(opt *model.CrackOptions) (plugins []string, ips []string, authList []model.Auth) {
+func parseOpt(opt *model.CrackOptions) (ips []string, authList []model.Auth) {
 	ip := opt.Ip
 	ipFile := opt.IpFile
 
@@ -179,23 +178,58 @@ func parseOpt(opt *model.CrackOptions) (plugins []string, ips []string, authList
 		}
 	}
 
-	plugin := opt.CrackPlugin
-	plugins = genPlugins(plugin)
-
-	return plugins, ips, authList
+	return ips, authList
 }
 
-func startCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
-	plugins, ips, authList := parseOpt(opt)
+func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
+	var (
+		optPlugins []string
+		ips        []string
+		auths      []model.Auth
+		tasks      []model.CrackTask
+	)
+	optPlugins = genPlugins(opt.CrackPlugin)
+
+	if len(opt.User+opt.UserFile+opt.Pass+opt.PassFile) > 0 {
+		ips, auths = parseOpt(opt)
+		tasks = genCrackTasks(optPlugins, ips, auths)
+		log.Info(tasks)
+	} else {
+		tasks = genDefaultTasks(ips, optPlugins)
+	}
+
 	ctx := context.Background()
-	tasks := unitTask(ips, authList, plugins)
-	runCrack(ctx, tasks)
+
+	var wg sync.WaitGroup
+	taskChan := make(chan model.CrackTask, 8)
+
+	for i := 0; i < 1; i++ {
+		go runUnitTask(ctx, taskChan, &wg)
+	}
+
+	for _, task := range tasks {
+		wg.Add(1)
+		taskChan <- task
+	}
+	//wg.Wait()
+	waitTimeout(&wg, model.T)
 }
 
-func startCrackTask2(ips []string, authList []model.Auth, plugins []string) {
-	ctx := context.Background()
-	tasks := unitTask(ips, authList, plugins)
-	runCrack(ctx, tasks)
-}
-
-// https://stackoverflow.com/questions/45500836/close-multiple-goroutine-if-an-error-occurs-in-one-in-go
+//func startCrackTask2(ips []string, authList []model.Auth, plugins []string) {
+//	ctx := context.Background()
+//	tasks := genCrackTasks(ips, authList, plugins)
+//
+//	var wg sync.WaitGroup
+//	taskChan := make(chan model.CrackTask, 8)
+//
+//	for i := 0; i < 1; i++ {
+//		go runUnitTask(ctx, taskChan, &wg)
+//	}
+//
+//	for _, task := range tasks {
+//		wg.Add(1)
+//		taskChan <- task
+//	}
+//	//wg.Wait()
+//	waitTimeout(&wg, model.T)
+//}

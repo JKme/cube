@@ -58,7 +58,10 @@ MS17010
 
 - [x] 增加内置词典
 - [ ] 增加输出到文件
+- [ ] log的输出带颜色
 - [ ] 增加请求间隔延迟 --delay 
 - [ ] probe的时候做一个大的分类， POC对应ms17010, INFO对应信息收集， ALL表示全部
 - [ ] 变量名和函数名优化
 - [ ] **尝试改造为interface实现**
+
+https://github.com/ysrc/xunfeng/tree/40d40ecf55910019b8b904ef70ae1eebb6b6d26f/vulscan/vuldb

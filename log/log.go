@@ -98,18 +98,10 @@ func Warn(v ...interface{}) {
 
 func Error(v ...interface{}) {
 	formatLogger.doLog(LevelError, v...)
-}
-
-func Errorf(format string, v ...interface{}) {
-	formatLogger.doLogf(LevelError, format, v...)
-}
-
-func Fatal(v ...interface{}) {
-	formatLogger.doLog(LevelError, v...)
 	os.Exit(2)
 }
 
-func Fatalf(format string, v ...interface{}) {
+func Errorf(format string, v ...interface{}) {
 	formatLogger.doLogf(LevelError, format, v...)
 	os.Exit(2)
 }

@@ -60,7 +60,7 @@ func SliceContain(str string, slice []string) bool {
 func FileReader(filename string) ([]string, error) {
 	file, err := os.Open(filename)
 	if err != nil {
-		log.Fatalf("Open file %s error, %v\n", filename, err)
+		log.Errorf("Open file %s error, %v\n", filename, err)
 	}
 	defer file.Close()
 	var content []string

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"strings"
 	"sync"
-	"time"
 )
 
 func loadDefaultDict(p string) map[string][]model.Auth {
@@ -59,38 +58,6 @@ func generateAuth(user []string, password []string) (authList []model.Auth) {
 	return authList
 }
 
-func executeCrackTask(taskChan chan model.CrackTask, wg *sync.WaitGroup) {
-	defer wg.Done()
-	for task := range taskChan {
-		//fmt.Println("Hello")
-		fn := Plugins.CrackFuncMap[task.CrackPlugin]
-		saveCrackReport(fn(task))
-	}
-
-}
-
-func RunCrackTasks(tasks []model.CrackTask, scanNum int, timeout int) {
-	tasksChan := make(chan model.CrackTask, scanNum*2)
-	var wg sync.WaitGroup
-
-	//消费者
-	wg.Add(scanNum)
-	for i := 0; i < scanNum; i++ {
-		go executeCrackTask(tasksChan, &wg)
-	}
-
-	//生产者
-	//go func() {
-	//
-	//}()
-
-	for _, task := range tasks {
-		tasksChan <- task
-	}
-	close(tasksChan)
-
-	waitTimeout(&wg, time.Duration(timeout)*time.Second)
-}
 
 func saveCrackReport(taskResult model.CrackTaskResult) {
 

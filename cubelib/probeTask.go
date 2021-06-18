@@ -98,10 +98,10 @@ func StartProbeTask(opt *model.ProbeOptions, globalopts *model.GlobalOptions) {
 	}
 	pluginList, err := ValidPlugin(opt.ScanPlugin)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 	}
 	if !Subset(pluginList, Plugins.ProbeKeys) {
-		log.Fatalf("plugins not found: %s", pluginList)
+		log.Errorf("plugins not found: %s", pluginList)
 	}
 
 	tasks := GenerateTasks(ips, opt.Port, pluginList)

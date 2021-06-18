@@ -7,6 +7,7 @@ import (
 
 const (
 	TIMEUNIT = 3
+	T        = 5 * time.Second
 	TIMEOUT  = time.Duration(TIMEUNIT) * time.Second
 )
 

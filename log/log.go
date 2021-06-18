@@ -12,6 +12,7 @@ type Level int
 
 const (
 	LevelDebug Level = iota
+	LevelInfo
 	LevelWarn
 	LevelError
 )
@@ -19,9 +20,11 @@ const (
 func (l Level) String() string {
 	switch l {
 	case LevelDebug:
-		return "debug"
+		return "DEBUG"
+	case LevelInfo:
+		return "INFO"
 	case LevelError:
-		return "error"
+		return "ERROR"
 	}
 	return ""
 }
@@ -29,18 +32,19 @@ func (l Level) String() string {
 var (
 	formatLogger *Logger
 	levelMap     = map[string]Level{
-		"debug": LevelDebug,
-		"error": LevelError,
+		"DEBUG": LevelDebug,
+		"INFO":  LevelInfo,
+		"ERROR": LevelError,
 	}
 )
 
 func init() {
-	InitLog("debug")
+	InitLog("INFO")
 
 }
 
 func InitLog(l string) {
-	formatLogger = newLog(os.Stdout).setLevel(levelMap[l]).setFlags(log.Ldate).setFlags(log.Lshortfile)
+	formatLogger = newLog(os.Stdout).setFlags(log.Ldate | log.Ltime | log.Lshortfile).setLevel(levelMap[l])
 }
 
 type Logger struct {
@@ -68,7 +72,7 @@ func (l *Logger) doLog(level Level, v ...interface{}) bool {
 	if level < l.level {
 		return false
 	}
-	l.l.Output(3, level.String()+" "+fmt.Sprintln(v...))
+	l.l.Output(3, level.String()+"\t"+fmt.Sprintln(v...))
 	return true
 }
 
@@ -76,12 +80,16 @@ func (l *Logger) doLogf(level Level, format string, v ...interface{}) bool {
 	if level < l.level {
 		return false
 	}
-	l.l.Output(3, level.String()+" "+fmt.Sprintln(fmt.Sprintf(format, v...)))
+	l.l.Output(3, level.String()+"\t"+fmt.Sprintln(fmt.Sprintf(format, v...)))
 	return true
 }
 
 func Debug(v ...interface{}) {
 	formatLogger.doLog(LevelDebug, v...)
+}
+
+func Info(v ...interface{}) {
+	formatLogger.doLog(LevelInfo, v...)
 }
 
 func Warn(v ...interface{}) {
@@ -92,13 +100,13 @@ func Error(v ...interface{}) {
 	formatLogger.doLog(LevelError, v...)
 }
 
+func Errorf(format string, v ...interface{}) {
+	formatLogger.doLogf(LevelError, format, v...)
+}
+
 func Fatal(v ...interface{}) {
 	formatLogger.doLog(LevelError, v...)
 	os.Exit(2)
-}
-
-func Errorf(format string, v ...interface{}) {
-	formatLogger.doLogf(LevelError, format, v...)
 }
 
 func Fatalf(format string, v ...interface{}) {
@@ -112,4 +120,8 @@ func Warnf(format string, v ...interface{}) {
 
 func Debugf(format string, v ...interface{}) {
 	formatLogger.doLogf(LevelDebug, format, v...)
+}
+
+func Infof(format string, v ...interface{}) {
+	formatLogger.doLogf(LevelInfo, format, v...)
 }

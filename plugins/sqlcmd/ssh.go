@@ -27,7 +27,7 @@ func SshCmd(task model.SqlcmdTask) (result model.SqlcmdTaskResult) {
 		r, err := session.Output(task.Query)
 		result.Result = string(r)
 		if err != nil {
-			log.Fatalf("Failed to run command, Err:%s", err.Error())
+			log.Errorf("Failed to run command, Err:%s", err.Error())
 			os.Exit(0)
 		}
 	}

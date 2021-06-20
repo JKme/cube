@@ -2,7 +2,7 @@ package model
 
 type ProbeTask struct {
 	Ip         string
-	Port       int
+	Port       string
 	ScanPlugin string
 }
 

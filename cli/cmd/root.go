@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	"os/signal"
 )
 
 var rootCmd = &cobra.Command{
@@ -24,21 +23,21 @@ func Execute() {
 	mainContext, cancel = context.WithCancel(context.Background())
 	defer cancel()
 
-	signalChan := make(chan os.Signal, 1)
-	signal.Notify(signalChan, os.Interrupt)
-	defer func() {
-		signal.Stop(signalChan)
-		cancel()
-	}()
-	go func() {
-		select {
-		case <-signalChan:
-			// caught CTRL+C
-			fmt.Println("\n[!] Keyboard interrupt detected, terminating.")
-			cancel()
-		case <-mainContext.Done():
-		}
-	}()
+	//signalChan := make(chan os.Signal, 1)
+	//signal.Notify(signalChan, os.Interrupt)
+	//defer func() {
+	//	signal.Stop(signalChan)
+	//	cancel()
+	//}()
+	//go func() {
+	//	select {
+	//	case <-signalChan:
+	//		// caught CTRL+C
+	//		fmt.Println("\n[!] Keyboard interrupt detected, terminating.")
+	//		cancel()
+	//	case <-mainContext.Done():
+	//	}
+	//}()
 
 	if err := rootCmd.Execute(); err != nil {
 		// Leaving this in results in the same error appearing twice
@@ -65,18 +64,16 @@ func parseGlobalOptions() (*model.GlobalOptions, error) {
 	globalopts.Threads = threads
 
 	globalopts.Timeout, _ = rootCmd.Flags().GetInt("timeout")
-	if globalopts.Timeout < 3 {
-		return nil, fmt.Errorf("timeout must be bigger than default vaule(default: %v)", model.TIMEOUT)
-	}
+	globalopts.Delay, _ = rootCmd.Flags().GetInt("delay")
 
 	verbose, err := rootCmd.Flags().GetBool("verbose")
 	if err != nil {
 		return nil, fmt.Errorf("invalid value for verbose: %w", err)
 	}
 	if verbose {
-		log.InitLog("debug")
+		log.InitLog("DEBUG")
 	} else {
-		log.InitLog("error")
+		log.InitLog("INFO")
 	}
 	globalopts.Verbose = verbose
 
@@ -86,6 +83,7 @@ func parseGlobalOptions() (*model.GlobalOptions, error) {
 func init() {
 	rootCmd.PersistentFlags().IntP("threads", "n", 20, "Number of concurrent threads")
 	rootCmd.PersistentFlags().IntP("timeout", "", 5, "Timeout each thread waits")
+	rootCmd.PersistentFlags().IntP("delay", "", 0, "delay for request")
 	rootCmd.PersistentFlags().StringP("output", "o", "", "Output file to write results to (defaults to stdout)")
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Verbose output (errors)")
 }

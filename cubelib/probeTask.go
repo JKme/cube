@@ -5,6 +5,7 @@ import (
 	"cube/model"
 	Plugins "cube/plugins"
 	"cube/util"
+	"strconv"
 
 	//Plugins "cube/plugins"
 	"fmt"
@@ -25,7 +26,7 @@ func ValidPlugin(plugin string) ([]string, error) {
 	return pluginList, nil
 }
 
-func GenerateTasks(ipList []string, port int, scanPlugin []string) (tasks []model.ProbeTask) {
+func GenerateTasks(ipList []string, port string, scanPlugin []string) (tasks []model.ProbeTask) {
 	tasks = make([]model.ProbeTask, 0)
 	for _, plugin := range scanPlugin {
 		for _, ip := range ipList {
@@ -47,7 +48,10 @@ func saveReport(taskResult model.ProbeTaskResult) {
 func executeTask(taskChan chan model.ProbeTask, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for task := range taskChan {
-		//fmt.Println("Hello")
+		if len(task.Port) == 0 {
+			//没有设置端口使用服务的默认端口
+			task.Port = strconv.Itoa(model.CommonPortMap[task.ScanPlugin])
+		}
 		fn := Plugins.ProbeFuncMap[task.ScanPlugin]
 		saveReport(fn(task))
 	}

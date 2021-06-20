@@ -28,7 +28,3 @@ func TestSameStringSlice(t *testing.T) {
 	//fmt.Println(SameStringSlice(s, s1))
 	fmt.Println(Subset(s1, s))
 }
-
-func TestColor(t *testing.T) {
-	fmt.Println(Fata("hello, world!\n222"))
-}

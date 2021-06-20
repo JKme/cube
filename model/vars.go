@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	TIMEUNIT = 3
-	T        = 5 * time.Second
+	TIMEUNIT = 5
+	T        = 6 * time.Second
 	TIMEOUT  = time.Duration(TIMEUNIT) * time.Second
 )
 
@@ -34,12 +34,12 @@ func init() {
 	SuccessHash = make(map[string]bool)
 
 	CommonPortMap = make(map[string]int)
-	CommonPortMap["FTP"] = 21
-	CommonPortMap["SSH"] = 22
-	CommonPortMap["OXID"] = 135
-	CommonPortMap["SMB"] = 445
-	CommonPortMap["MSSQL"] = 1433
-	CommonPortMap["MYSQL"] = 6379
-	CommonPortMap["REDIS"] = 6379
+	CommonPortMap["ftp"] = 21
+	CommonPortMap["ssh"] = 22
+	CommonPortMap["oxid"] = 135
+	CommonPortMap["smb"] = 445
+	CommonPortMap["mssql"] = 1433
+	CommonPortMap["mysql"] = 6379
+	CommonPortMap["redis"] = 6379
 
 }

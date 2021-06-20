@@ -74,6 +74,7 @@ func init() {
 		Run:   runCrack,
 		Example: `cube crack -u root -p root -i 192.168.1.1 -x ssh
 cube crack -u root -p root -i 192.168.1.1 -x ssh --port 2222
+cube crack -u root,ubuntu -p 123,000111,root -x ssh -i 192.168.1.1
 cube crack -u root -p root -i 192.168.1.1/24 -x ssh
 cube crack -u root --pass-file pass.txt -i 192.168.1.1/24 -x ssh
 cube crack -u root --pass-file pass.txt -i 192.168.1.1/24 -x ssh,mysql

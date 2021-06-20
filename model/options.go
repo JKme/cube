@@ -5,13 +5,13 @@ type GlobalOptions struct {
 	Timeout int
 	Verbose bool
 	Output  string
-	//Plugin  string
+	Delay   int
 }
 
 type ProbeOptions struct {
 	Target     string
 	TargetFile string
-	Port       int
+	Port       string
 	ScanPlugin string
 }
 

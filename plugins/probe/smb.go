@@ -276,7 +276,7 @@ func NetBIOS1(task model.ProbeTask) (nbname NbnsName, err error) {
 	}
 	defer conn.Close()
 
-	if task.Port == 139 && len(payload0) > 0 {
+	if task.Port == "139" && len(payload0) > 0 {
 		_, err1 := conn.Write(payload0)
 		if err1 != nil {
 			return

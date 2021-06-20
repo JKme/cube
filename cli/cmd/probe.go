@@ -29,16 +29,16 @@ func parseProbeOptions() (*model.GlobalOptions, *model.ProbeOptions, error) {
 		return nil, nil, fmt.Errorf("invalid value for plugin: %v", err)
 	}
 
-	probeOption.Port, err = probeCli.Flags().GetInt("port")
+	probeOption.Port, err = probeCli.Flags().GetString("port")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for scan port: %v", err)
 	}
 
-	probeOption.Target, err = probeCli.Flags().GetString("target-ip")
+	probeOption.Target, err = probeCli.Flags().GetString("ip")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for target-ip: %w", err)
 	}
-	probeOption.TargetFile, err = probeCli.Flags().GetString("target-file")
+	probeOption.TargetFile, err = probeCli.Flags().GetString("ip-file")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for target-file: %w", err)
 	}
@@ -52,10 +52,10 @@ func init() {
 		Run:   runProbe,
 	}
 
-	probeCli.Flags().IntP("port", "p", 135, "target port")
+	probeCli.Flags().StringP("port", "p", "", "target port")
 	probeCli.Flags().StringP("plugin", "x", "", "plugin to scan(e.g. OXID)")
-	probeCli.Flags().StringP("target-ip", "i", "", "ip range to probe for(e.g. 192.168.1.1/24)")
-	probeCli.Flags().StringP("target-file", "I", "", "File to probe for(e.g. ip.txt)")
+	probeCli.Flags().StringP("ip", "i", "", "ip range to probe for(e.g. 192.168.1.1/24)")
+	probeCli.Flags().StringP("ip-file", "", "", "File to probe for(e.g. ip.txt)")
 
 	//if err := probeCli.MarkPersistentFlagRequired("plugin"); err != nil {
 	//	log.Fatalf("on marking flag as required: %v", err)

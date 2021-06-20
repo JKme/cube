@@ -6,6 +6,7 @@ import (
 	"cube/model"
 	Plugins "cube/plugins"
 	"fmt"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -79,14 +80,13 @@ func saveCrackReport(taskResult model.CrackTaskResult) {
 		k := fmt.Sprintf("%v-%v-%v", taskResult.CrackTask.Ip, taskResult.CrackTask.Port, taskResult.CrackTask.CrackPlugin)
 		h := MakeTaskHash(k)
 		SetTaskHash(h)
-		s := fmt.Sprintf("[->>>>>]: %s\n[->>>>>]: %s:%s", taskResult.CrackTask.CrackPlugin, taskResult.CrackTask.Ip, taskResult.CrackTask.Port)
-		s1 := fmt.Sprintf("[output]: %s", taskResult.Result)
-		fmt.Println(s)
-		fmt.Println(Green(s1))
+		s := fmt.Sprintf("[->>>>>]: %s\n[->>>>>]: %s:%s\n", taskResult.CrackTask.CrackPlugin, taskResult.CrackTask.Ip, taskResult.CrackTask.Port)
+		s1 := fmt.Sprintf("[Success]: %s", taskResult.Result)
+		fmt.Println(s + s1)
 	}
 }
 
-func runUnitTask(ctx context.Context, tasks chan model.CrackTask, wg *sync.WaitGroup) {
+func runUnitTask(ctx context.Context, tasks chan model.CrackTask, wg *sync.WaitGroup, delay int) {
 	for {
 		select {
 		case <-ctx.Done():
@@ -95,6 +95,11 @@ func runUnitTask(ctx context.Context, tasks chan model.CrackTask, wg *sync.WaitG
 			if !ok {
 				return
 			}
+			if len(task.Port) == 0 {
+				//没有设置端口使用服务的默认端口
+				task.Port = strconv.Itoa(model.CommonPortMap[task.CrackPlugin])
+			}
+			log.Debugf("Checking %s Password: %s://%s:%s@%s:%s", task.CrackPlugin, task.CrackPlugin, task.Auth.User, task.Auth.Password, task.Ip, task.Port)
 			k := fmt.Sprintf("%v-%v-%v", task.Ip, task.Port, task.CrackPlugin)
 			h := MakeTaskHash(k)
 			if CheckTashHash(h) {
@@ -105,13 +110,10 @@ func runUnitTask(ctx context.Context, tasks chan model.CrackTask, wg *sync.WaitG
 			r := fn(task)
 			saveCrackReport(r)
 			wg.Done()
-			if len(r.Result) > 0 {
-				log.Info(r)
-			}
 
 			select {
 			case <-ctx.Done():
-			case <-time.After(2 * time.Second):
+			case <-time.After(time.Duration(delay) * time.Second):
 			}
 
 		}
@@ -119,23 +121,26 @@ func runUnitTask(ctx context.Context, tasks chan model.CrackTask, wg *sync.WaitG
 	}
 }
 
-func runCrack(ctx context.Context, tasks []model.CrackTask) {
-
-	var wg sync.WaitGroup
-	taskChan := make(chan model.CrackTask, 8)
-
-	for i := 0; i < 1; i++ {
-		go runUnitTask(ctx, taskChan, &wg)
-	}
-
-	for _, task := range tasks {
-		wg.Add(1)
-		taskChan <- task
-	}
-	waitTimeout(&wg, model.T)
-}
+//func runCrack(ctx context.Context, tasks []model.CrackTask, delay int) {
+//
+//	wg := &sync.WaitGroup{}
+//	taskChan := make(chan model.CrackTask, 2)
+//
+//	for i := 0; i < 1; i++ {
+//		go runUnitTask(ctx, taskChan, wg, delay)
+//	}
+//
+//	for _, task := range tasks {
+//		wg.Add(1)
+//		taskChan <- task
+//	}
+//	waitTimeout(wg, model.T)
+//}
 
 func opt2slice(str string, file string) []string {
+	if len(str+file) == 0 {
+		log.Error("-h for Help, Args not set")
+	}
 	if len(str) > 0 {
 		r := strings.Split(str, ",")
 		return r
@@ -187,49 +192,44 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 		ips        []string
 		auths      []model.Auth
 		tasks      []model.CrackTask
+		num        int
+		delay      int
 	)
+	delay = globalopts.Delay
+
+	if delay > 0 {
+		num = 1
+	} else {
+		num = globalopts.Threads
+	}
+
 	optPlugins = genPlugins(opt.CrackPlugin)
 
 	if len(opt.User+opt.UserFile+opt.Pass+opt.PassFile) > 0 {
 		ips, auths = parseOpt(opt)
 		tasks = genCrackTasks(optPlugins, ips, auths)
-		log.Info(tasks)
+		log.Debug(tasks)
 	} else {
 		tasks = genDefaultTasks(ips, optPlugins)
 	}
 
 	ctx := context.Background()
+	//runCrack(ctx, tasks)
 
 	var wg sync.WaitGroup
-	taskChan := make(chan model.CrackTask, 8)
+	taskChan := make(chan model.CrackTask, num*2)
 
-	for i := 0; i < 1; i++ {
-		go runUnitTask(ctx, taskChan, &wg)
+	for i := 0; i < num; i++ {
+		go runUnitTask(ctx, taskChan, &wg, delay)
+
 	}
 
 	for _, task := range tasks {
 		wg.Add(1)
 		taskChan <- task
+
 	}
 	//wg.Wait()
 	waitTimeout(&wg, model.T)
-}
 
-//func startCrackTask2(ips []string, authList []model.Auth, plugins []string) {
-//	ctx := context.Background()
-//	tasks := genCrackTasks(ips, authList, plugins)
-//
-//	var wg sync.WaitGroup
-//	taskChan := make(chan model.CrackTask, 8)
-//
-//	for i := 0; i < 1; i++ {
-//		go runUnitTask(ctx, taskChan, &wg)
-//	}
-//
-//	for _, task := range tasks {
-//		wg.Add(1)
-//		taskChan <- task
-//	}
-//	//wg.Wait()
-//	waitTimeout(&wg, model.T)
-//}
+}

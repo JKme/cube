@@ -72,27 +72,25 @@ func init() {
 		Use:   "crack",
 		Short: "crack service password (e.g. ssh,mssql,redis,mysql)",
 		Run:   runCrack,
+		Example: `cube crack -u root -p root -i 192.168.1.1 -x ssh
+cube crack -u root -p root -i 192.168.1.1 -x ssh --port 2222
+cube crack -u root -p root -i 192.168.1.1/24 -x ssh
+cube crack -u root --pass-file pass.txt -i 192.168.1.1/24 -x ssh
+cube crack -u root --pass-file pass.txt -i 192.168.1.1/24 -x ssh,mysql
+		`,
 	}
 
 	crackCli.Flags().StringP("ip", "i", "", "ip (e.g. 192.168.2.1")
 	crackCli.Flags().StringP("ip-file", "", "", "login account")
 	crackCli.Flags().StringP("user", "u", "", "login password")
 	crackCli.Flags().StringP("user-file", "", "", "string to query or exec")
-	crackCli.Flags().StringP("passwd", "p", "", "login password")
+	crackCli.Flags().StringP("pass", "p", "", "login password")
 	crackCli.Flags().StringP("pass-file", "", "", "string to query or exec")
 	crackCli.Flags().StringP("port", "", "", "login password")
 	crackCli.Flags().StringP("plugin", "x", "", "crack plugin")
-	err := crackCli.MarkFlagRequired("x")
-	if err != nil {
-		log.Error("--plugin or -x flag required")
-		return
+	if err := crackCli.MarkFlagRequired("plugin"); err != nil {
+		log.Errorf("error on marking flag as required: %v", err)
 	}
-	//if err := crackCli.MarkPersistentFlagRequired("x"); err != nil {
-	//	log.Errorf("on marking flag as required: %v", err)
-	//}
 
-	//probeCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
-	//
-	//}
 	rootCmd.AddCommand(crackCli)
 }

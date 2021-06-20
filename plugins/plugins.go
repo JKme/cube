@@ -26,26 +26,26 @@ var (
 
 func init() {
 	ProbeFuncMap = make(map[string]ProbeFunc)
-	ProbeFuncMap["OXID"] = probe.OxidProbe
-	ProbeFuncMap["SMB"] = probe.SmbProbe
+	ProbeFuncMap["oxid"] = probe.OxidProbe
+	ProbeFuncMap["smb"] = probe.SmbProbe
 	ProbeKeys = append(ProbeKeys, "ALL")
 	for k := range ProbeFuncMap {
 		ProbeKeys = append(ProbeKeys, k)
 	}
 
 	SqlcmdFuncMap = make(map[string]SqlcmdFunc)
-	SqlcmdFuncMap["SSH"] = sqlcmd.SshCmd
+	SqlcmdFuncMap["ssh"] = sqlcmd.SshCmd
 	for k := range SqlcmdFuncMap {
 		SqlcmdKeys = append(SqlcmdKeys, k)
 	}
 
 	CrackFuncMap = make(map[string]CrackFunc)
-	CrackFuncMap["SSH"] = crack.SshCrack
+	CrackFuncMap["ssh"] = crack.SshCrack
 	for k := range ProbeFuncMap {
 		CrackKeys = append(CrackKeys, k)
 	}
 
 	CrackPluginKeys := make(map[string][]string)
-	CrackPluginKeys["all"] = CrackKeys
+	CrackPluginKeys["ALL"] = CrackKeys
 
 }

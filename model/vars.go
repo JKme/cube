@@ -39,7 +39,7 @@ func init() {
 	CommonPortMap["oxid"] = 135
 	CommonPortMap["smb"] = 445
 	CommonPortMap["mssql"] = 1433
-	CommonPortMap["mysql"] = 6379
+	CommonPortMap["mysql"] = 3306
 	CommonPortMap["redis"] = 6379
 
 }

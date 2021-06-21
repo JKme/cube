@@ -41,6 +41,8 @@ func init() {
 
 	CrackFuncMap = make(map[string]CrackFunc)
 	CrackFuncMap["ssh"] = crack.SshCrack
+	CrackFuncMap["mysql"] = crack.MysqlCrack
+
 	for k := range ProbeFuncMap {
 		CrackKeys = append(CrackKeys, k)
 	}

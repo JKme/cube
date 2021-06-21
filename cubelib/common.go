@@ -127,7 +127,7 @@ func MakeTaskHash(k string) string {
 	return hash
 }
 
-func CheckTashHash(hash string) bool {
+func CheckTaskHash(hash string) bool {
 	_, ok := model.SuccessHash[hash]
 	return ok
 }

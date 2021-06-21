@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"strings"
+	"unicode"
 )
 
 func saveReport(taskResult model.ProbeTaskResult) {
@@ -49,4 +50,13 @@ func PortCheck(host string, port string) bool {
 		conn.Close()
 		return true
 	}
+}
+
+func IsUpper(s string) bool {
+	for _, r := range s {
+		if !unicode.IsUpper(r) && unicode.IsLetter(r) {
+			return false
+		}
+	}
+	return true
 }

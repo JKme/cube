@@ -5,6 +5,7 @@ import (
 	"cube/log"
 	"cube/model"
 	Plugins "cube/plugins"
+	"cube/util"
 	"fmt"
 	"strconv"
 	"strings"
@@ -80,9 +81,8 @@ func saveCrackReport(taskResult model.CrackTaskResult) {
 		k := fmt.Sprintf("%v-%v-%v", taskResult.CrackTask.Ip, taskResult.CrackTask.Port, taskResult.CrackTask.CrackPlugin)
 		h := MakeTaskHash(k)
 		SetTaskHash(h)
-		s := fmt.Sprintf("[->>>>>]: %s\n[->>>>>]: %s:%s\n", taskResult.CrackTask.CrackPlugin, taskResult.CrackTask.Ip, taskResult.CrackTask.Port)
-		s1 := fmt.Sprintf("[Success]: %s", taskResult.Result)
-		fmt.Println(s + s1)
+		s1 := fmt.Sprintf("[+]: %s://%s:%s %s", taskResult.CrackTask.CrackPlugin, taskResult.CrackTask.Ip, taskResult.CrackTask.Port, taskResult.Result)
+		fmt.Println(s1)
 	}
 }
 
@@ -143,6 +143,7 @@ func opt2slice(str string, file string) []string {
 	}
 	if len(str) > 0 {
 		r := strings.Split(str, ",")
+
 		return r
 	}
 	r, _ := FileReader(file)
@@ -165,7 +166,8 @@ func parseOpt(opt *model.CrackOptions) (ips []string, authList []model.Auth) {
 	ip := opt.Ip
 	ipFile := opt.IpFile
 
-	ips = opt2slice(ip, ipFile)
+	ips, _ = util.ParseIP(ip, ipFile)
+	log.Debug(ips)
 
 	user := opt.User
 	userFile := opt.UserFile

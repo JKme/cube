@@ -12,3 +12,8 @@ func TestName(t *testing.T) {
 		fmt.Println(ip)
 	}
 }
+
+func TestIsUpper(t *testing.T) {
+	r := IsUpper("ALL")
+	fmt.Println(r)
+}

@@ -12,7 +12,7 @@ func TestMysqlCrack(t *testing.T) {
 		Port: "3306",
 		Auth: model.Auth{
 			User:     "root",
-			Password: "xiaobai",
+			Password: "root",
 		},
 		CrackPlugin: "mysql",
 	}

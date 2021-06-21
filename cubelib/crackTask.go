@@ -102,7 +102,7 @@ func runUnitTask(ctx context.Context, tasks chan model.CrackTask, wg *sync.WaitG
 			log.Debugf("Checking %s Password: %s://%s:%s@%s:%s", task.CrackPlugin, task.CrackPlugin, task.Auth.User, task.Auth.Password, task.Ip, task.Port)
 			k := fmt.Sprintf("%v-%v-%v", task.Ip, task.Port, task.CrackPlugin)
 			h := MakeTaskHash(k)
-			if CheckTashHash(h) {
+			if CheckTaskHash(h) {
 				wg.Done()
 				continue
 			}
@@ -167,7 +167,6 @@ func parseOpt(opt *model.CrackOptions) (ips []string, authList []model.Auth) {
 	ipFile := opt.IpFile
 
 	ips, _ = util.ParseIP(ip, ipFile)
-	log.Debug(ips)
 
 	user := opt.User
 	userFile := opt.UserFile
@@ -212,6 +211,7 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 		tasks = genCrackTasks(optPlugins, ips, auths)
 		log.Debug(tasks)
 	} else {
+		ips, _ = util.ParseIP(opt.Ip, opt.IpFile)
 		tasks = genDefaultTasks(ips, optPlugins)
 	}
 

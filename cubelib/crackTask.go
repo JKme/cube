@@ -7,7 +7,6 @@ import (
 	Plugins "cube/plugins"
 	"cube/util"
 	"fmt"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -29,14 +28,14 @@ func loadDefaultDict(p string) map[string][]model.Auth {
 	return r
 }
 
-func genDefaultTasks(ips []string, plugins []string) (tasks []model.CrackTask) {
+func genDefaultTasks(AliveAddr []util.IpAddr, plugins []string) (tasks []model.CrackTask) {
 	tasks = make([]model.CrackTask, 0)
-	for _, ip := range ips {
+	for _, addr := range AliveAddr {
 		for _, plugin := range plugins {
 			mapAuthSlice := loadDefaultDict(plugin)
 			authSlice := mapAuthSlice[plugin]
 			for _, auth := range authSlice {
-				s := model.CrackTask{Ip: ip, Auth: auth, CrackPlugin: plugin}
+				s := model.CrackTask{Ip: addr.Ip, Port: addr.Port, Auth: auth, CrackPlugin: plugin}
 				tasks = append(tasks, s)
 			}
 
@@ -46,12 +45,12 @@ func genDefaultTasks(ips []string, plugins []string) (tasks []model.CrackTask) {
 	return tasks
 }
 
-func genCrackTasks(plugins []string, ips []string, auths []model.Auth) (tasks []model.CrackTask) {
+func genCrackTasks(plugins []string, AliveAddr []util.IpAddr, auths []model.Auth) (tasks []model.CrackTask) {
 	tasks = make([]model.CrackTask, 0)
-	for _, ip := range ips {
+	for _, addr := range AliveAddr {
 		for _, auth := range auths {
 			for _, p := range plugins {
-				s := model.CrackTask{Ip: ip, Auth: auth, CrackPlugin: p}
+				s := model.CrackTask{Ip: addr.Ip, Port: addr.Port, Auth: auth, CrackPlugin: p}
 				tasks = append(tasks, s)
 			}
 		}
@@ -84,10 +83,6 @@ func runUnitTask(ctx context.Context, tasks chan model.CrackTask, wg *sync.WaitG
 			if !ok {
 				return
 			}
-			if len(task.Port) == 0 {
-				//没有设置端口使用服务的默认端口
-				task.Port = strconv.Itoa(model.CommonPortMap[task.CrackPlugin])
-			}
 			log.Debugf("Checking %s Password: %s://%s:%s@%s:%s", task.CrackPlugin, task.CrackPlugin, task.Auth.User, task.Auth.Password, task.Ip, task.Port)
 			k := fmt.Sprintf("%v-%v-%v", task.Ip, task.Port, task.CrackPlugin)
 			h := MakeTaskHash(k)
@@ -112,7 +107,7 @@ func runUnitTask(ctx context.Context, tasks chan model.CrackTask, wg *sync.WaitG
 
 func opt2slice(str string, file string) []string {
 	if len(str+file) == 0 {
-		log.Error("-h for Help, Args not set")
+		log.Error("-h for Help, Please set User and Password flag")
 	}
 	if len(str) > 0 {
 		r := strings.Split(str, ",")
@@ -173,14 +168,14 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 
 	optPlugins = genPlugins(opt.CrackPlugin)
 	ips, _ = util.ParseIP(opt.Ip, opt.IpFile)
-
+	AliveAddr := util.CheckAlive(ips, optPlugins, opt.Port)
 
 	if len(opt.User+opt.UserFile+opt.Pass+opt.PassFile) > 0 {
 		auths = genAuths(opt)
-		tasks = genCrackTasks(optPlugins, ips, auths)
-		log.Debug(tasks)
+		tasks = genCrackTasks(optPlugins, AliveAddr, auths)
+		log.Debugf("Receive %d task", len(tasks))
 	} else {
-		tasks = genDefaultTasks(ips, optPlugins)
+		tasks = genDefaultTasks(AliveAddr, optPlugins)
 	}
 
 	ctx := context.Background()
@@ -199,6 +194,6 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 
 	}
 	//wg.Wait()
-	waitTimeout(&wg, model.T)
+	waitTimeout(&wg, model.ThreadTimeout)
 
 }

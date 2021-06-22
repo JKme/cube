@@ -17,7 +17,7 @@ jobs:
                       goos: windows
                       bin: 'cube.exe'
                       args: -9
-                      strip: false
+                      strip: true
                       releaseos: windows
                     - os: macos-latest
                       goos: darwin
@@ -29,7 +29,7 @@ jobs:
                       goos: linux
                       bin: 'cube'
                       args: -9
-                      strip: false
+                      strip: true
                       releaseos: linux
                 exclude:
                     - os: macos-latest
@@ -61,6 +61,7 @@ jobs:
               with:
                 args: ${{ matrix.args }}
                 file: ${{ matrix.bin }}
+                strip: ${{ matrix.strip }}
             - name: Upload to artifacts
               uses: actions/upload-artifact@v2
               with:

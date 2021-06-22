@@ -174,6 +174,7 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 	optPlugins = genPlugins(opt.CrackPlugin)
 	ips, _ = util.ParseIP(opt.Ip, opt.IpFile)
 
+
 	if len(opt.User+opt.UserFile+opt.Pass+opt.PassFile) > 0 {
 		auths = genAuths(opt)
 		tasks = genCrackTasks(optPlugins, ips, auths)

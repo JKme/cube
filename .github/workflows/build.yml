@@ -1,4 +1,4 @@
-name: Release Go project
+name: Release Build
 
 on:
   push:

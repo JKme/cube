@@ -64,17 +64,6 @@ func processArgs(opt *model.CrackOptions) ([]string, error) {
 	return nil, nil
 }
 
-func generateAuth(user []string, password []string) (authList []model.Auth) {
-	authList = make([]model.Auth, 0)
-	for _, u := range user {
-		for _, pass := range password {
-			a := model.Auth{User: u, Password: pass}
-			authList = append(authList, a)
-		}
-	}
-	return authList
-}
-
 func saveCrackReport(taskResult model.CrackTaskResult) {
 
 	if len(taskResult.Result) > 0 {
@@ -121,22 +110,6 @@ func runUnitTask(ctx context.Context, tasks chan model.CrackTask, wg *sync.WaitG
 	}
 }
 
-//func runCrack(ctx context.Context, tasks []model.CrackTask, delay int) {
-//
-//	wg := &sync.WaitGroup{}
-//	taskChan := make(chan model.CrackTask, 2)
-//
-//	for i := 0; i < 1; i++ {
-//		go runUnitTask(ctx, taskChan, wg, delay)
-//	}
-//
-//	for _, task := range tasks {
-//		wg.Add(1)
-//		taskChan <- task
-//	}
-//	waitTimeout(wg, model.T)
-//}
-
 func opt2slice(str string, file string) []string {
 	if len(str+file) == 0 {
 		log.Error("-h for Help, Args not set")
@@ -162,12 +135,7 @@ func genPlugins(plugin string) []string {
 	return pluginList
 }
 
-func parseOpt(opt *model.CrackOptions) (ips []string, authList []model.Auth) {
-	ip := opt.Ip
-	ipFile := opt.IpFile
-
-	ips, _ = util.ParseIP(ip, ipFile)
-
+func genAuths(opt *model.CrackOptions) (auths []model.Auth) {
 	user := opt.User
 	userFile := opt.UserFile
 	pass := opt.Pass
@@ -177,14 +145,13 @@ func parseOpt(opt *model.CrackOptions) (ips []string, authList []model.Auth) {
 
 	for _, u := range us {
 		for _, p := range ps {
-			authList = append(authList, model.Auth{
+			auths = append(auths, model.Auth{
 				User:     u,
 				Password: p,
 			})
 		}
 	}
-
-	return ips, authList
+	return auths
 }
 
 func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
@@ -205,18 +172,17 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 	}
 
 	optPlugins = genPlugins(opt.CrackPlugin)
+	ips, _ = util.ParseIP(opt.Ip, opt.IpFile)
 
 	if len(opt.User+opt.UserFile+opt.Pass+opt.PassFile) > 0 {
-		ips, auths = parseOpt(opt)
+		auths = genAuths(opt)
 		tasks = genCrackTasks(optPlugins, ips, auths)
 		log.Debug(tasks)
 	} else {
-		ips, _ = util.ParseIP(opt.Ip, opt.IpFile)
 		tasks = genDefaultTasks(ips, optPlugins)
 	}
 
 	ctx := context.Background()
-	//runCrack(ctx, tasks)
 
 	var wg sync.WaitGroup
 	taskChan := make(chan model.CrackTask, num*2)

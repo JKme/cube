@@ -21,6 +21,7 @@ jobs:
                     - os: macos-latest
                       goos: darwin
                       bin: 'cube'
+                      strip: false
                       args: -9
                       releaseos: osx
                     - os: ubuntu-latest

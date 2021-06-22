@@ -17,3 +17,10 @@ func TestIsUpper(t *testing.T) {
 	r := IsUpper("ALL")
 	fmt.Println(r)
 }
+
+func TestCheckAlive(t *testing.T) {
+	ips, _ := ParseIP("172.20.40.22/24", "")
+	plugins := []string{"ssh"}
+	r := CheckAlive(ips, plugins, "")
+	fmt.Println(r)
+}

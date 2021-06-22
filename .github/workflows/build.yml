@@ -17,17 +17,19 @@ jobs:
                       goos: windows
                       bin: 'cube.exe'
                       args: -9
+                      strip: false
                       releaseos: windows
                     - os: macos-latest
                       goos: darwin
                       bin: 'cube'
-                      strip: false
                       args: -9
+                      strip: false
                       releaseos: osx
                     - os: ubuntu-latest
                       goos: linux
                       bin: 'cube'
                       args: -9
+                      strip: false
                       releaseos: linux
                 exclude:
                     - os: macos-latest

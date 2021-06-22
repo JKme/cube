@@ -3,7 +3,7 @@ name: Release Build
 on:
   push:
     tags:
-      - "*" # triggers only if push new tag version, like `0.8.4` or else
+      - "**" # triggers only if push new tag version, like `0.8.4` or else
 
 jobs:
   build:

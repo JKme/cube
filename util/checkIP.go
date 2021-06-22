@@ -16,11 +16,11 @@ type IpAddr struct {
 
 var (
 	mutex     sync.Mutex
-	AliveAddr []string
+	AliveAddr []IpAddr
 	ipList    []IpAddr
 )
 
-func CheckAlive(ips []string, plugins []string, port string) []string {
+func CheckAlive(ips []string, plugins []string, port string) []IpAddr {
 	if len(port) > 0 {
 		for _, ip := range ips {
 			ipList = append(ipList, IpAddr{
@@ -40,7 +40,6 @@ func CheckAlive(ips []string, plugins []string, port string) []string {
 
 	}
 
-	fmt.Println(ipList)
 	var wg sync.WaitGroup
 	wg.Add(len(ipList))
 
@@ -58,8 +57,9 @@ func CheckAlive(ips []string, plugins []string, port string) []string {
 func check(addr IpAddr) (bool, IpAddr) {
 	alive := false
 	log.Debugf("Checking: %s:%s", addr.Ip, addr.Port)
-	_, err := net.DialTimeout("tcp", fmt.Sprintf("%v:%v", addr.Ip, addr.Port), model.T)
+	_, err := net.DialTimeout("tcp", fmt.Sprintf("%v:%v", addr.Ip, addr.Port), model.ConnectTimeout)
 	if err == nil {
+		log.Debugf("[*] %s:%s Open", addr.Ip, addr.Port)
 		alive = true
 	}
 	return alive, addr
@@ -68,7 +68,7 @@ func check(addr IpAddr) (bool, IpAddr) {
 func SaveAddr(alive bool, addr IpAddr) {
 	if alive {
 		mutex.Lock()
-		AliveAddr = append(AliveAddr, addr.Ip)
+		AliveAddr = append(AliveAddr, addr)
 		mutex.Unlock()
 	}
 }

@@ -44,7 +44,11 @@ func init() {
 }
 
 func InitLog(l string) {
-	formatLogger = newLog(os.Stdout).setFlags(log.Ldate | log.Ltime | log.Lshortfile).setLevel(levelMap[l])
+	if l == "DEBUG" {
+		formatLogger = newLog(os.Stdout).setFlags(log.Ldate | log.Ltime | log.Lshortfile).setLevel(levelMap[l])
+	} else {
+		formatLogger = newLog(os.Stdout).setFlags(log.Ldate | log.Ltime).setLevel(levelMap[l])
+	}
 }
 
 type Logger struct {

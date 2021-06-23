@@ -109,15 +109,15 @@ jobs:
                 path: releases/
                 
             - name: Create Release
-                id: create_release
-                uses: monkeyWie/create-release@master
-                env:
-                  GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-                with:
-                  tag_name: ${{ github.ref }}
-                  release_name: Release ${{ github.ref }}
-                  draft: false
-                  prerelease: true
+              id: create_release
+              uses: monkeyWie/create-release@master
+              env:
+                GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+              with:
+                tag_name: ${{ github.ref }}
+                release_name: Release ${{ github.ref }}
+                draft: false
+                prerelease: true
                   
             - name: Upload Archives to Release
               env:

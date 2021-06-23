@@ -6,9 +6,10 @@ import (
 )
 
 const (
-	TIMEUNIT = 5
-	T        = 10 * time.Second
-	TIMEOUT  = time.Duration(TIMEUNIT) * time.Second
+	ConnectTimeout = 3 * time.Second
+	ThreadTimeout  = 5 * time.Second
+	//T              = 10 * time.Second
+	//TIMEOUT        = time.Duration(TIMEUNIT) * time.Second
 )
 
 var (

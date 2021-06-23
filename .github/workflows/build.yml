@@ -126,6 +126,14 @@ jobs:
                 AUTH_HEADER: "Authorization: token ${{ secrets.ACCESS_TOKEN }}"
               run: |
                 UPLOAD_URL=$(echo -n $UPLOAD_URL | sed s/\{.*//g)
+                touch releases/sha256.txt
+                for FILE in releases/*
+                do
+                  FILENAME=$(basename ${FILE})
+                  HASH=$(sha256sum ${FILE} | cut -d ' ' -f 1)
+                  echo "${HASH}    $FILENAME" >> releases/sha256.txt
+                done
+                
                 for FILE in releases/*
                 do
                   echo "Uploading ${FILE}";
@@ -136,25 +144,4 @@ jobs:
                     --data-binary "@${FILE}" \
                     "${UPLOAD_URL}?name=$(basename ${FILE})";
                 done
-            - name: Generate SHA256 Hashes
-              env:
-                API_HEADER: "Accept: application/vnd.github.v3+json"
-                AUTH_HEADER: "Authorization: token ${{ secrets.ACCESS_TOKEN }}"
-                RELEASE_URL: ${{ steps.create_release.outputs.html_url }}
-              run: |
-                HASH_TABLE="| SHA256 Hash | Filename |"
-                HASH_TABLE="${HASH_TABLE}\n|-----|-----|\n"
-                for FILE in releases/*
-                do
-                  FILENAME=$(basename ${FILE})
-                  HASH=$(sha256sum ${FILE} | cut -d ' ' -f 1)
-                  HASH_TABLE="${HASH_TABLE}|${HASH}|${FILENAME}|\n"
-                done
-                echo "${HASH_TABLE}"
-                curl \
-                  -XPATCH \
-                  -H "${API_HEADER}" \
-                  -H "${AUTH_HEADER}" \
-                  -H "Content-Type: application/json" \
-                  -d "{\"body\": \"${HASH_TABLE}\"}" \
-                  "${RELEASE_URL}";
+            

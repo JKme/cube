@@ -1,9 +1,8 @@
 name: Build Cube Release
 on:
-  create:
+  push:
     tags:
-      - v*
-
+      - "**" # triggers only if push new tag version, like `0.8.4` or else
 jobs:
     build:
         name: Build Binary

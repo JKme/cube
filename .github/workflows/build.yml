@@ -140,7 +140,7 @@ jobs:
               env:
                 API_HEADER: "Accept: application/vnd.github.v3+json"
                 AUTH_HEADER: "Authorization: token ${{ secrets.ACCESS_TOKEN }}"
-                RELEASE_URL: ${{ github.event.release.url }}
+                RELEASE_URL: ${{ steps.create_release.outputs.url }}
               run: |
                 HASH_TABLE="| SHA256 Hash | Filename |"
                 HASH_TABLE="${HASH_TABLE}\n|-----|-----|\n"

@@ -158,6 +158,8 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 		num        int
 		delay      int
 	)
+	ctx := context.Background()
+
 	delay = globalopts.Delay
 
 	if delay > 0 {
@@ -168,7 +170,7 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 
 	optPlugins = genPlugins(opt.CrackPlugin)
 	ips, _ = util.ParseIP(opt.Ip, opt.IpFile)
-	AliveAddr := util.CheckAlive(ips, optPlugins, opt.Port)
+	AliveAddr := util.CheckAlive(ctx, num, delay, ips, optPlugins, opt.Port)
 
 	if len(opt.User+opt.UserFile+opt.Pass+opt.PassFile) > 0 {
 		auths = genAuths(opt)
@@ -177,8 +179,6 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 	} else {
 		tasks = genDefaultTasks(AliveAddr, optPlugins)
 	}
-
-	ctx := context.Background()
 
 	var wg sync.WaitGroup
 	taskChan := make(chan model.CrackTask, num*2)

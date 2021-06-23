@@ -44,10 +44,11 @@ func init() {
 }
 
 func InitLog(l string) {
-	if l == "DEBUG" {
+	switch {
+	case l == "INFO":
+		formatLogger = newLog(os.Stdout).setLevel(levelMap[l])
+	default:
 		formatLogger = newLog(os.Stdout).setFlags(log.Ldate | log.Ltime | log.Lshortfile).setLevel(levelMap[l])
-	} else {
-		formatLogger = newLog(os.Stdout).setFlags(log.Ldate | log.Ltime).setLevel(levelMap[l])
 	}
 }
 
@@ -76,7 +77,12 @@ func (l *Logger) doLog(level Level, v ...interface{}) bool {
 	if level < l.level {
 		return false
 	}
-	l.l.Output(3, level.String()+"\t"+fmt.Sprintln(v...))
+	if level == 1 {
+		l.l.Output(3, fmt.Sprintln(fmt.Sprintln(v...)))
+	} else {
+		l.l.Output(3, level.String()+"\t"+fmt.Sprintln(fmt.Sprintln(v...)))
+
+	}
 	return true
 }
 
@@ -84,7 +90,12 @@ func (l *Logger) doLogf(level Level, format string, v ...interface{}) bool {
 	if level < l.level {
 		return false
 	}
-	l.l.Output(3, level.String()+"\t"+fmt.Sprintln(fmt.Sprintf(format, v...)))
+	if level == 1 {
+		l.l.Output(3, fmt.Sprintln(fmt.Sprintf(format, v...)))
+	} else {
+		l.l.Output(3, level.String()+"\t"+fmt.Sprintln(fmt.Sprintf(format, v...)))
+
+	}
 	return true
 }
 

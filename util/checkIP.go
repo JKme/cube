@@ -1,12 +1,14 @@
 package util
 
 import (
+	"context"
 	"cube/log"
 	"cube/model"
 	"fmt"
 	"net"
 	"strconv"
 	"sync"
+	"time"
 )
 
 type IpAddr struct {
@@ -20,7 +22,7 @@ var (
 	ipList    []IpAddr
 )
 
-func CheckAlive(ips []string, plugins []string, port string) []IpAddr {
+func CheckAlive(ctx context.Context, Num int, delay int, ips []string, plugins []string, port string) []IpAddr {
 	if len(port) > 0 {
 		for _, ip := range ips {
 			ipList = append(ipList, IpAddr{
@@ -40,15 +42,52 @@ func CheckAlive(ips []string, plugins []string, port string) []IpAddr {
 
 	}
 
+	//var wg sync.WaitGroup
+	//wg.Add(len(ipList))
+	//
+	//for _, addr := range ipList {
+	//	go func(addr IpAddr) {
+	//		defer wg.Done()
+	//		SaveAddr(check(addr))
+	//	}(addr)
+	//}
+	//wg.Wait()
+	var threadNum int
+	if delay != 0 {
+		threadNum = 1
+	} else {
+		threadNum = Num * 10
+	}
+
+	var addrChan = make(chan IpAddr, threadNum*2)
 	var wg sync.WaitGroup
 	wg.Add(len(ipList))
 
-	for _, addr := range ipList {
-		go func(addr IpAddr) {
-			defer wg.Done()
-			SaveAddr(check(addr))
-		}(addr)
+	for i := 0; i < threadNum; i++ {
+		go func() {
+			for {
+				select {
+				case <-ctx.Done():
+					return
+				case addr, ok := <-addrChan:
+					if !ok {
+						return
+					}
+					SaveAddr(check(addr))
+					wg.Done()
+					select {
+					case <-ctx.Done():
+					case <-time.After(time.Duration(delay) * time.Second):
+					}
+				}
+			}
+		}()
 	}
+
+	for _, addr := range ipList {
+		addrChan <- addr
+	}
+	close(addrChan)
 	wg.Wait()
 
 	return AliveAddr
@@ -56,10 +95,10 @@ func CheckAlive(ips []string, plugins []string, port string) []IpAddr {
 
 func check(addr IpAddr) (bool, IpAddr) {
 	alive := false
-	log.Debugf("Checking: %s:%s", addr.Ip, addr.Port)
+	log.Debugf("Port connect check: %s:%s", addr.Ip, addr.Port)
 	_, err := net.DialTimeout("tcp", fmt.Sprintf("%v:%v", addr.Ip, addr.Port), model.ConnectTimeout)
 	if err == nil {
-		log.Infof("[*] %s:%s Open", addr.Ip, addr.Port)
+		log.Infof("%s:%s Open", addr.Ip, addr.Port)
 		alive = true
 	}
 	return alive, addr

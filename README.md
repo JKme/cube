@@ -64,4 +64,5 @@ MS17010
 - [ ] 变量名和函数名优化
 - [ ] **尝试改造为interface实现**
 
+delay 好像并没有什么卵用
 https://github.com/ysrc/xunfeng/tree/40d40ecf55910019b8b904ef70ae1eebb6b6d26f/vulscan/vuldb

@@ -43,12 +43,12 @@ jobs:
             - if: matrix.os == 'ubuntu-latest'
               run: sudo apt-get update && sudo apt-get install -y gcc-multilib
             - if: matrix.arch == '386'
-              run: echo "RELEASE=cube-${{ github.event.release.tag_name}}-${{ matrix.releaseos}}-32bit" >> $GITHUB_ENV
+              run: echo "RELEASE=cube${{ github.event.release.tag_name}}-${{ matrix.releaseos}}-32bit" >> $GITHUB_ENV
             - if: matrix.arch == 'amd64'
-              run: echo "RELEASE=cube-${{ github.event.release.tag_name}}-${{ matrix.releaseos}}-64bit" >> $GITHUB_ENV
+              run: echo "RELEASE=cube${{ github.event.release.tag_name}}-${{ matrix.releaseos}}-64bit" >> $GITHUB_ENV
             - if: matrix.os == 'windows-latest'
               shell: powershell
-              run: echo "RELEASE=cube-${{ github.event.release.tag_name}}-${{ matrix.releaseos}}-64bit" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+              run: echo "RELEASE=cube${{ github.event.release.tag_name}}-${{ matrix.releaseos}}-64bit" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
             - uses: actions/checkout@v2
             - name: Build ${{ matrix.goos }}/${{ matrix.arch }}
               run: go build -ldflags '-w -s' -o ${{ matrix.bin }}
@@ -126,7 +126,6 @@ jobs:
                 AUTH_HEADER: "Authorization: token ${{ secrets.ACCESS_TOKEN }}"
               run: |
                 UPLOAD_URL=$(echo -n $UPLOAD_URL | sed s/\{.*//g)
-                touch releases/sha256.txt
                 for FILE in releases/*
                 do
                   FILENAME=$(basename ${FILE})

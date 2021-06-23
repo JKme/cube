@@ -106,9 +106,21 @@ jobs:
               with:
                 name: releases
                 path: releases/
+                
+            - name: Create Release
+            id: create_release
+            uses: monkeyWie/create-release@master
+            env:
+              GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+            with:
+              tag_name: ${{ github.ref }}
+              release_name: Release ${{ github.ref }}
+              draft: false
+              prerelease: true
+              
             - name: Upload Archives to Release
               env:
-                UPLOAD_URL: ${{ github.event.release.upload_url }}
+                UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
                 API_HEADER: "Accept: application/vnd.github.v3+json"
                 AUTH_HEADER: "Authorization: token ${{ secrets.ACCESS_TOKEN }}"
               run: |

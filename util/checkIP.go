@@ -59,7 +59,7 @@ func check(addr IpAddr) (bool, IpAddr) {
 	log.Debugf("Checking: %s:%s", addr.Ip, addr.Port)
 	_, err := net.DialTimeout("tcp", fmt.Sprintf("%v:%v", addr.Ip, addr.Port), model.ConnectTimeout)
 	if err == nil {
-		log.Debugf("[*] %s:%s Open", addr.Ip, addr.Port)
+		log.Infof("[*] %s:%s Open", addr.Ip, addr.Port)
 		alive = true
 	}
 	return alive, addr

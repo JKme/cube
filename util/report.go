@@ -3,7 +3,6 @@ package util
 import (
 	"cube/model"
 	"fmt"
-	"net"
 	"strings"
 	"unicode"
 )
@@ -40,16 +39,6 @@ func Color(colorString string) func(...interface{}) string {
 			fmt.Sprint(args...))
 	}
 	return sprint
-}
-
-func PortCheck(host string, port string) bool {
-	conn, err := net.DialTimeout("tcp", host+":"+port, model.T)
-	if err != nil {
-		return false
-	} else {
-		conn.Close()
-		return true
-	}
 }
 
 func IsUpper(s string) bool {

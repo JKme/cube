@@ -18,9 +18,16 @@ func TestIsUpper(t *testing.T) {
 	fmt.Println(r)
 }
 
-func TestCheckAlive(t *testing.T) {
-	ips, _ := ParseIP("172.20.40.22/24", "")
-	plugins := []string{"ssh"}
-	r := CheckAlive(ips, plugins, "")
+//func TestCheckAlive(t *testing.T) {
+//	ips, _ := ParseIP("172.20.40.22/24", "")
+//	plugins := []string{"ssh"}
+//	//r := CheckAlive(ips, plugins, "")
+//	fmt.Println(r)
+//}
+
+func TestStrXor(t *testing.T) {
+	r := StrXor("", "1")
 	fmt.Println(r)
+	print(r)
+
 }

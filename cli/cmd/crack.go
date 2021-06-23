@@ -13,6 +13,12 @@ var crackCli *cobra.Command
 func runCrack(cmd *cobra.Command, args []string) {
 	globalopts, opt, _ := parseCrackOptions()
 
+	if len(opt.User+opt.UserFile+opt.Pass+opt.PassFile) > 0 { //当使用自定义用户密码的时候，判断是否同时指定了User和Password
+		if len(opt.User)+len(opt.UserFile) == 0 || len(opt.Pass)+len(opt.PassFile) == 0 {
+			log.Error("-h for Help, Please set User(-u/--user-file) and Password(-p/--pass-file) flag")
+		}
+	}
+
 	cubelib.StartCrackTask(opt, globalopts)
 }
 

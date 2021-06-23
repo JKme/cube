@@ -1,7 +1,9 @@
 name: Build Cube Release
 on:
-  release:
-    types: [created]
+  create:
+    tags:
+      - v*
+
 jobs:
     build:
         name: Build Binary

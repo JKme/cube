@@ -15,7 +15,12 @@ import (
 func loadDefaultDict(p string) map[string][]model.Auth {
 	authSlice := make([]model.Auth, 0)
 	r := make(map[string][]model.Auth, 0)
-	for _, user := range model.UserDict[p] {
+	users, ok := model.UserDict[p]
+	if !ok {
+		users = []string{""}
+	}
+	for _, user := range users {
+		log.Debugf("User: %s", user)
 		for _, pass := range model.PassDict {
 			pass = strings.Replace(pass, "{user}", user, -1)
 			authSlice = append(authSlice, model.Auth{
@@ -86,6 +91,7 @@ func runUnitTask(ctx context.Context, tasks chan model.CrackTask, wg *sync.WaitG
 			log.Debugf("Checking %s Password: %s://%s:%s@%s:%s", task.CrackPlugin, task.CrackPlugin, task.Auth.User, task.Auth.Password, task.Ip, task.Port)
 			k := fmt.Sprintf("%v-%v-%v", task.Ip, task.Port, task.CrackPlugin)
 			h := MakeTaskHash(k)
+			log.Debug("Hash is %s", h)
 			if CheckTaskHash(h) {
 				wg.Done()
 				continue
@@ -185,7 +191,6 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 
 	for i := 0; i < num; i++ {
 		go runUnitTask(ctx, taskChan, &wg, delay)
-
 	}
 
 	for _, task := range tasks {

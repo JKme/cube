@@ -8,11 +8,11 @@ import (
 
 func TestMysqlCrack(t *testing.T) {
 	task := model.CrackTask{
-		Ip:   "127.0.0.1",
+		Ip:   "172.20.40.101",
 		Port: "3306",
 		Auth: model.Auth{
 			User:     "root",
-			Password: "root",
+			Password: "123456",
 		},
 		CrackPlugin: "mysql",
 	}

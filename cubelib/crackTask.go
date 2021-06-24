@@ -175,10 +175,10 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 	if len(opt.User+opt.UserFile+opt.Pass+opt.PassFile) > 0 {
 		auths = genAuths(opt)
 		tasks = genCrackTasks(optPlugins, AliveAddr, auths)
-		log.Debugf("Receive %d task", len(tasks))
 	} else {
 		tasks = genDefaultTasks(AliveAddr, optPlugins)
 	}
+	log.Debugf("Receive %d task", len(tasks))
 
 	var wg sync.WaitGroup
 	taskChan := make(chan model.CrackTask, num*2)

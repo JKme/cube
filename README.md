@@ -49,10 +49,10 @@ https://monkeywie.cn/2019/10/10/go-cross-compile/
 http://beangogo.cn/2021/03/08/golang-context%E5%BA%94%E7%94%A8/
 https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-context/
 
-FTP弱口令
-SNMP弱口令
-SMB弱口令
-REDIS未授权
+- [ ] FTP弱口令
+- [ ] SMB弱口令
+- [ ] REDIS未授权
+
 ZOOKEEPER未授权
 MS17010
 

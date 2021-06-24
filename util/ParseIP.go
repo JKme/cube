@@ -31,6 +31,9 @@ func ParseIP(ip string, filename string) (hosts []string, err error) {
 
 	if ip != "" {
 		hosts, err = ParseIPs(ip)
+		if err != nil {
+			CheckErr(ip, err)
+		}
 	}
 
 	if filename != "" {
@@ -199,8 +202,8 @@ func Readipfile(filename string) ([]string, error) {
 	for scanner.Scan() {
 		text := strings.TrimSpace(scanner.Text())
 		if text != "" {
-			host, err := ParseIPs(text)
-			CheckErr(text, err)
+			host, _ := ParseIPs(text)
+			//CheckErr(text, err)
 			content = append(content, host...)
 		}
 	}

@@ -31,3 +31,8 @@ func TestStrXor(t *testing.T) {
 	print(r)
 
 }
+
+func TestReadipfile(t *testing.T) {
+	r, _ := Readipfile("/tmp/ip.txt")
+	fmt.Println(r)
+}

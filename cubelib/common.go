@@ -129,6 +129,7 @@ func MakeTaskHash(k string) string {
 
 func CheckTaskHash(hash string) bool {
 	_, ok := model.SuccessHash[hash]
+	log.Debugf("Success: %#v\n", model.SuccessHash)
 	return ok
 }
 

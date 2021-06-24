@@ -26,10 +26,23 @@ func TestRedisCrack(t *testing.T) {
 		Port: "6379",
 		Auth: model.Auth{
 			User:     "",
-			Password: "666666",
+			Password: "123456",
 		},
 		CrackPlugin: "redis",
 	}
 	r := RedisCrack(task)
 	fmt.Println(r)
+}
+
+func TestSlice(t *testing.T) {
+	var UserDict = map[string][]string{
+		"ftp":        {"ftp", "admin", "www", "web", "root", "db", "wwwroot", "data"},
+		"mysql":      {"root", "mysql"},
+		"mssql":      {"sa", "sql"},
+		"smb":        {"administrator", "admin", "guest"},
+		"postgresql": {"postgres", "admin"},
+		"ssh":        {"root", "admin"},
+		"mongodb":    {"root", "admin"},
+	}
+	fmt.Println(UserDict["aa"])
 }

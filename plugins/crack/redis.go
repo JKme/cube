@@ -1,6 +1,7 @@
 package crack
 
 import (
+	"cube/log"
 	"cube/model"
 	"cube/util"
 	"fmt"
@@ -15,21 +16,31 @@ func RedisCrack(task model.CrackTask) (result model.CrackTaskResult) {
 	if err != nil {
 		return
 	}
+	log.Debugf("Password: %s", task.Auth.Password)
 
-	_, err = conn.Write([]byte(fmt.Sprintf("auth %s\r\n", task.Auth.Password)))
+	config, err := getConfig(conn)
 	if err != nil {
 		return
 	}
-	buf := make([]byte, 4096)
-	count, _ := conn.Read(buf)
-	config, _ := getConfig(conn)
-	fmt.Printf("Config: %s\n", config)
-	response := string(buf[0:count])
-	if strings.Contains(response, "+OK") {
-		result.Result = util.Green(fmt.Sprintf("Password: %s", task.Auth.Password))
 
+	if len(config) > 0 {
+		result.Result = util.Green(fmt.Sprintf("Password: %s \t Version=%s  OS=%s", task.Auth.Password, config[0], config[1]))
+	} else {
+		_, err = conn.Write([]byte(fmt.Sprintf("AUTH %s\r\n", task.Auth.Password)))
+		if err != nil {
+			return
+		}
+		buf := make([]byte, 4096)
+		count, _ := conn.Read(buf)
+		response := string(buf[0:count])
+		if strings.Contains(response, "+OK") {
+			config, _ := getConfig(conn)
+			log.Debugf("Config: %v", config)
+			//result.Result = util.Green(fmt.Sprintf("Password: %s \t Version: %v ", task.Auth.Password, config))
+
+			result.Result = util.Green(fmt.Sprintf("Password: %s \t Version=%s  OS=%s", task.Auth.Password, config[0], config[1]))
+		}
 	}
-
 	return result
 }
 func readReply(conn net.Conn) (result string, err error) {
@@ -56,20 +67,13 @@ func getConfig(conn net.Conn) (conf []string, err error) {
 	if err != nil {
 		return
 	}
-	//l := strings.Split(text, "\n")
-	fmt.Println(strings.Split(text, "\n")[2])
-	r := regexp.MustCompile(`.*redis_version:(.*)\n(?s).*(?U)os:(.*)\n`)
-	l := r.FindStringSubmatch(text)
-	fmt.Println(l[1], l[2])
-	fmt.Printf("[+] %#v\n", r.FindStringSubmatch(text))
+	if strings.Contains(text, "redis_version") {
+		r := regexp.MustCompile(`.*redis_version:(.*)\n(?s).*(?U)os:(.*)\n`)
 
-	//text1 := strings.Split(text, "\n")
-	//if len(text1) > 2 {
-	//	dbfilename = text1[len(text1)-2]
-	//} else {
-	//	dbfilename = text1[0]
-	//}
-	return
+		match := r.FindStringSubmatch(text)
+		a := strings.TrimSpace(match[1])
+		b := strings.TrimSpace(match[2])
+		conf = append(conf, a, b)
+	}
+	return conf, nil
 }
-
-//redis_version  os

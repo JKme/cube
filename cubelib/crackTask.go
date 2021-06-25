@@ -74,8 +74,9 @@ func saveCrackReport(taskResult model.CrackTaskResult) {
 		k := fmt.Sprintf("%v-%v-%v", taskResult.CrackTask.Ip, taskResult.CrackTask.Port, taskResult.CrackTask.CrackPlugin)
 		h := MakeTaskHash(k)
 		SetTaskHash(h)
-		s1 := fmt.Sprintf("[+]: %s://%s:%s %s", taskResult.CrackTask.CrackPlugin, taskResult.CrackTask.Ip, taskResult.CrackTask.Port, taskResult.Result)
-		fmt.Println(s1)
+		//s1 := fmt.Sprintf("[+]: %s://%s:%s %s", taskResult.CrackTask.CrackPlugin, taskResult.CrackTask.Ip, taskResult.CrackTask.Port, taskResult.Result)
+		//fmt.Println(s1)
+		SetResultMap(taskResult)
 	}
 }
 
@@ -91,7 +92,6 @@ func runUnitTask(ctx context.Context, tasks chan model.CrackTask, wg *sync.WaitG
 			log.Debugf("Checking %s Password: %s://%s:%s@%s:%s", task.CrackPlugin, task.CrackPlugin, task.Auth.User, task.Auth.Password, task.Ip, task.Port)
 			k := fmt.Sprintf("%v-%v-%v", task.Ip, task.Port, task.CrackPlugin)
 			h := MakeTaskHash(k)
-			log.Debug("Hash is %s", h)
 			if CheckTaskHash(h) {
 				wg.Done()
 				continue
@@ -196,9 +196,8 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 	for _, task := range tasks {
 		wg.Add(1)
 		taskChan <- task
-
 	}
 	//wg.Wait()
 	waitTimeout(&wg, model.ThreadTimeout)
-
+	ReadResultMap()
 }

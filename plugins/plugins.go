@@ -44,7 +44,7 @@ func init() {
 	CrackFuncMap["mysql"] = crack.MysqlCrack
 	CrackFuncMap["redis"] = crack.RedisCrack
 
-	for k := range ProbeFuncMap {
+	for k := range CrackFuncMap {
 		CrackKeys = append(CrackKeys, k)
 	}
 

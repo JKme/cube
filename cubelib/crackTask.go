@@ -7,6 +7,7 @@ import (
 	Plugins "cube/plugins"
 	"cube/util"
 	"fmt"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -33,31 +34,26 @@ func loadDefaultDict(p string) map[string][]model.Auth {
 	return r
 }
 
-func genDefaultTasks(AliveAddr []util.IpAddr, plugins []string) (tasks []model.CrackTask) {
+func genDefaultTasks(AliveIPS []util.IpAddr) (tasks []model.CrackTask) {
 	tasks = make([]model.CrackTask, 0)
-	for _, addr := range AliveAddr {
-		for _, plugin := range plugins {
-			mapAuthSlice := loadDefaultDict(plugin)
-			authSlice := mapAuthSlice[plugin]
+	for _, addr := range AliveIPS {
+			mapAuthSlice := loadDefaultDict(addr.Plugin)
+			authSlice := mapAuthSlice[addr.Plugin]
 			for _, auth := range authSlice {
-				s := model.CrackTask{Ip: addr.Ip, Port: addr.Port, Auth: auth, CrackPlugin: plugin}
+				s := model.CrackTask{Ip: addr.Ip, Port:addr.Port, Auth: auth, CrackPlugin: addr.Plugin}
 				tasks = append(tasks, s)
-			}
-
 		}
 
 	}
 	return tasks
 }
 
-func genCrackTasks(plugins []string, AliveAddr []util.IpAddr, auths []model.Auth) (tasks []model.CrackTask) {
+func genCrackTasks(AliveIPS []util.IpAddr, auths []model.Auth) (tasks []model.CrackTask) {
 	tasks = make([]model.CrackTask, 0)
-	for _, addr := range AliveAddr {
+	for _, addr := range AliveIPS {
 		for _, auth := range auths {
-			for _, p := range plugins {
-				s := model.CrackTask{Ip: addr.Ip, Port: addr.Port, Auth: auth, CrackPlugin: p}
+				s := model.CrackTask{Ip: addr.Ip, Port: addr.Port, Auth: auth, CrackPlugin: addr.Plugin}
 				tasks = append(tasks, s)
-			}
 		}
 	}
 	return tasks
@@ -89,6 +85,15 @@ func runUnitTask(ctx context.Context, tasks chan model.CrackTask, wg *sync.WaitG
 			if !ok {
 				return
 			}
+			if task.Port == "" {
+				task.Port =  strconv.Itoa(model.CommonPortMap[task.CrackPlugin])
+			}
+			//alive := CheckAlive(task)
+			//if !alive {
+			//	wg.Done()
+			//	continue
+			//}
+
 			log.Debugf("Checking %s Password: %s://%s:%s@%s:%s", task.CrackPlugin, task.CrackPlugin, task.Auth.User, task.Auth.Password, task.Ip, task.Port)
 			k := fmt.Sprintf("%v-%v-%v", task.Ip, task.Port, task.CrackPlugin)
 			h := MakeTaskHash(k)
@@ -131,7 +136,7 @@ func genPlugins(plugin string) []string {
 	}
 
 	if plugin == "ALL" {
-		pluginList = Plugins.CrackKeys[1:]
+		pluginList = Plugins.CrackKeys
 	}
 	return pluginList
 }
@@ -165,7 +170,7 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 		delay      int
 	)
 	ctx := context.Background()
-
+	t1 := time.Now()
 	delay = globalopts.Delay
 
 	if delay > 0 {
@@ -175,14 +180,18 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 	}
 
 	optPlugins = genPlugins(opt.CrackPlugin)
+	log.Info(optPlugins)
 	ips, _ = util.ParseIP(opt.Ip, opt.IpFile)
-	AliveAddr := util.CheckAlive(ctx, num, delay, ips, optPlugins, opt.Port)
+
+	AliveIPS := util.CheckAlive(ctx, num, delay, ips, optPlugins, opt.Port)
+	//AliveIPS = RemoveRepByMap(AliveIPS)  // 去重IP
+	log.Debug("Receive alive IP: ", AliveIPS)
 
 	if len(opt.User+opt.UserFile+opt.Pass+opt.PassFile) > 0 {
 		auths = genAuths(opt)
-		tasks = genCrackTasks(optPlugins, AliveAddr, auths)
+		tasks = genCrackTasks(AliveIPS, auths)
 	} else {
-		tasks = genDefaultTasks(AliveAddr, optPlugins)
+		tasks = genDefaultTasks(AliveIPS)
 	}
 	log.Debugf("Receive %d task", len(tasks))
 
@@ -200,4 +209,7 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 	//wg.Wait()
 	waitTimeout(&wg, model.ThreadTimeout)
 	ReadResultMap()
+	fmt.Println(strings.Repeat("=", 50))
+	End := time.Now().Format("2006-01-02 15:04:05")
+	fmt.Printf("Finished:%s  Cost:%s", End, time.Since(t1))
 }

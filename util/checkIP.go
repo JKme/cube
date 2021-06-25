@@ -12,8 +12,9 @@ import (
 )
 
 type IpAddr struct {
-	Ip   string
-	Port string
+	Ip   	string
+	Port 	string
+	Plugin 	string
 }
 
 var (
@@ -36,6 +37,7 @@ func CheckAlive(ctx context.Context, Num int, delay int, ips []string, plugins [
 				ipList = append(ipList, IpAddr{
 					Ip:   ip,
 					Port: strconv.Itoa(model.CommonPortMap[plugin]),
+					Plugin: plugin,
 				})
 			}
 		}
@@ -103,6 +105,8 @@ func check(addr IpAddr) (bool, IpAddr) {
 	}
 	return alive, addr
 }
+
+
 
 func SaveAddr(alive bool, addr IpAddr) {
 	if alive {

@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 func ValidIp(ip string) bool {
@@ -129,7 +130,7 @@ func MakeTaskHash(k string) string {
 
 func CheckTaskHash(hash string) bool {
 	_, ok := model.SuccessHash[hash]
-	log.Debugf("Success: %#v\n", model.SuccessHash)
+	//log.Debugf("Success: %#v\n", model.SuccessHash)
 	return ok
 }
 
@@ -137,4 +138,25 @@ func SetTaskHash(hash string) {
 	model.Mutex.Lock()
 	model.SuccessHash[hash] = true
 	model.Mutex.Unlock()
+}
+
+//当Mysql或者redis空密码的时候，任何密码都正确，会导致密码刷屏
+var ResultMap = struct{
+	sync.RWMutex
+	m map[string]string
+}{m: make(map[string]string)}
+
+func SetResultMap(r model.CrackTaskResult) {
+	ResultMap.Lock()
+	ResultMap.m[fmt.Sprintf("%s://%s:%s", r.CrackTask.CrackPlugin, r.CrackTask.Ip, r.CrackTask.Port)] = r.Result
+	ResultMap.Unlock()
+}
+
+func ReadResultMap() {
+	ResultMap.RLock()
+	n := ResultMap.m
+	ResultMap.RUnlock()
+	for k, v := range n{
+		fmt.Println(k, v)
+	}
 }

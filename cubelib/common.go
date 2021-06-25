@@ -35,7 +35,7 @@ func ParseService(str string) (service model.Service, err error) {
 		return service, fmt.Errorf("invalid target: %s (eg: ssh://192.168.1.1:22)", str)
 	}
 
-	service.Schema = strings.ToUpper(a[0])
+	service.Schema = a[0]
 	service.Ip = a[1]
 	if !ValidIp(service.Ip) {
 		return service, fmt.Errorf("invalid ip: %s", service.Ip)
@@ -172,7 +172,7 @@ func ReadResultMap() {
 	n := ResultMap.m
 	ResultMap.RUnlock()
 	for k, v := range n{
-		log.Info(k, v)
+		log.Infof("[*]: %s %v", k, v)
 	}
 }
 

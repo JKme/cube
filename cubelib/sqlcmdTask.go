@@ -24,7 +24,7 @@ func StartSqlcmdTask(opt *model.SqlcmdOptions, globalopts *model.GlobalOptions) 
 
 	_, key := Plugins.SqlcmdFuncMap[s.Schema]
 	if !key {
-		log.Errorf("Available Plugins: %s", strings.Join(Plugins.SqlcmdKeys, ","))
+		log.Errorf("%s plugin not found, available plugins: %s", s.Schema, strings.Join(Plugins.SqlcmdKeys, ","))
 	}
 
 	task := model.SqlcmdTask{Ip: s.Ip, Port: s.Port, User: opt.User, Password: opt.Password, SqlcmdPlugin: s.Schema, Query: opt.Query}

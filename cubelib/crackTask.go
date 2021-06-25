@@ -59,11 +59,6 @@ func genCrackTasks(AliveIPS []util.IpAddr, auths []model.Auth) (tasks []model.Cr
 	return tasks
 }
 
-func processArgs(opt *model.CrackOptions) ([]string, error) {
-
-	return nil, nil
-}
-
 func saveCrackReport(taskResult model.CrackTaskResult) {
 
 	if len(taskResult.Result) > 0 {
@@ -180,7 +175,7 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 	}
 
 	optPlugins = genPlugins(opt.CrackPlugin)
-	log.Info(optPlugins)
+	log.Infof("Loading plugin: %s",strings.Join(optPlugins, ","))
 	ips, _ = util.ParseIP(opt.Ip, opt.IpFile)
 
 	AliveIPS := util.CheckAlive(ctx, num, delay, ips, optPlugins, opt.Port)
@@ -209,7 +204,7 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 	//wg.Wait()
 	waitTimeout(&wg, model.ThreadTimeout)
 	ReadResultMap()
-	fmt.Println(strings.Repeat("=", 50))
+	fmt.Println(strings.Repeat(">", 50))
 	End := time.Now().Format("2006-01-02 15:04:05")
 	fmt.Printf("Finished:%s  Cost:%s", End, time.Since(t1))
 }

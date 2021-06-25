@@ -51,13 +51,13 @@ https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-context/
 
 - [ ] FTP弱口令
 - [ ] SMB弱口令
-- [ ] REDIS未授权
+- [x] REDIS未授权
 
 ZOOKEEPER未授权
 MS17010
 
 - [x] 增加内置词典
-- [ ] 增加输出到文件
+- [ ] 增加输出CSV
 - [x] log的输出带颜色
 - [x] 增加请求间隔延迟 --delay 
 - [ ] probe的时候做一个大的分类， POC对应ms17010, INFO对应信息收集， ALL表示全部

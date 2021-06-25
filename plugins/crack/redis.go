@@ -16,8 +16,6 @@ func RedisCrack(task model.CrackTask) (result model.CrackTaskResult) {
 	if err != nil {
 		return
 	}
-	log.Debugf("Password: %s", task.Auth.Password)
-
 	config, err := getConfig(conn)
 	if err != nil {
 		return

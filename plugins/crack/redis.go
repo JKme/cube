@@ -1,7 +1,6 @@
 package crack
 
 import (
-	"cube/log"
 	"cube/model"
 	"cube/util"
 	"fmt"
@@ -33,9 +32,6 @@ func RedisCrack(task model.CrackTask) (result model.CrackTaskResult) {
 		response := string(buf[0:count])
 		if strings.Contains(response, "+OK") {
 			config, _ := getConfig(conn)
-			log.Debugf("Config: %v", config)
-			//result.Result = util.Green(fmt.Sprintf("Password: %s \t Version: %v ", task.Auth.Password, config))
-
 			result.Result = util.Green(fmt.Sprintf("Password: %s \t Version=%s  OS=%s", task.Auth.Password, config[0], config[1]))
 		}
 	}

@@ -7,6 +7,7 @@ import (
 	"cube/model"
 	"fmt"
 	"io"
+	"net"
 	"os"
 	"regexp"
 	"strconv"
@@ -99,6 +100,20 @@ func SameStringSlice(x, y []string) bool {
 	return len(diff) == 0
 }
 
+func RemoveRepByMap(slc []string) []string {
+	result := []string{}
+	tempMap := map[string]byte{}  // 存放不重复主键
+	for _, e := range slc{
+		l := len(tempMap)
+		tempMap[e] = 0
+		if len(tempMap) != l{  // 加入map后，map长度变化，则元素不重复
+			result = append(result, e)
+		}
+	}
+	return result
+}
+
+
 func Subset(first, second []string) bool {
 	set := make(map[string]int)
 	for _, value := range second {
@@ -157,6 +172,17 @@ func ReadResultMap() {
 	n := ResultMap.m
 	ResultMap.RUnlock()
 	for k, v := range n{
-		fmt.Println(k, v)
+		log.Info(k, v)
 	}
+}
+
+func CheckAlive(task model.CrackTask) bool {
+	alive := false
+	log.Debugf("Port connect check: %s:%s", task.Ip, task.Port)
+	_, err := net.DialTimeout("tcp", fmt.Sprintf("%v:%v", task.Ip, task.Port), model.ConnectTimeout)
+	if err == nil {
+		log.Infof("%s:%s Open", task.Ip, task.Port)
+		alive = true
+	}
+	return alive
 }

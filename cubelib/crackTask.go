@@ -7,7 +7,6 @@ import (
 	Plugins "cube/plugins"
 	"cube/util"
 	"fmt"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -37,11 +36,11 @@ func loadDefaultDict(p string) map[string][]model.Auth {
 func genDefaultTasks(AliveIPS []util.IpAddr) (tasks []model.CrackTask) {
 	tasks = make([]model.CrackTask, 0)
 	for _, addr := range AliveIPS {
-			mapAuthSlice := loadDefaultDict(addr.Plugin)
-			authSlice := mapAuthSlice[addr.Plugin]
-			for _, auth := range authSlice {
-				s := model.CrackTask{Ip: addr.Ip, Port:addr.Port, Auth: auth, CrackPlugin: addr.Plugin}
-				tasks = append(tasks, s)
+		mapAuthSlice := loadDefaultDict(addr.Plugin)
+		authSlice := mapAuthSlice[addr.Plugin]
+		for _, auth := range authSlice {
+			s := model.CrackTask{Ip: addr.Ip, Port: addr.Port, Auth: auth, CrackPlugin: addr.Plugin}
+			tasks = append(tasks, s)
 		}
 
 	}
@@ -52,8 +51,8 @@ func genCrackTasks(AliveIPS []util.IpAddr, auths []model.Auth) (tasks []model.Cr
 	tasks = make([]model.CrackTask, 0)
 	for _, addr := range AliveIPS {
 		for _, auth := range auths {
-				s := model.CrackTask{Ip: addr.Ip, Port: addr.Port, Auth: auth, CrackPlugin: addr.Plugin}
-				tasks = append(tasks, s)
+			s := model.CrackTask{Ip: addr.Ip, Port: addr.Port, Auth: auth, CrackPlugin: addr.Plugin}
+			tasks = append(tasks, s)
 		}
 	}
 	return tasks
@@ -80,9 +79,9 @@ func runUnitTask(ctx context.Context, tasks chan model.CrackTask, wg *sync.WaitG
 			if !ok {
 				return
 			}
-			if task.Port == "" {
-				task.Port =  strconv.Itoa(model.CommonPortMap[task.CrackPlugin])
-			}
+			//if task.Port == "" {
+			//	task.Port =  strconv.Itoa(model.CommonPortMap[task.CrackPlugin])
+			//}
 			//alive := CheckAlive(task)
 			//if !alive {
 			//	wg.Done()
@@ -175,12 +174,12 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 	}
 
 	optPlugins = genPlugins(opt.CrackPlugin)
-	log.Infof("Loading plugin: %s",strings.Join(optPlugins, ","))
+	log.Infof("Loading plugin: %s", strings.Join(optPlugins, ","))
 	ips, _ = util.ParseIP(opt.Ip, opt.IpFile)
 
 	AliveIPS := util.CheckAlive(ctx, num, delay, ips, optPlugins, opt.Port)
 	//AliveIPS = RemoveRepByMap(AliveIPS)  // 去重IP
-	log.Debug("Receive alive IP: ", AliveIPS)
+	log.Debugf("Receive alive IP: %s", AliveIPS)
 
 	if len(opt.User+opt.UserFile+opt.Pass+opt.PassFile) > 0 {
 		auths = genAuths(opt)
@@ -188,7 +187,7 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 	} else {
 		tasks = genDefaultTasks(AliveIPS)
 	}
-	log.Debugf("Receive %d task", len(tasks))
+	log.Debugf("Receive %d tasks", len(tasks))
 
 	var wg sync.WaitGroup
 	taskChan := make(chan model.CrackTask, num*2)
@@ -204,7 +203,5 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 	//wg.Wait()
 	waitTimeout(&wg, model.ThreadTimeout)
 	ReadResultMap()
-	fmt.Println(strings.Repeat(">", 50))
-	End := time.Now().Format("2006-01-02 15:04:05")
-	fmt.Printf("Finished:%s  Cost:%s", End, time.Since(t1))
+	getFinishTime(t1)
 }

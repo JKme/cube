@@ -1,12 +1,11 @@
 package cubelib
 
 import (
+	"context"
 	"cube/log"
 	"cube/model"
 	Plugins "cube/plugins"
 	"cube/util"
-	"strconv"
-
 	//Plugins "cube/plugins"
 	"fmt"
 	"strings"
@@ -21,16 +20,16 @@ func ValidPlugin(plugin string) ([]string, error) {
 	}
 
 	if plugin == "ALL" {
-		pluginList = Plugins.ProbeKeys[1:]
+		pluginList = Plugins.ProbeKeys
 	}
 	return pluginList, nil
 }
 
-func GenerateTasks(ipList []string, port string, scanPlugin []string) (tasks []model.ProbeTask) {
+func generateTasks(AliveIPS []util.IpAddr, scanPlugin []string) (tasks []model.ProbeTask) {
 	tasks = make([]model.ProbeTask, 0)
 	for _, plugin := range scanPlugin {
-		for _, ip := range ipList {
-			service := model.ProbeTask{Ip: ip, Port: port, ScanPlugin: plugin}
+		for _, aliveAddr := range AliveIPS {
+			service := model.ProbeTask{Ip: aliveAddr.Ip, Port: aliveAddr.Port, ScanPlugin: plugin}
 			tasks = append(tasks, service)
 		}
 	}
@@ -39,46 +38,36 @@ func GenerateTasks(ipList []string, port string, scanPlugin []string) (tasks []m
 
 func saveReport(taskResult model.ProbeTaskResult) {
 	if len(taskResult.Result) > 0 {
-		s := fmt.Sprintf("[*]: %s\n[*]: %s:%d\n", taskResult.ProbeTask.ScanPlugin, taskResult.ProbeTask.Ip, taskResult.ProbeTask.Port)
+		s := fmt.Sprintf("[*]: %s\n[*]: %s:%s\n", taskResult.ProbeTask.ScanPlugin, taskResult.ProbeTask.Ip, taskResult.ProbeTask.Port)
 		s1 := fmt.Sprintf("[*]: %s", taskResult.Result)
-		fmt.Println(s + s1)
+		log.Info(s + s1)
 	}
 }
 
-func executeTask(taskChan chan model.ProbeTask, wg *sync.WaitGroup) {
-	defer wg.Done()
-	for task := range taskChan {
-		if len(task.Port) == 0 {
-			//没有设置端口使用服务的默认端口
-			task.Port = strconv.Itoa(model.CommonPortMap[task.ScanPlugin])
+func executeProbeTask(ctx context.Context, taskChan chan model.ProbeTask, wg *sync.WaitGroup, delay int) {
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case task, ok := <-taskChan:
+			if !ok {
+				return
+			}
+
+			log.Debugf("Checking %s Password: %s://%s:%s", task.ScanPlugin, task.ScanPlugin, task.Ip, task.Port)
+			fn := Plugins.ProbeFuncMap[task.ScanPlugin]
+			r := fn(task)
+			saveReport(r)
+
+			select {
+			case <-ctx.Done():
+			case <-time.After(time.Duration(delay) * time.Second):
+			}
+			wg.Done()
+
 		}
-		fn := Plugins.ProbeFuncMap[task.ScanPlugin]
-		saveReport(fn(task))
+
 	}
-
-}
-
-func RunTasks(tasks []model.ProbeTask, scanNum int, timeout int) {
-	tasksChan := make(chan model.ProbeTask, scanNum*2)
-	var wg sync.WaitGroup
-
-	//消费者
-	wg.Add(scanNum)
-	for i := 0; i < scanNum; i++ {
-		go executeTask(tasksChan, &wg)
-	}
-
-	//生产者
-	//go func() {
-	//
-	//}()
-
-	for _, task := range tasks {
-		tasksChan <- task
-	}
-	close(tasksChan)
-
-	waitTimeout(&wg, time.Duration(timeout)*time.Second)
 }
 
 func waitTimeout(wg *sync.WaitGroup, timeout time.Duration) bool {
@@ -96,6 +85,17 @@ func waitTimeout(wg *sync.WaitGroup, timeout time.Duration) bool {
 }
 
 func StartProbeTask(opt *model.ProbeOptions, globalopts *model.GlobalOptions) {
+	var (
+		threadNum int
+		delay     int
+	)
+	delay = globalopts.Delay
+	threadNum = globalopts.Threads
+	t1 := time.Now()
+	if delay > 0 {
+		threadNum = 1
+	}
+
 	ips, err := util.ParseIP(opt.Target, opt.TargetFile)
 	if err != nil {
 		log.Error(err)
@@ -108,6 +108,26 @@ func StartProbeTask(opt *model.ProbeOptions, globalopts *model.GlobalOptions) {
 		log.Errorf("plugins not found: %s", pluginList)
 	}
 
-	tasks := GenerateTasks(ips, opt.Port, pluginList)
-	RunTasks(tasks, globalopts.Threads, globalopts.Timeout)
+	ctx := context.Background()
+
+	AliveIPS := util.CheckAlive(ctx, threadNum, delay, ips, pluginList, opt.Port)
+
+	tasks := generateTasks(AliveIPS, pluginList)
+
+	taskChan := make(chan model.ProbeTask, threadNum*2)
+	var wg sync.WaitGroup
+
+	//消费者
+	for i := 0; i < threadNum; i++ {
+		go executeProbeTask(ctx, taskChan, &wg, delay)
+	}
+
+	for _, task := range tasks {
+		wg.Add(1)
+		taskChan <- task
+	}
+
+	waitTimeout(&wg, model.ThreadTimeout)
+	getFinishTime(t1)
+
 }

@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"context"
 	"cube/log"
 	"cube/model"
 	"fmt"
@@ -14,15 +13,9 @@ var rootCmd = &cobra.Command{
 	SilenceUsage: true,
 }
 
-var mainContext context.Context
-
 // Execute is the main cobra method
 
 func Execute() {
-	var cancel context.CancelFunc
-	mainContext, cancel = context.WithCancel(context.Background())
-	defer cancel()
-
 	//signalChan := make(chan os.Signal, 1)
 	//signal.Notify(signalChan, os.Interrupt)
 	//defer func() {
@@ -84,6 +77,6 @@ func init() {
 	rootCmd.PersistentFlags().IntP("threads", "n", 30, "Number of concurrent threads")
 	rootCmd.PersistentFlags().IntP("timeout", "", 5, "Timeout each thread waits")
 	rootCmd.PersistentFlags().IntP("delay", "", 0, "delay for request")
-	rootCmd.PersistentFlags().StringP("output", "o", "", "Output file to write results to (defaults to stdout)")
+	//rootCmd.PersistentFlags().StringP("output", "o", "", "Output file to write results to (defaults to stdout)")
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Verbose output (errors)")
 }

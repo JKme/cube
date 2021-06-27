@@ -7,7 +7,7 @@ import (
 )
 
 func TestName(t *testing.T) {
-	task := model.ProbeTask{Ip: "172.20.40.100", Port: "135", ScanPlugin: "OXID"}
+	task := model.ProbeTask{Ip: " 192.168.2.226", Port: "135", ScanPlugin: "oxid"}
 	r := OxidProbe(task)
 	//fmt.Println(reflect.TypeOf(r.Result))
 	fmt.Println(r.Result)

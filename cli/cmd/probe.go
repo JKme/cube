@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"cube/cubelib"
+	"cube/log"
 
 	//"cube/log"
 	"cube/model"
@@ -57,13 +58,9 @@ func init() {
 	probeCli.Flags().StringP("ip", "i", "", "ip range to probe for(e.g. 192.168.1.1/24)")
 	probeCli.Flags().StringP("ip-file", "", "", "File to probe for(e.g. ip.txt)")
 
-	//if err := probeCli.MarkPersistentFlagRequired("plugin"); err != nil {
-	//	log.Fatalf("on marking flag as required: %v", err)
-	//	//log.Fatalf("error on marking flag as required: %v", err)
-	//}
+	if err := crackCli.MarkFlagRequired("plugin"); err != nil {
+		log.Errorf("error on marking flag as required: %v", err)
+	}
 
-	//probeCli.PersistentPreRun = func(cmd *cobra.Command, args []string) {
-	//
-	//}
 	rootCmd.AddCommand(probeCli)
 }

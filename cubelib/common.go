@@ -7,12 +7,12 @@ import (
 	"cube/model"
 	"fmt"
 	"io"
-	"net"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 func ValidIp(ip string) bool {
@@ -102,17 +102,16 @@ func SameStringSlice(x, y []string) bool {
 
 func RemoveRepByMap(slc []string) []string {
 	result := []string{}
-	tempMap := map[string]byte{}  // 存放不重复主键
-	for _, e := range slc{
+	tempMap := map[string]byte{} // 存放不重复主键
+	for _, e := range slc {
 		l := len(tempMap)
 		tempMap[e] = 0
-		if len(tempMap) != l{  // 加入map后，map长度变化，则元素不重复
+		if len(tempMap) != l { // 加入map后，map长度变化，则元素不重复
 			result = append(result, e)
 		}
 	}
 	return result
 }
-
 
 func Subset(first, second []string) bool {
 	set := make(map[string]int)
@@ -155,8 +154,8 @@ func SetTaskHash(hash string) {
 	model.Mutex.Unlock()
 }
 
-//当Mysql或者redis空密码的时候，任何密码都正确，会导致密码刷屏
-var ResultMap = struct{
+// ResultMap 当Mysql或者redis空密码的时候，任何密码都正确，会导致密码刷屏
+var ResultMap = struct {
 	sync.RWMutex
 	m map[string]string
 }{m: make(map[string]string)}
@@ -171,18 +170,27 @@ func ReadResultMap() {
 	ResultMap.RLock()
 	n := ResultMap.m
 	ResultMap.RUnlock()
-	for k, v := range n{
+	for k, v := range n {
 		log.Infof("[*]: %s %v", k, v)
 	}
 }
 
-func CheckAlive(task model.CrackTask) bool {
-	alive := false
-	log.Debugf("Port connect check: %s:%s", task.Ip, task.Port)
-	_, err := net.DialTimeout("tcp", fmt.Sprintf("%v:%v", task.Ip, task.Port), model.ConnectTimeout)
-	if err == nil {
-		log.Infof("%s:%s Open", task.Ip, task.Port)
-		alive = true
+func getFinishTime(t1 time.Time) {
+
+	fmt.Println(strings.Repeat(">", 50))
+	End := time.Now().Format("2006-01-02 15:04:05")
+	fmt.Printf("Finished:%s  Cost:%s", End, time.Since(t1))
+
+}
+
+var mu *sync.RWMutex
+
+func WriteToFile(f *os.File, output string) error {
+	mu.Lock()
+	_, err := f.WriteString(fmt.Sprintf("%s\n", output))
+	mu.Unlock()
+	if err != nil {
+		return fmt.Errorf("[!] Unable to write to file %w", err)
 	}
-	return alive
+	return nil
 }

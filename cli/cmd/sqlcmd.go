@@ -61,13 +61,5 @@ func init() {
 	sqlCli.Flags().StringP("password", "p", "", "login password")
 	sqlCli.Flags().StringP("query", "e", "", "string to query or exec")
 
-	//if err := probeCmd.MarkPersistentFlagRequired("plugin"); err != nil {
-	//	log.Fatalf("on marking flag as required: %v", err)
-	//	//log.Fatalf("error on marking flag as required: %v", err)
-	//}
-
-	//probeCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
-	//
-	//}
 	rootCmd.AddCommand(sqlCli)
 }

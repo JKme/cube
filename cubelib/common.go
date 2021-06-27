@@ -101,7 +101,7 @@ func SameStringSlice(x, y []string) bool {
 }
 
 func RemoveRepByMap(slc []string) []string {
-	result := []string{}
+	var result []string
 	tempMap := map[string]byte{} // 存放不重复主键
 	for _, e := range slc {
 		l := len(tempMap)

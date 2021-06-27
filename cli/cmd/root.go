@@ -16,37 +16,12 @@ var rootCmd = &cobra.Command{
 // Execute is the main cobra method
 
 func Execute() {
-	//signalChan := make(chan os.Signal, 1)
-	//signal.Notify(signalChan, os.Interrupt)
-	//defer func() {
-	//	signal.Stop(signalChan)
-	//	cancel()
-	//}()
-	//go func() {
-	//	select {
-	//	case <-signalChan:
-	//		// caught CTRL+C
-	//		fmt.Println("\n[!] Keyboard interrupt detected, terminating.")
-	//		cancel()
-	//	case <-mainContext.Done():
-	//	}
-	//}()
 
 	if err := rootCmd.Execute(); err != nil {
-		// Leaving this in results in the same error appearing twice
-		// Once before and once after the help output. Not sure if
-		// this is going to be needed to output other errors that
-		// aren't automatically outputted.
-		// fmt.Println(err)
+
 		os.Exit(1)
 	}
 }
-
-//func configureGlobalOptions() {
-//	if err := rootCmd.MarkPersistentFlagRequired("plugin"); err != nil {
-//		log.Fatalf("error on marking flag as required: %v", err)
-//	}
-//}
 
 func parseGlobalOptions() (*model.GlobalOptions, error) {
 	globalopts := model.NewGlobalOptions()

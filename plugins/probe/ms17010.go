@@ -2,7 +2,6 @@ package probe
 
 import (
 	"cube/model"
-	"cube/util"
 	"encoding/binary"
 	"encoding/hex"
 	"errors"
@@ -116,7 +115,7 @@ func Ms17010Probe(task model.ProbeTask) (result model.ProbeTaskResult) {
 		//fmt.Printf("%s\tMS17-010\t(%s)\n", ip, os)
 		//if runtime.GOOS=="windows" {fmt.Printf("%s\tMS17-010\t(%s)\n", ip, os)
 		//} else{fmt.Printf("\033[33m%s\tMS17-010\t(%s)\033[0m\n", ip, os)}
-		r := fmt.Sprintf(util.Red("[+] %s\tMS17-010\t(%s)", task.Ip, os))
+		r := fmt.Sprintf("[+] %s\tMS17-010 Vulnerable\t(%s)", task.Ip, os)
 		result.Result = r
 		// detect present of DOUBLEPULSAR SMB implant
 		trans2SessionSetupRequest[28] = treeID[0]

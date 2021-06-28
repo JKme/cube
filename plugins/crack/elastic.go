@@ -2,7 +2,6 @@ package crack
 
 import (
 	"cube/model"
-	"cube/util"
 	"fmt"
 	"gopkg.in/olivere/elastic.v3"
 )
@@ -15,7 +14,7 @@ func ElasticCrack(task model.CrackTask) (result model.CrackTaskResult) {
 	if err == nil {
 		_, _, err = client.Ping(fmt.Sprintf("http://%v:%v", task.Ip, task.Port)).Do()
 		if err == nil {
-			result.Result = util.Green(fmt.Sprintf("User: %s\tPassword: %s \t", task.Auth.User, task.Auth.Password))
+			result.Result = fmt.Sprintf("User: %s\tPassword: %s \t", task.Auth.User, task.Auth.Password)
 		}
 	}
 	return result

@@ -2,7 +2,6 @@ package crack
 
 import (
 	"cube/model"
-	"cube/util"
 	"database/sql"
 	"fmt"
 	_ "github.com/denisenkom/go-mssqldb"
@@ -18,7 +17,7 @@ func MssqlCrack(task model.CrackTask) (result model.CrackTaskResult) {
 		defer db.Close()
 		err = db.Ping()
 		if err == nil {
-			result.Result = util.Green(fmt.Sprintf("User: %s\tPassword: %s \t", task.Auth.User, task.Auth.Password))
+			result.Result = fmt.Sprintf("User: %s\tPassword: %s \t", task.Auth.User, task.Auth.Password)
 		}
 	}
 

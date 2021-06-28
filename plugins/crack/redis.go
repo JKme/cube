@@ -2,7 +2,6 @@ package crack
 
 import (
 	"cube/model"
-	"cube/util"
 	"fmt"
 	"net"
 	"regexp"
@@ -21,7 +20,7 @@ func RedisCrack(task model.CrackTask) (result model.CrackTaskResult) {
 	}
 
 	if len(config) > 0 {
-		result.Result = util.Green(fmt.Sprintf("Password: %s \t Version=%s  OS=%s", task.Auth.Password, config[0], config[1]))
+		result.Result = fmt.Sprintf("Password: %s \t Version=%s  OS=%s", task.Auth.Password, config[0], config[1])
 	} else {
 		_, err = conn.Write([]byte(fmt.Sprintf("AUTH %s\r\n", task.Auth.Password)))
 		if err != nil {
@@ -32,7 +31,7 @@ func RedisCrack(task model.CrackTask) (result model.CrackTaskResult) {
 		response := string(buf[0:count])
 		if strings.Contains(response, "+OK") {
 			config, _ := getConfig(conn)
-			result.Result = util.Green(fmt.Sprintf("Password: %s \t Version=%s  OS=%s", task.Auth.Password, config[0], config[1]))
+			result.Result = fmt.Sprintf("Password: %s \t Version=%s  OS=%s", task.Auth.Password, config[0], config[1])
 		}
 	}
 	return result

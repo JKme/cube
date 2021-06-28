@@ -10,8 +10,6 @@ const (
 	ThreadTimeout  = 5 * time.Second
 )
 
-
-
 var (
 	CommonPortMap map[string]int
 	SuccessHash   map[string]bool
@@ -19,7 +17,7 @@ var (
 )
 
 var UserDict = map[string][]string{
-	"ftp":        {"ftp", "admin", "www", "web", "root", "db", "wwwroot", "data"},
+	"ftp":        {"anonymous", "ftp", "admin", "www", "web", "root", "db", "wwwroot", "data"},
 	"mysql":      {"root", "mysql"},
 	"mssql":      {"sa", "sql"},
 	"smb":        {"administrator", "admin", "guest"},
@@ -38,8 +36,10 @@ func init() {
 	CommonPortMap["ssh"] = 22
 	CommonPortMap["oxid"] = 135
 	CommonPortMap["smb"] = 445
+	CommonPortMap["ms17010"] = 445
 	CommonPortMap["mssql"] = 1433
 	CommonPortMap["mysql"] = 3306
 	CommonPortMap["redis"] = 6379
+	CommonPortMap["mongo"] = 27017
 
 }

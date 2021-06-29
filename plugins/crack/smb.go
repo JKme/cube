@@ -8,6 +8,7 @@ import (
 )
 
 func SmbCrack(task model.CrackTask) (result model.CrackTaskResult) {
+	result = model.CrackTaskResult{CrackTask: task, Result: "", Err: nil}
 	Port, _ := strconv.Atoi(task.Port)
 	options := smb.Options{
 		Host:        task.Ip,

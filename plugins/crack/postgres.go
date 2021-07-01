@@ -8,6 +8,7 @@ import (
 )
 
 func PostgresCrack(task model.CrackTask) (result model.CrackTaskResult) {
+	result = model.CrackTaskResult{CrackTask: task, Result: "", Err: nil}
 	dataSourceName := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=%v", task.Auth.User,
 		task.Auth.Password, task.Ip, task.Port, "postgres", "disable")
 	db, err := sql.Open("postgres", dataSourceName)

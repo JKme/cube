@@ -88,3 +88,17 @@ func TestElasticCrack(t *testing.T) {
 	r := ElasticCrack(task)
 	fmt.Println(r)
 }
+
+func TestPhpmyadminCrack(t *testing.T) {
+	task := model.CrackTask{
+		Ip:   "http://127.0.0.1:8081/",
+		Port: "",
+		Auth: model.Auth{
+			User:     "root",
+			Password: "root1",
+		},
+		CrackPlugin: "phpmyadmin",
+	}
+	r := PhpmyadminCrack(task)
+	fmt.Println(r)
+}

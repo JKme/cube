@@ -54,6 +54,8 @@ func init() {
 		Use:   "sqlcmd",
 		Short: "exec sql query or cmd",
 		Run:   runSqlcmd,
+		Example: `cube sqlcmd -x ssh://192.168.0.0:2200 -uroot -proot -e "whoami"
+		`,
 	}
 
 	sqlCli.Flags().StringP("service", "x", "", "ip (e.g. ssh://192.168.0.0:2200 or ssh://127.0.0.1))")

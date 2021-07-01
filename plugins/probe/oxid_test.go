@@ -7,8 +7,20 @@ import (
 )
 
 func TestName(t *testing.T) {
-	task := model.ProbeTask{Ip: " 192.168.2.226", Port: "135", ScanPlugin: "oxid"}
+	task := model.ProbeTask{Ip: "172.20.40.108", Port: "135", ScanPlugin: "oxid"}
 	r := OxidProbe(task)
+	//fmt.Println(reflect.TypeOf(r.Result))
+	fmt.Println(r.Result)
+
+	//for _, v := range r.Result {
+	//	fmt.Println( v)
+	//	//r1.append
+	//}
+}
+
+func TestZookeeperProbe(t *testing.T) {
+	task := model.ProbeTask{Ip: "172.20.40.108", Port: "2181", ScanPlugin: "zookeeper"}
+	r := ZookeeperProbe(task)
 	//fmt.Println(reflect.TypeOf(r.Result))
 	fmt.Println(r.Result)
 

@@ -4,8 +4,10 @@ import (
 	"cube/cubelib"
 	"cube/log"
 	"cube/model"
+	Plugins "cube/plugins"
 	"fmt"
 	"github.com/spf13/cobra"
+	"strings"
 )
 
 var crackCli *cobra.Command
@@ -88,13 +90,13 @@ cube crack -u root --pass-file pass.txt -i 192.168.1.1/24 -x ssh,mysql
 	}
 
 	crackCli.Flags().StringP("ip", "i", "", "ip (e.g. 192.168.2.1")
-	crackCli.Flags().StringP("ip-file", "", "", "login account")
-	crackCli.Flags().StringP("user", "u", "", "login password")
-	crackCli.Flags().StringP("user-file", "", "", "string to query or exec")
+	crackCli.Flags().StringP("ip-file", "", "", "ip file")
+	crackCli.Flags().StringP("user", "u", "", "login user")
+	crackCli.Flags().StringP("user-file", "", "", "login user file")
 	crackCli.Flags().StringP("pass", "p", "", "login password")
-	crackCli.Flags().StringP("pass-file", "", "", "string to query or exec")
-	crackCli.Flags().StringP("port", "", "", "login password")
-	crackCli.Flags().StringP("plugin", "x", "", "crack plugin")
+	crackCli.Flags().StringP("pass-file", "", "", "login password file")
+	crackCli.Flags().StringP("port", "", "", "if the service is on a different default port, define it here")
+	crackCli.Flags().StringP("plugin", "x", "", fmt.Sprintf("avaliable plugin: %s", strings.Join(Plugins.CrackKeys, ",")))
 	if err := crackCli.MarkFlagRequired("plugin"); err != nil {
 		log.Errorf("error on marking flag as required: %v", err)
 	}

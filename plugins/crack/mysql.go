@@ -2,7 +2,6 @@ package crack
 
 import (
 	"cube/model"
-	"cube/util"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
@@ -29,7 +28,7 @@ func MysqlCrack(task model.CrackTask) (result model.CrackTaskResult) {
 					s = s + fmt.Sprintf("OS=%s Version=%s Machine=%s File_Priv=%s\t", strings.Split(cols[1], "-")[0], cols[0], cols[2], cols[3])
 
 				}
-				result.Result = util.Green(fmt.Sprintf("User: %s \tPassword: %s \t %s", task.Auth.User, task.Auth.Password, s))
+				result.Result = fmt.Sprintf("User: %s \tPassword: %s \t %s", task.Auth.User, task.Auth.Password, s)
 			}
 		}
 		db.Close()

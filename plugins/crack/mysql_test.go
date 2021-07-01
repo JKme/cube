@@ -95,7 +95,7 @@ func TestPhpmyadminCrack(t *testing.T) {
 		Port: "",
 		Auth: model.Auth{
 			User:     "root",
-			Password: "root1",
+			Password: "root",
 		},
 		CrackPlugin: "phpmyadmin",
 	}

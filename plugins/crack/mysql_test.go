@@ -8,7 +8,7 @@ import (
 
 func TestMysqlCrack(t *testing.T) {
 	task := model.CrackTask{
-		Ip:   "172.20.41.254",
+		Ip:   "127.0.0.1",
 		Port: "3306",
 		Auth: model.Auth{
 			User:     "root",
@@ -45,4 +45,46 @@ func TestSlice(t *testing.T) {
 		"mongodb":    {"root", "admin"},
 	}
 	fmt.Println(UserDict["aa"])
+}
+
+func TestFtpCrack(t *testing.T) {
+	task := model.CrackTask{
+		Ip:   "127.0.0.1",
+		Port: "21",
+		Auth: model.Auth{
+			User:     "root",
+			Password: "root",
+		},
+		CrackPlugin: "ftp",
+	}
+	r := FtpCrack(task)
+	fmt.Println(r)
+}
+
+func TestSmbCrack(t *testing.T) {
+	task := model.CrackTask{
+		Ip:   "172.20.7.20",
+		Port: "445",
+		Auth: model.Auth{
+			User:     "Guest",
+			Password: "",
+		},
+		CrackPlugin: "smb",
+	}
+	r := SmbCrack(task)
+	fmt.Println(r)
+}
+
+func TestElasticCrack(t *testing.T) {
+	task := model.CrackTask{
+		Ip:   "192.168.249.240",
+		Port: "9200",
+		Auth: model.Auth{
+			User:     "",
+			Password: "",
+		},
+		CrackPlugin: "elastic",
+	}
+	r := ElasticCrack(task)
+	fmt.Println(r)
 }

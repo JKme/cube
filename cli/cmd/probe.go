@@ -51,6 +51,10 @@ func init() {
 		Use:   "probe",
 		Short: "collect pentest environment information",
 		Run:   runProbe,
+		Example: `cube probe -i 192.168.1.1 -x oxid
+cube probe -i 192.168.1.1 -x oxid,zookeeper,ms17010
+cube probe -i 192.168.1.1/24 -x ALL
+		`,
 	}
 
 	probeCli.Flags().StringP("port", "p", "", "target port")

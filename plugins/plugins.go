@@ -29,6 +29,7 @@ func init() {
 	ProbeFuncMap["oxid"] = probe.OxidProbe
 	ProbeFuncMap["smb"] = probe.SmbProbe
 	ProbeFuncMap["ms17010"] = probe.Ms17010Probe
+	ProbeFuncMap["zookeeper"] = probe.ZookeeperProbe
 	ProbeKeys = append(ProbeKeys, "ALL")
 	for k := range ProbeFuncMap {
 		ProbeKeys = append(ProbeKeys, k)
@@ -47,6 +48,8 @@ func init() {
 	CrackFuncMap["ftp"] = crack.FtpCrack
 	CrackFuncMap["smb"] = crack.SmbCrack
 	CrackFuncMap["mongo"] = crack.MongoCrack
+	CrackFuncMap["elastic"] = crack.ElasticCrack
+	CrackFuncMap["postgres"] = crack.PostgresCrack
 	CrackFuncMap["mssql"] = crack.MssqlCrack
 
 	for k := range CrackFuncMap {

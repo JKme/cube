@@ -22,13 +22,12 @@ func PhpmyadminCrack(task model.CrackTask) (result model.CrackTaskResult) {
 	resp, err := clt.Do(req)
 	if err != nil {
 		panic(err)
-		return
 	}
-	resp.Body.Close()
 
-	data := make([]byte, 40250)
+	data := make([]byte, 20250)
 	c := bufio.NewReader(resp.Body)
 	c.Read(data)
+	resp.Body.Close()
 	//content, _ := ioutil.ReadAll(resp.Body)
 	r := regexp.MustCompile(`(?U)name="token" value="(.*)"`)
 	match := r.FindStringSubmatch(string(data))
@@ -57,6 +56,8 @@ func PhpmyadminCrack(task model.CrackTask) (result model.CrackTaskResult) {
 
 	//body := strings.NewReader(urlValues.Encode())
 	resp2, _ := crackClt.PostForm(task.Ip, urlValues)
+	//resp2, _ := crackClt.Post(task.Ip, urlValues)
+	defer resp2.Body.Close()
 	if resp2.StatusCode == 302 {
 		result.Result = fmt.Sprintf("Password: %s", task.Auth.Password)
 	}

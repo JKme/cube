@@ -74,3 +74,17 @@ func TestSmbCrack(t *testing.T) {
 	r := SmbCrack(task)
 	fmt.Println(r)
 }
+
+func TestElasticCrack(t *testing.T) {
+	task := model.CrackTask{
+		Ip:   "192.168.249.240",
+		Port: "9200",
+		Auth: model.Auth{
+			User:     "",
+			Password: "",
+		},
+		CrackPlugin: "elastic",
+	}
+	r := ElasticCrack(task)
+	fmt.Println(r)
+}

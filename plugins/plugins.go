@@ -51,6 +51,7 @@ func init() {
 	CrackFuncMap["elastic"] = crack.ElasticCrack
 	CrackFuncMap["postgres"] = crack.PostgresCrack
 	CrackFuncMap["mssql"] = crack.MssqlCrack
+	CrackFuncMap["phpmyadmin"] = crack.PhpmyadminCrack
 
 	for k := range CrackFuncMap {
 		CrackKeys = append(CrackKeys, k)

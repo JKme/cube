@@ -20,7 +20,7 @@ func ValidPlugin(plugin string) ([]string, error) {
 	}
 
 	if plugin == "ALL" {
-		pluginList = Plugins.ProbeKeys
+		pluginList = Plugins.ProbeKeys[1:]
 	}
 	return pluginList, nil
 }
@@ -40,7 +40,7 @@ func saveReport(taskResult model.ProbeTaskResult) {
 	if len(taskResult.Result) > 0 {
 		s := fmt.Sprintf("[*]: %s\n[*]: %s:%s\n", taskResult.ProbeTask.ScanPlugin, taskResult.ProbeTask.Ip, taskResult.ProbeTask.Port)
 		s1 := fmt.Sprintf("[*]: %s", taskResult.Result)
-		log.Info(s + s1)
+		log.Infof(s + s1)
 	}
 }
 
@@ -107,7 +107,7 @@ func StartProbeTask(opt *model.ProbeOptions, globalopts *model.GlobalOptions) {
 	if !Subset(pluginList, Plugins.ProbeKeys) {
 		log.Errorf("plugins not found: %s", pluginList)
 	}
-
+	log.Infof("Loading plugin: %s", strings.Join(pluginList, ","))
 	ctx := context.Background()
 
 	AliveIPS := util.CheckAlive(ctx, threadNum, delay, ips, pluginList, opt.Port)

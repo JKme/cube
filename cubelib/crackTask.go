@@ -162,6 +162,7 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 		tasks      []model.CrackTask
 		num        int
 		delay      int
+		AliveIPS   []util.IpAddr
 	)
 	ctx := context.Background()
 	t1 := time.Now()
@@ -173,13 +174,21 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 		num = globalopts.Threads
 	}
 
-	optPlugins = genPlugins(opt.CrackPlugin)
-	log.Infof("Loading plugin: %s", strings.Join(optPlugins, ","))
-	ips, _ = util.ParseIP(opt.Ip, opt.IpFile)
+	if opt.CrackPlugin == "phpmyadmin" {
+		AliveIPS = append(AliveIPS, util.IpAddr{
+			Ip:     opt.Ip,
+			Port:   "",
+			Plugin: opt.CrackPlugin,
+		})
+	} else {
+		optPlugins = genPlugins(opt.CrackPlugin)
+		log.Infof("Loading plugin: %s", strings.Join(optPlugins, ","))
+		ips, _ = util.ParseIP(opt.Ip, opt.IpFile)
 
-	AliveIPS := util.CheckAlive(ctx, num, delay, ips, optPlugins, opt.Port)
-	//AliveIPS = RemoveRepByMap(AliveIPS)  // 去重IP
-	log.Debugf("Receive alive IP: %s", AliveIPS)
+		AliveIPS = util.CheckAlive(ctx, num, delay, ips, optPlugins, opt.Port)
+		//AliveIPS = RemoveRepByMap(AliveIPS)  // 去重IP
+		log.Debugf("Receive alive IP: %s", AliveIPS)
+	}
 
 	if len(opt.User+opt.UserFile+opt.Pass+opt.PassFile) > 0 {
 		auths = genAuths(opt)

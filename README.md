@@ -69,7 +69,7 @@ https://github.com/checkymander/Sharp-SMBExec/blob/master/SharpInvoke-SMBExec/Pr
 - [ ] 变量名和函数名优化
 - [ ] SMB和OXID输出的中文乱码问题
 - [ ] **尝试改造为interface实现**
-
+httpx -title --follow-redirects --status-code -tech-detect --title -ports 8000,8080,8888
 ###参考
 * <https://github.com/shadow1ng/fscan>
 * <https://github.com/k8gege/LadonGo>

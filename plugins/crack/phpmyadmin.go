@@ -54,8 +54,14 @@ func PhpmyadminCrack(task model.CrackTask) (result model.CrackTaskResult) {
 	urlValues.Add("server", "1")
 	urlValues.Add("token", token)
 
-	//body := strings.NewReader(urlValues.Encode())
-	resp2, _ := crackClt.PostForm(task.Ip, urlValues)
+	body := strings.NewReader(urlValues.Encode())
+	req2, _ := http.NewRequest("POST", task.Ip, body)
+	req2.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1468.0 Safari/537.36")
+	req2.Header.Add("Connection", "close")
+	req2.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp2, _ := crackClt.Do(req2)
+	//resp2, _ := crackClt.PostForm(task.Ip, urlValues)
 	//resp2, _ := crackClt.Post(task.Ip, urlValues)
 	defer resp2.Body.Close()
 	if resp2.StatusCode == 302 {

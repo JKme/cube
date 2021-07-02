@@ -25,6 +25,7 @@ var UserDict = map[string][]string{
 	"ssh":        {"root", "admin"},
 	"mongodb":    {"root", "admin"},
 	"phpmyadmin": {"root"},
+	"httpbasic":  {"root", "admin", "tomcat", "test", "guest"}, //activemq、tomcat、nexus
 	"elastic":    {""},
 }
 

@@ -102,3 +102,17 @@ func TestPhpmyadminCrack(t *testing.T) {
 	r := PhpmyadminCrack(task)
 	fmt.Println(r)
 }
+
+func TestHttpBasicCrack(t *testing.T) {
+	task := model.CrackTask{
+		Ip:   "http://127.0.0.1:8080",
+		Port: "",
+		Auth: model.Auth{
+			User:     "root",
+			Password: "root",
+		},
+		CrackPlugin: "httpbasic",
+	}
+	r := HttpBasicCrack(task)
+	fmt.Println(r)
+}

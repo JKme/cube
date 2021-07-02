@@ -174,7 +174,7 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 		num = globalopts.Threads
 	}
 
-	if opt.CrackPlugin == "phpmyadmin" {
+	if SliceContain(opt.CrackPlugin, Plugins.CrackFuncExclude) {
 		AliveIPS = append(AliveIPS, util.IpAddr{
 			Ip:     opt.Ip,
 			Port:   "",

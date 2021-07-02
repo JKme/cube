@@ -24,3 +24,12 @@ func StrXor(message string, keywords string) string {
 	}
 	return result
 }
+
+func SliceContain(str string, slice []string) bool {
+	for _, value := range slice {
+		if str == value {
+			return true
+		}
+	}
+	return false
+}

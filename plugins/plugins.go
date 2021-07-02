@@ -5,6 +5,7 @@ import (
 	"cube/plugins/crack"
 	"cube/plugins/probe"
 	"cube/plugins/sqlcmd"
+	"cube/util"
 )
 
 type ProbeFunc func(task model.ProbeTask) (taskResult model.ProbeTaskResult)
@@ -18,9 +19,10 @@ var (
 	SqlcmdFuncMap map[string]SqlcmdFunc
 	CrackFuncMap  map[string]CrackFunc
 
-	ProbeKeys  []string
-	SqlcmdKeys []string
-	CrackKeys  []string
+	ProbeKeys        []string
+	SqlcmdKeys       []string
+	CrackKeys        []string
+	CrackFuncExclude []string
 	//CrackFuncMap map[string]CrackFunc
 )
 
@@ -52,9 +54,14 @@ func init() {
 	CrackFuncMap["postgres"] = crack.PostgresCrack
 	CrackFuncMap["mssql"] = crack.MssqlCrack
 	CrackFuncMap["phpmyadmin"] = crack.PhpmyadminCrack
+	CrackFuncMap["httpbasic"] = crack.HttpBasicCrack
+
+	CrackFuncExclude = []string{"phpmyadmin", "httpbasic"} //去除phpmyadmin这类单独使用的
 
 	for k := range CrackFuncMap {
-		CrackKeys = append(CrackKeys, k)
+		if !util.SliceContain(k, CrackFuncExclude) {
+			CrackKeys = append(CrackKeys, k)
+		}
 	}
 
 	CrackPluginKeys := make(map[string][]string)

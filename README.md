@@ -66,7 +66,8 @@ https://github.com/checkymander/Sharp-SMBExec/blob/master/SharpInvoke-SMBExec/Pr
 - [ ] 增加输出CSV
 - [x] log的输出带颜色
 - [x] 增加请求间隔延迟 --delay，当设定这个选项的时候，线程强制设为1，这个选项大概用不上？
-- [ ] 变量名和函数名优化
+- [ ] 变量名和函数名优化、
+- [ ] 增加蜜罐识别：<https://www.secrss.com/articles/28577>
 ~~- [ ] SMB和OXID输出的中文乱码问题~~
 - [ ] **尝试改造为interface实现**
 httpx -title --follow-redirects --status-code -tech-detect --title -ports 8000,8080,8888

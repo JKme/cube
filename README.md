@@ -22,6 +22,7 @@
 (~~给fscan和Ladon做了个分类~~😀😀，[X-Crack](https://github.com/netxfly/x-crack) 套壳
 
 #### Probe
+NTLM SSP信息扫描：https://github.com/EddieIvan01/ntlmssp
 内网探测信息，比如OXID多网卡探测，Windows版本探测，MS17010扫描
 可用插件：
 - [x] oxid多网卡扫描

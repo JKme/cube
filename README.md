@@ -47,8 +47,8 @@ cube crack -u root --pass-file pass.txt -i 192.168.1.1/24 -x ssh
 cube crack -u root --pass-file pass.txt -i 192.168.1.1/24 -x ssh,mysql
 
 phpmyadmin和httpbasic只能单独使用，不可组合:
-cube crack -u root --pass-file pass.txt -i 192.168.1.1/24 -x phpmyadmin
-cube crack -u root --pass-file pass.txt -i 192.168.1.1/24 -x httpbasic
+cube crack -u root --pass-file pass.txt -i http://192.168.1.1 -x phpmyadmin
+cube crack -u root --pass-file pass.txt -i http://192.168.1.1 -x httpbasic
 ```
 
 #### Sqlcmd

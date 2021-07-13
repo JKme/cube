@@ -51,6 +51,8 @@ cube crack -u root --pass-file pass.txt -i http://192.168.1.1 -x phpmyadmin
 cube crack -u root --pass-file pass.txt -i http://192.168.1.1 -x httpbasic
 ```
 
+sqlserver爆破密码的代码(Event Code): 18456
+
 #### Sqlcmd
 执行命令，可用插件： `ssh`
 

@@ -116,3 +116,17 @@ func TestHttpBasicCrack(t *testing.T) {
 	r := HttpBasicCrack(task)
 	fmt.Println(r)
 }
+
+func TestMssqlCrack(t *testing.T) {
+	task := model.CrackTask{
+		Ip:   "172.16.157.129",
+		Port: "1433",
+		Auth: model.Auth{
+			User:     "sa",
+			Password: "123456aa",
+		},
+		CrackPlugin: "mssql",
+	}
+	r := MssqlCrack(task)
+	fmt.Println(r)
+}

@@ -32,10 +32,11 @@ cube probe -x ALL -i 192.168.2.1/24
 
 #### TODO
 - [ ] NTLM SSP信息收集扫描
+  https://www.mi1k7ea.com/2021/02/24/%E6%8E%A2%E6%B5%8B%E5%86%85%E7%BD%91%E5%AD%98%E6%B4%BB%E4%B8%BB%E6%9C%BA/
 
 
 ### Crack
-爆破弱密码，可用插件：`ssh，mysql，redis，elastic，ftp，httpbasic，mongo，mssql，phpmyadmin，smb，postgres`
+爆破弱密码，可用插件：`ssh，mysql，redis，elastic，ftp，httpbasic，mongo，mssql，phpmyadmin，smb，postgres, jenkins`
 
 ```
 Examples:
@@ -49,6 +50,7 @@ cube crack -u root --pass-file pass.txt -i 192.168.1.1/24 -x ssh,mysql
 phpmyadmin和httpbasic只能单独使用，不可组合:
 cube crack -u root --pass-file pass.txt -i http://192.168.1.1 -x phpmyadmin
 cube crack -u root --pass-file pass.txt -i http://192.168.1.1 -x httpbasic
+cube crack -u root --pass-file pass.txt -i http://192.168.1.1 -x jenkins
 ```
 
 sqlserver爆破密码的代码(Event Code): 18456

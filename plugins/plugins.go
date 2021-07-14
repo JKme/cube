@@ -55,8 +55,9 @@ func init() {
 	CrackFuncMap["mssql"] = crack.MssqlCrack
 	CrackFuncMap["phpmyadmin"] = crack.PhpmyadminCrack
 	CrackFuncMap["httpbasic"] = crack.HttpBasicCrack
+	CrackFuncMap["jenkins"] = crack.JenkinsCrack
 
-	CrackFuncExclude = []string{"phpmyadmin", "httpbasic"} //去除phpmyadmin这类单独使用的
+	CrackFuncExclude = []string{"phpmyadmin", "httpbasic", "jenkins"} //去除phpmyadmin这类单独使用的
 
 	for k := range CrackFuncMap {
 		if !util.SliceContain(k, CrackFuncExclude) {

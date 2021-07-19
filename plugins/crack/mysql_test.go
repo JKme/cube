@@ -133,10 +133,10 @@ func TestMssqlCrack(t *testing.T) {
 
 func TestJenkinsCrack(t *testing.T) {
 	task := model.CrackTask{
-		Ip: "https://127.0.0.1/j_acegi_security_check",
+		Ip: "http://127.0.0.1:8081",
 		//Port: "1433",
 		Auth: model.Auth{
-			User:     "jenkins",
+			User:     "admin",
 			Password: "123456",
 		},
 		CrackPlugin: "jenkins",

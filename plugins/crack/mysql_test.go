@@ -130,3 +130,17 @@ func TestMssqlCrack(t *testing.T) {
 	r := MssqlCrack(task)
 	fmt.Println(r)
 }
+
+func TestJenkinsCrack(t *testing.T) {
+	task := model.CrackTask{
+		Ip: "http://127.0.0.1:8081",
+		//Port: "1433",
+		Auth: model.Auth{
+			User:     "admin",
+			Password: "123456",
+		},
+		CrackPlugin: "jenkins",
+	}
+	r := JenkinsCrack(task)
+	fmt.Println(r)
+}

@@ -210,7 +210,7 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 		taskChan <- task
 	}
 	//wg.Wait()
-	waitTimeout(&wg, model.ThreadTimeout)
+	waitTimeout(&wg, model.ThreadTimeout*2)
 	ReadResultMap()
 	getFinishTime(t1)
 }

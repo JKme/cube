@@ -61,6 +61,7 @@ func genCrackTasks(AliveIPS []util.IpAddr, auths []model.Auth) (tasks []model.Cr
 func saveCrackReport(taskResult model.CrackTaskResult) {
 
 	if len(taskResult.Result) > 0 {
+		log.Debugf("Put Result to Map: %v\n", taskResult)
 		k := fmt.Sprintf("%v-%v-%v", taskResult.CrackTask.Ip, taskResult.CrackTask.Port, taskResult.CrackTask.CrackPlugin)
 		h := MakeTaskHash(k)
 		SetTaskHash(h)

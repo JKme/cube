@@ -39,6 +39,10 @@ func init() {
 
 	SqlcmdFuncMap = make(map[string]SqlcmdFunc)
 	SqlcmdFuncMap["ssh"] = sqlcmd.SshCmd
+	SqlcmdFuncMap["mssql1"] = sqlcmd.Mssql1Cmd
+	SqlcmdFuncMap["mssql-wscript"] = sqlcmd.Mssql2Cmd
+	SqlcmdFuncMap["mssql-com"] = sqlcmd.Mssql3Cmd
+
 	for k := range SqlcmdFuncMap {
 		SqlcmdKeys = append(SqlcmdKeys, k)
 	}

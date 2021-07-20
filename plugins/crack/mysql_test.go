@@ -77,7 +77,7 @@ func TestSmbCrack(t *testing.T) {
 
 func TestElasticCrack(t *testing.T) {
 	task := model.CrackTask{
-		Ip:   "192.168.249.240",
+		Ip:   "172.20.42.212",
 		Port: "9200",
 		Auth: model.Auth{
 			User:     "",

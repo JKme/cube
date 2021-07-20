@@ -32,7 +32,7 @@ func ParseService(str string) (service model.Service, err error) {
 	a := strings.FieldsFunc(str, Split)
 	l := len(a)
 	if l < 2 || l > 3 {
-		return service, fmt.Errorf("invalid target: %s (eg: ssh://192.168.1.1:22)", str)
+		return service, fmt.Errorf("invalid target: %s (eg: cube sqlcmd -x mssql1://172.16.157.163:1434 -usa -p123456aa -e \"whoami\")", str)
 	}
 
 	service.Schema = a[0]

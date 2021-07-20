@@ -36,8 +36,8 @@ cube probe -x ALL -i 192.168.2.1/24
 
 
 ### Crack
-- [ ] 批量扫描存在Bug，无法显示多个模块的扫描结果
-- [ ] 批量扫描存在Bug，使用多个模块扫描不准确
+- [x] 批量扫描存在Bug，无法显示多个模块的扫描结果
+- [x] 批量扫描存在Bug，使用多个模块扫描不准确
 
 爆破弱密码，可用插件：`ssh，mysql，redis，elastic，ftp，httpbasic，mongo，mssql，phpmyadmin，smb，postgres, jenkins`
 

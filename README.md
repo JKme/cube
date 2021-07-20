@@ -36,6 +36,9 @@ cube probe -x ALL -i 192.168.2.1/24
 
 
 ### Crack
+- [x] 批量扫描存在Bug，无法显示多个模块的扫描结果
+- [x] 批量扫描存在Bug，使用多个模块扫描不准确
+
 爆破弱密码，可用插件：`ssh，mysql，redis，elastic，ftp，httpbasic，mongo，mssql，phpmyadmin，smb，postgres, jenkins`
 
 ```
@@ -83,3 +86,4 @@ httpx -title --follow-redirects --status-code -tech-detect --title -ports 8000,8
 * <https://github.com/k8gege/LadonGo>
 * <https://github.com/OJ/gobuster>
 * <https://github.com/netxfly/x-crack>
+* <https://github.com/mabangde/pentesttools/blob/master/golang/sqltool.go>

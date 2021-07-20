@@ -12,3 +12,10 @@ func TestSshCmd(t *testing.T) {
 	r := SshCmd(task)
 	fmt.Println(r.Result)
 }
+
+func TestMssql3Cmd(t *testing.T) {
+	task := model.SqlcmdTask{Ip: "172.16.157.163", User: "sa", Password: "123456aa", SqlcmdPlugin: "mssql3", Query: "whoami"}
+	//fmt.Println(SshCmd(task))
+	r := Mssql3Cmd(task)
+	fmt.Println(r.Result)
+}

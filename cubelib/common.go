@@ -162,7 +162,7 @@ var ResultMap = struct {
 
 func SetResultMap(r model.CrackTaskResult) {
 	ResultMap.Lock()
-	ResultMap.m[fmt.Sprintf("%s://%s:%s", r.CrackTask.CrackPlugin, r.CrackTask.Ip, r.CrackTask.Port)] = r.Result
+	ResultMap.m[fmt.Sprintf("%s==>%s:%s", r.CrackTask.CrackPlugin, r.CrackTask.Ip, r.CrackTask.Port)] = r.Result
 	ResultMap.Unlock()
 }
 

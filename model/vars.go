@@ -42,6 +42,8 @@ func init() {
 	CommonPortMap["smb"] = 445
 	CommonPortMap["ms17010"] = 445
 	CommonPortMap["mssql"] = 1433
+	CommonPortMap["mssql-wscript"] = 1433
+	CommonPortMap["mssql_com"] = 1433
 	CommonPortMap["zookeeper"] = 2181
 	CommonPortMap["mysql"] = 3306
 	CommonPortMap["postgres"] = 5432

@@ -14,8 +14,8 @@ func TestSshCmd(t *testing.T) {
 }
 
 func TestMssql3Cmd(t *testing.T) {
-	task := model.SqlcmdTask{Ip: "172.16.157.163", User: "sa", Password: "123456aa", SqlcmdPlugin: "mssql3", Query: "whoami"}
+	task := model.SqlcmdTask{Ip: "172.16.157.163", User: "sa", Password: "123456aa", SqlcmdPlugin: "mssql-clr", Query: "tasklist"}
 	//fmt.Println(SshCmd(task))
-	r := Mssql3Cmd(task)
+	r := MssqlClr(task)
 	fmt.Println(r.Result)
 }

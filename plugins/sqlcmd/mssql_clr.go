@@ -1,4 +1,4 @@
-//From: https://github.com/mabangde/pentesttools/blob/master/golang/sqltool.go
+//From: https://zhuanlan.zhihu.com/p/33322584
 package sqlcmd
 
 import (

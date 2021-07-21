@@ -9,7 +9,7 @@ import (
 	_ "github.com/denisenkom/go-mssqldb"
 )
 
-func Mssql2Cmd(task model.SqlcmdTask) (result model.SqlcmdTaskResult) {
+func MssqlWscript(task model.SqlcmdTask) (result model.SqlcmdTaskResult) {
 	result = model.SqlcmdTaskResult{SqlcmdTask: task, Result: "", Err: nil}
 
 	dataSourceName := fmt.Sprintf("server=%v;port=%v;user id=%v;password=%v;database=%v", task.Ip,
@@ -110,5 +110,7 @@ func closeOle(conn sql.DB) {
 	if err != nil {
 		log.Error("Prepare failed:", err.Error())
 	}
+	stmt.Query()
 	defer stmt.Close()
+
 }

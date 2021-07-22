@@ -80,6 +80,14 @@ cube sqlcmd -x mssql-clr://172.16.157.163 -usa -p123456 -e "whoami"
 cube sqlcmd -x mssql-clr://172.16.157.163 -usa -p123456 -e "close" //close CLR
 ```
 
+#### ELK SIEM Detections Rule
+```
+1. mssql execute cmd
+process where event.type in ("start", "process_started") and
+process.name : "cmd.exe" and process.parent.name : "sqlservr.exe"
+
+```
+
 ### TODO
 ##### Probe模块：
 NTLM信息识别收集：

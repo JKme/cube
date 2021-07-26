@@ -32,6 +32,8 @@ func init() {
 	//ProbeFuncMap["smb"] = probe.SmbProbe
 	ProbeFuncMap["ms17010"] = probe.Ms17010Probe
 	ProbeFuncMap["zookeeper"] = probe.ZookeeperProbe
+	ProbeFuncMap["smbghost"] = probe.SmbGhostProbe
+
 	ProbeKeys = append(ProbeKeys, "ALL")
 	for k := range ProbeFuncMap {
 		ProbeKeys = append(ProbeKeys, k)

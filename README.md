@@ -116,6 +116,8 @@ process.name : "cmd.exe" and process.parent.name : "sqlservr.exe"
 ### TODO
 NTLM信息识别收集：
 
+https://daiker.gitbook.io/windows-protocol/ntlm-pian/4
+
 https://github.com/FeigongSec/NTLMINFO
 
 https://github.com/RowTeam/SharpDetectionNTLMSSP

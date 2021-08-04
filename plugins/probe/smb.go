@@ -234,27 +234,6 @@ func smbScan2(task model.ProbeTask) (result model.ProbeTaskResult) {
 	return result
 }
 
-func SmbProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
-	result = model.ProbeTaskResult{ProbeTask: task, Result: "", Err: nil}
-	nbname, _ := NetBIOS1(task)
-
-	var msg, isdc string
-	//result.Result = nbname
-
-	if strings.Contains(nbname.msg, "Domain Controllers") {
-		isdc = "[+]DC"
-	}
-	msg += fmt.Sprintf("[*] %-15s%-5s %s\\%s   %s", task.Ip, isdc, nbname.group, nbname.unique, nbname.osversion)
-	fmt.Printf("Group: %s\nMsg: %s\nOsVersion: %s\nUniqe: %s", nbname.group, nbname.msg, nbname.osversion, nbname.unique)
-	//if info.Scantype == "netbios" {
-	//	msg += "\n-------------------------------------------\n" + nbname.msg
-	//}
-	//if len(nbname.group) > 0 || len(nbname.unique) > 0 {
-	//	common.LogSuccess(msg)
-	//}
-	return result
-}
-
 func NetBIOS1(task model.ProbeTask) (nbname NbnsName, err error) {
 	nbname, err = GetNbnsname(task)
 	var payload0 []byte

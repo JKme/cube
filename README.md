@@ -124,6 +124,8 @@ https://github.com/RowTeam/SharpDetectionNTLMSSP
 
 https://github.com/checkymander/Sharp-SMBExec/blob/master/SharpInvoke-SMBExec/Program.cs
 
+http://davenport.sourceforge.net/ntlm.html#theType2Message
+
 - [ ] NTLM SSP信息收集扫描
 - [ ] 增加输出CSV
 - [x] 增加sqlcmd的mssql命令执行

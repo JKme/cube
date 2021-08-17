@@ -7,7 +7,7 @@ import (
 )
 
 func TestSMB(t *testing.T) {
-	task := model.ProbeTask{Ip: "172.20.40.130", Port: "445", ScanPlugin: "SMB"}
+	task := model.ProbeTask{Ip: "172.16.47.3", Port: "445", ScanPlugin: "SMB"}
 	r := smbScan2(task)
 	fmt.Printf("Get Result: %v\n", r.Result)
 }

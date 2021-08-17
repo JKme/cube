@@ -126,6 +126,7 @@ https://github.com/checkymander/Sharp-SMBExec/blob/master/SharpInvoke-SMBExec/Pr
 
 http://davenport.sourceforge.net/ntlm.html#theType2Message
 
+- [ ] [WidnowsEDR探测](https://www.rumble.run/blog/research-dcerpc/)
 - [ ] NTLM SSP信息收集扫描
 - [ ] 增加输出CSV
 - [x] 增加sqlcmd的mssql命令执行

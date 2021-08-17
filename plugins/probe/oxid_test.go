@@ -19,7 +19,7 @@ func TestName(t *testing.T) {
 }
 
 func TestZookeeperProbe(t *testing.T) {
-	task := model.ProbeTask{Ip: "172.20.40.108", Port: "2181", ScanPlugin: "zookeeper"}
+	task := model.ProbeTask{Ip: "172.20.40.30", Port: "2182", ScanPlugin: "zookeeper"}
 	r := ZookeeperProbe(task)
 	//fmt.Println(reflect.TypeOf(r.Result))
 	fmt.Println(r.Result)

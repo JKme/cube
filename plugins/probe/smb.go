@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"cube/log"
 	"cube/model"
+	"encoding/binary"
 	"fmt"
+	"github.com/JKme/go-ntlmssp"
 	"net"
 	"strconv"
 	"strings"
@@ -178,6 +180,9 @@ type NbnsName struct {
 	osversion string
 }
 
+func TrimName(name string) string {
+	return strings.TrimSpace(strings.Replace(name, "\x00", "", -1))
+}
 func bytes2Uint(bs []byte, endian byte) uint64 {
 	var u uint64
 	if endian == '>' {
@@ -234,8 +239,38 @@ func smbScan2(task model.ProbeTask) (result model.ProbeTaskResult) {
 	gss := ret[47:]
 	off_ntlm := bytes.Index(gss, []byte("NTLMSSP"))
 	fmt.Println(off_ntlm)
-	fmt.Printf("NTLM: %x\n", gss[off_ntlm:blob_length])
+	fmt.Printf("NTLM1: %x\n", gss[off_ntlm:])
 
+	fmt.Printf("NTLM2: %x\n", gss[off_ntlm:blob_length])
+	fmt.Printf("native: %x\n", gss[int(blob_length):blob_count])
+	native := gss[int(blob_length):blob_count]
+	ss := strings.Split(string(native), "\x00\x00")
+	fmt.Println(ss)
+
+	bs := gss[off_ntlm:blob_length]
+	type2 := ntlmssp.NewChallengeMsg(bs)
+	tinfo := ntlmssp.ParseAVPair(type2.TargetInfo())
+	for k, v := range tinfo {
+		if k == "MsvAvTimestamp" {
+			byteKey := []byte(fmt.Sprintf("%s", v.(interface{})))
+			//fmt.Println(byteKey)
+			i := binary.LittleEndian.Uint64(byteKey)
+			i2 := i - 116444736000000000
+			tm := time.Unix(0, int64(i2*100))
+			v = tm
+		}
+		fmt.Printf("    %s: %v\n", k, v)
+	}
+	offset_version := 48
+	version := bs[offset_version : offset_version+8]
+	v, _ := ntlmssp.ReadVersionStruct(version)
+	fmt.Println(v)
+
+	NativeOS := TrimName(ss[0])
+	NativeLM := TrimName(ss[1])
+	fmt.Println(NativeOS, NativeLM)
+
+	//fmt.Println(bytes.ReplaceAll(native, []byte{0x00}, []byte{}))
 	//fmt.Printf("%x\n", ret[45:47])
 	//blob_length, err := bytetoint(ret[43:44][0])
 	//blob_count, err := bytetoint(ret[44:45][0])

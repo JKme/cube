@@ -178,6 +178,19 @@ type NbnsName struct {
 	osversion string
 }
 
+func bytes2Uint(bs []byte, endian byte) uint64 {
+	var u uint64
+	if endian == '>' {
+		for i := 0; i < len(bs); i++ {
+			u += uint64(bs[i]) << (8 * (len(bs) - i - 1))
+		}
+	} else {
+		for i := 0; i < len(bs); i++ {
+			u += uint64(bs[len(bs)-i-1]) << (8 * (len(bs) - i - 1))
+		}
+	}
+	return u
+}
 func smbScan2(task model.ProbeTask) (result model.ProbeTaskResult) {
 	result = model.ProbeTaskResult{ProbeTask: task, Result: "", Err: nil}
 	realhost := fmt.Sprintf("%s:%v", task.Ip, task.Port)
@@ -203,33 +216,39 @@ func smbScan2(task model.ProbeTask) (result model.ProbeTaskResult) {
 	//fmt.Println(buf)
 
 	ret, err := readbytes(conn)
+	//fmt.Printf("ret: %x\n", ret)
+
 	start1 := bytes.Index(ret, []byte("NTLMSSP"))
 	fmt.Println(start1)
+	fmt.Printf("NTLMSSP: %x\n", ret[80:])
 	if err != nil || len(ret) < 45 {
 		return
 	}
 
 	//_, err = conn.Write(NtlmV2)
+	blob_length := uint16(bytes2Uint(ret[43:45], '<'))
+	blob_count := uint16(bytes2Uint(ret[45:47], '<'))
 
-	num1, err := bytetoint(ret[43:44][0])
-	if err != nil {
-		return
-	}
-	num2, err := bytetoint(ret[44:45][0])
-	if err != nil {
-		return
-	}
-	fmt.Printf("ret: %x\n", ret)
-	length := num1 + num2*256
-	osVersion := ret[47+length:]
-	osVersion = bytes.ReplaceAll(osVersion, []byte{0x00}, []byte{})
-	fmt.Printf("Version: %x\n", osVersion)
-	result.Result = string(osVersion[:])
+	fmt.Println(blob_length, blob_count)
+	fmt.Printf("GSS: %x\n", ret[47:])
+	gss := ret[47:]
+	off_ntlm := bytes.Index(gss, []byte("NTLMSSP"))
+	fmt.Println(off_ntlm)
+	fmt.Printf("NTLM: %x\n", gss[off_ntlm:blob_length])
 
-	R := bytes.ReplaceAll(ret, []byte{0x00}, []byte{})
-	rs := []rune(string(R)) // 将字符串转为字节rune切片
-	fmt.Println(rs)         // 输出rune切片
-	fmt.Println(string(rs)) // 将rune切片转为字符串
+	//fmt.Printf("%x\n", ret[45:47])
+	//blob_length, err := bytetoint(ret[43:44][0])
+	//blob_count, err := bytetoint(ret[44:45][0])
+	//fmt.Println(blob_length, blob_count)
+	//osVersion := ret[47+length:]
+	//osVersion = bytes.ReplaceAll(osVersion, []byte{0x00}, []byte{})
+	//fmt.Printf("Version: %x\n", osVersion)
+	//result.Result = string(osVersion[:])
+	//
+	//R := bytes.ReplaceAll(ret, []byte{0x00}, []byte{})
+	//rs := []rune(string(R)) // 将字符串转为字节rune切片
+	//fmt.Println(rs)         // 输出rune切片
+	//fmt.Println(string(rs)) // 将rune切片转为字符串
 
 	return result
 }
@@ -357,6 +376,8 @@ func NetBIOS1(task model.ProbeTask) (nbname NbnsName, err error) {
 		item_content := bytes.ReplaceAll(ret[index+4:index+4+item_length], []byte{0x00}, []byte{})
 		index += 4 + item_length
 		if string(item_type) == "\x07\x00" {
+			timestamp := ret[index+4 : index+12]
+			fmt.Println("TimeStamp" + string(timestamp))
 			//Time stamp, 暂时不想处理
 		} else if NetBIOS_ITEM_TYPE[string(item_type)] != "" {
 			nbname.msg += fmt.Sprintf("%-22s: %s\n", NetBIOS_ITEM_TYPE[string(item_type)], string(item_content))

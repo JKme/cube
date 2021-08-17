@@ -17,11 +17,11 @@ func ZookeeperProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 		//log.Printf("Oxid Running Error: %s:%s", task.Ip, err)
 		return result
 	}
-	conn.Write([]byte("envi\r\n"))
+	conn.Write([]byte("version\r\n"))
 
 	r := make([]byte, 1024)
 	conn.Read(r)
-	if strings.Contains(string(r), "zookeeper") {
+	if strings.Contains(string(r), "ZooKeeper") {
 		result.Result = "Zookeeper Unauthorized"
 	}
 	return result

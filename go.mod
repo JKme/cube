@@ -3,7 +3,7 @@ module cube
 go 1.16
 
 require (
-	github.com/JKme/go-ntlmssp v0.0.0-20210817153141-4af9c775c7a4
+	github.com/JKme/go-ntlmssp v1.2.4
 	github.com/denisenkom/go-mssqldb v0.10.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/jlaffaye/ftp v0.0.0-20210307004419-5d4190119067

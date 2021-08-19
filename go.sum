@@ -13,14 +13,8 @@ cloud.google.com/go/storage v1.0.0/go.mod h1:IhtSnM/ZTZV8YYJWCY8RULGVqBDmpoyjwiy
 dmitri.shuralyov.com/gpu/mtl v0.0.0-20190408044501-666a987793e9/go.mod h1:H6x//7gZCb22OMCxBHrMx7a5I7Hp++hsVxbQ4BYO7hU=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
-github.com/JKme/go-ntlmssp v1.2.1 h1:ePksP0tf7pZFgKXNRtUP453oWdNcc5tv58FiyO8g+w0=
-github.com/JKme/go-ntlmssp v1.2.1/go.mod h1:h70Bm5p1N0ejFrkuFCl80IxpoNzCmG1gHAhsVJG3ASg=
-github.com/JKme/go-ntlmssp v1.2.2 h1:RY47PUb5OXX76BwbCGy/tgI03Shidc/3rTy5jZO0y48=
-github.com/JKme/go-ntlmssp v1.2.2/go.mod h1:h70Bm5p1N0ejFrkuFCl80IxpoNzCmG1gHAhsVJG3ASg=
-github.com/JKme/go-ntlmssp v1.2.3 h1:I7TX3ianBP9TRqhNIxzOOzHI6pMZDmRgiPs/ja6uhRQ=
-github.com/JKme/go-ntlmssp v1.2.3/go.mod h1:h70Bm5p1N0ejFrkuFCl80IxpoNzCmG1gHAhsVJG3ASg=
-github.com/JKme/go-ntlmssp v1.2.4 h1:BDcCivSVG/BKLJs6yuYQwViq44CZJbjP9Ancsf+hhlw=
-github.com/JKme/go-ntlmssp v1.2.4/go.mod h1:h70Bm5p1N0ejFrkuFCl80IxpoNzCmG1gHAhsVJG3ASg=
+github.com/JKme/go-ntlmssp v1.2.5 h1:YhL+tkdc3qYXXhIGoGMLjT0y6sia/keRrrkBP99ypO8=
+github.com/JKme/go-ntlmssp v1.2.5/go.mod h1:h70Bm5p1N0ejFrkuFCl80IxpoNzCmG1gHAhsVJG3ASg=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=

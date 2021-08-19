@@ -6,15 +6,18 @@ import (
 	"testing"
 )
 
-func TestSMB(t *testing.T) {
-	task := model.ProbeTask{Ip: "172.16.47.3", Port: "445", ScanPlugin: "smb"}
-	r := SmbProbe(task)
+func TestSmbProbeV2(t *testing.T) {
+
+	task := model.ProbeTask{Ip: "172.16.47.4", Port: "445", ScanPlugin: "smb"}
+	r := SmbProbeV2(task)
 	//fmt.Printf("%v\n", r.Result)
 	fmt.Println(r.Result)
 }
 
-//func TestWMI(t *testing.T) {
-//	task := model.ProbeTask{Ip: "172.20.40.124", Port: "135", ScanPlugin: "WMI"}
-//	wmi(task)
-//	//fmt.Printf("Get Result: %v\n", r.Result)
-//}
+func TestSMB(t *testing.T) {
+
+	task := model.ProbeTask{Ip: "172.16.47.4", Port: "445", ScanPlugin: "smb"}
+	r := SmbProbe(task)
+	//fmt.Printf("%v\n", r.Result)
+	fmt.Println(r.Result)
+}

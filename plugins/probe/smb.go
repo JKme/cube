@@ -53,8 +53,10 @@ func SmbProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	if err != nil {
 		return
 	}
-	buf := make([]byte, 4096)
-	conn.Read(buf)
+	_, err = readBytes(conn)
+	if err != nil {
+		return
+	}
 
 	_, err = conn.Write(d2)
 	//_, err = conn.Write(SmbV2D2)
@@ -81,18 +83,18 @@ func SmbProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 
 	//fmt.Println(blob_length, blob_count)
 	//fmt.Printf("GSS: %x\n", ret[47:])
-	gss := ret[47:]
-	off_ntlm := bytes.Index(gss, []byte("NTLMSSP"))
+	gss_native := ret[47:]
+	off_ntlm := bytes.Index(gss_native, []byte("NTLMSSP"))
 	//fmt.Println(off_ntlm)
 	//fmt.Printf("NTLM1: %x\n", gss[off_ntlm:])
 	//
 	//fmt.Printf("NTLM2: %x\n", gss[off_ntlm:blob_length])
 	//fmt.Printf("native: %x\n", gss[int(blob_length):blob_count])
-	native := gss[int(blob_length):blob_count]
+	native := gss_native[int(blob_length):blob_count]
 	ss := strings.Split(string(native), "\x00\x00")
 	//fmt.Println(ss)
 
-	bs := gss[off_ntlm:blob_length]
+	bs := gss_native[off_ntlm:blob_length]
 	type2 := ntlmssp.ChallengeMsg{}
 	tinfo := "\n" + type2.String(bs)
 	//fmt.Println(tinfo)
@@ -102,7 +104,6 @@ func SmbProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	//fmt.Println(NativeOS, NativeLM)
 	tinfo += fmt.Sprintf("NativeOS: %s\nNativeLM: %s\n%s", NativeOS, NativeLM, strings.Repeat("<", 50))
 	result.Result = tinfo
-	//
 	//R := bytes.ReplaceAll(ret, []byte{0x00}, []byte{})
 	//rs := []rune(string(R)) // 将字符串转为字节rune切片
 	//fmt.Println(rs)         // 输出rune切片

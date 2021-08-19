@@ -30,6 +30,8 @@ func init() {
 	ProbeFuncMap = make(map[string]ProbeFunc)
 	ProbeFuncMap["oxid"] = probe.OxidProbe
 	ProbeFuncMap["smb"] = probe.SmbProbe
+	ProbeFuncMap["smb2"] = probe.SmbProbeV2
+
 	ProbeFuncMap["ms17010"] = probe.Ms17010Probe
 	ProbeFuncMap["zookeeper"] = probe.ZookeeperProbe
 	ProbeFuncMap["smbghost"] = probe.SmbGhostProbe

@@ -127,12 +127,14 @@ https://github.com/checkymander/Sharp-SMBExec/blob/master/SharpInvoke-SMBExec/Pr
 http://davenport.sourceforge.net/ntlm.html#theType2Message
 
 - [ ] [WidnowsEDR探测](https://www.rumble.run/blog/research-dcerpc/)
-- [ ] NTLM SSP信息收集扫描
+- [ ] NTLM SSP信息收集扫描, 
 - [ ] 增加输出CSV
 - [x] 增加sqlcmd的mssql命令执行
 - [x] 增加请求间隔延迟 --delay，当设定这个选项的时候，线程强制设为1，这个选项大概用不上？
 - [ ] 变量名和函数名优化
-~~- [ ] SMB和OXID输出的中文乱码问题~~
+
+- [ ] SMB和OXID输出的中文乱码问题 [Golang的字符编码与regexp](https://mp.weixin.qq.com/s/MgkRkCgqkvOL81gokP4gAg)
+- [ ] NetBios模块直接拿来Fscan
 - [ ] **尝试改造为interface实现**
 
 httpx -title --follow-redirects --status-code -tech-detect --title -ports 8000,8080,8888

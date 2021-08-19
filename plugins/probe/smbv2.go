@@ -87,6 +87,9 @@ func SmbProbeV2(task model.ProbeTask) (result model.ProbeTaskResult) {
 	if err != nil {
 		return
 	}
+	ret1, _ := readBytes(conn)
+	fmt.Println(ret1)
+
 	_, err = conn.Write(NTLMSSPNegotiatev2Data)
 	ret, _ := readBytes(conn)
 	fmt.Printf("RES: %x\n", ret)

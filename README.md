@@ -31,8 +31,18 @@ Flags:
 
 
 ### Probe 内网信息收集
-内网探测信息，已实现的有三个插件：OXID多网卡探测，MS17010、zookeeper、smbghost扫描
-可用插件：`oxid,ms17010,zookeeper,smbghost`
+内网探测信息，有如下插件:
+
+| 插件名称      | 探测效果 | 默认端口 |
+| --------- | :-----|------|
+| oxid      | 多网卡 |   TCP 135 |
+| ms17010     |  ms17010漏洞 | TCP 445 
+| zookeeper      |    zookeeper未授权 | TCP 2181
+| smbghost      | smbghost漏洞    | TCP 445
+|ntlm-smb       | NTLM信息收集(smbv1和smbv2) | TCP 445
+|ntlm-wmi       | NTLM信息收集     | TCP 135
+|ntlm-winrm     | NTLM信息收集     | TCP 5985
+|ntlm-mssql     | NTLM信息收集     | TCP 1433
 
 ```bash
 cube probe -x oxid -i 192.168.2.1/24

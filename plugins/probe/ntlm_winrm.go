@@ -19,10 +19,11 @@ func WinrmProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	req.Header.Add("User-Agent", "Microsoft WinRM Client")
 	req.Header.Add("Authorization", "Negotiate TlRMTVNTUAABAAAAB4IIogAAAAAAAAAAAAAAAAAAAAAGAbEdAAAADw==")
 	resp, err := clt.Do(req)
-	resp.Body.Close()
 	if err != nil {
-		panic(err)
+		return
 	}
+	defer resp.Body.Close()
+
 	ntlminfo := resp.Header.Get("Www-Authenticate")[10:]
 	data, err := base64.StdEncoding.DecodeString(ntlminfo)
 	type2 := ntlmssp.ChallengeMsg{}

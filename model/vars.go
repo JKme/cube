@@ -39,9 +39,10 @@ func init() {
 	CommonPortMap["ftp"] = 21
 	CommonPortMap["ssh"] = 22
 	CommonPortMap["oxid"] = 135
-	CommonPortMap["smb"] = 445
+	CommonPortMap["ntlm-smb"] = 445
 	CommonPortMap["ntlm_winrm"] = 445
 	CommonPortMap["ntlm_wmi"] = 135
+	CommonPortMap["ntlm-mssql"] = 1433
 
 	CommonPortMap["ms17010"] = 445
 	CommonPortMap["mssql"] = 1433

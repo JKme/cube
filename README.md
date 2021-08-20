@@ -137,7 +137,7 @@ https://github.com/checkymander/Sharp-SMBExec/blob/master/SharpInvoke-SMBExec/Pr
 http://davenport.sourceforge.net/ntlm.html#theType2Message
 
 - [ ] [WidnowsEDR探测](https://www.rumble.run/blog/research-dcerpc/)
-- [ ] NTLM SSP信息收集扫描, 
+- [x] NTLM SSP信息收集扫描, 
 - [ ] 增加输出CSV
 - [x] 增加sqlcmd的mssql命令执行
 - [x] 增加请求间隔延迟 --delay，当设定这个选项的时候，线程强制设为1，这个选项大概用不上？

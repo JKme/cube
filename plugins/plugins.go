@@ -29,11 +29,10 @@ var (
 func init() {
 	ProbeFuncMap = make(map[string]ProbeFunc)
 	ProbeFuncMap["oxid"] = probe.OxidProbe
-	ProbeFuncMap["smb"] = probe.SmbProbe
+	ProbeFuncMap["ntlm-smb"] = probe.SmbProbe
 	ProbeFuncMap["ntlm-winrm"] = probe.WinrmProbe
 	ProbeFuncMap["ntlm-wmi"] = probe.WmiProbe
-
-	//ProbeFuncMap["smb2"] = probe.SmbProbeV2
+	ProbeFuncMap["ntlm-mssql"] = probe.MssqlProbe
 
 	ProbeFuncMap["ms17010"] = probe.Ms17010Probe
 	ProbeFuncMap["zookeeper"] = probe.ZookeeperProbe

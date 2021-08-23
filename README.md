@@ -2,8 +2,13 @@
 
 ### CUBE
 
-学习Go语言，适用内网渗透测试。 ~~F-Scrack的翻版，给fscan和Ladon做了个分类，[X-Crack](https://github.com/netxfly/x-crack) 套壳~~
-，包括三个模块信息收集(probe)、弱密码爆破(crack)、命令执行(sqlcmd)，此处参考了gobuster的爆破模式
+ 代码整体可读性比较差，各位师傅如果对源代码感兴趣，建议看netxfly师傅[X-Crack](https://github.com/netxfly/x-crack)仓库的
+ [README.txt](https://github.com/netxfly/x-crack/commit/684e738b8de93456cce073243efe1ad784bb154f)，我只是在X-Crack的基础上套了一层壳。
+
+![code](https://pbs.twimg.com/media/ElkdkAGXIAAl_4P?format=jpg&name=small)
+
+适用内网渗透测试。 ~~F-Scrack的翻版，给fscan和Ladon做了个分类，[X-Crack](https://github.com/netxfly/x-crack) 套壳~~
+，包括三个模块信息收集(probe)、弱密码爆破(crack)、命令执行(sqlcmd)，此处参考gobuster的爆破模式
 
 ```bash
 Usage:
@@ -36,6 +41,7 @@ Flags:
 | 插件名称      | 探测效果 | 默认端口 |
 | --------- | :-----|------|
 | oxid      | 多网卡 |   TCP 135 |
+| netbios     | Nbtscan     | UDP 137
 | ms17010     |  ms17010漏洞 | TCP 445 
 | zookeeper      |    zookeeper未授权 | TCP 2181
 | smbghost      | smbghost漏洞    | TCP 445
@@ -43,6 +49,7 @@ Flags:
 |ntlm-wmi       | NTLM信息收集     | TCP 135
 |ntlm-winrm     | NTLM信息收集     | TCP 5985
 |ntlm-mssql     | NTLM信息收集     | TCP 1433
+
 
 ```bash
 cube probe -x oxid -i 192.168.2.1/24
@@ -74,7 +81,7 @@ Global Flags:
       --timeout int   Timeout each thread waits (default 5)
   -v, --verbose       Verbose output (errors)
 ```
-用户名(`-u/--user-file`)和密码(`-p/--pass-file`)成对出现，可以任意组合， 可用插件：`ssh，mysql，redis，elastic，ftp，httpbasic，mongo，mssql，phpmyadmin，smb，postgres, jenkins`
+用户名(`-u/--user-file`)和密码(`-p/--pass-file`)成对出现，可以任意组合， 可用插件：`ssh，mysql，redis，elastic，ftp，httpbasic，mongo，mssql，smb，postgres`
 
 ```
 Examples:
@@ -144,7 +151,7 @@ http://davenport.sourceforge.net/ntlm.html#theType2Message
 - [ ] 变量名和函数名优化
 
 - [ ] SMB和OXID输出的中文乱码问题 [Golang的字符编码与regexp](https://mp.weixin.qq.com/s/MgkRkCgqkvOL81gokP4gAg)
-- [ ] NetBios模块直接拿来Fscan
+- [x] NetBios模块复制[nextnet](https://github.com/hdm/nextnet)
 - [ ] **尝试改造为interface实现**
 
 httpx -title --follow-redirects --status-code -tech-detect --title -ports 8000,8080,8888

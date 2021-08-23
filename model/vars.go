@@ -39,6 +39,7 @@ func init() {
 	CommonPortMap["ftp"] = 21
 	CommonPortMap["ssh"] = 22
 	CommonPortMap["oxid"] = 135
+	CommonPortMap["netbios"] = 137
 	CommonPortMap["ntlm-smb"] = 445
 	CommonPortMap["ntlm_winrm"] = 445
 	CommonPortMap["ntlm-wmi"] = 135

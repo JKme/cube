@@ -75,7 +75,11 @@ func CheckAlive(ctx context.Context, Num int, delay int, ips []string, plugins [
 					if !ok {
 						return
 					}
-					SaveAddr(check(addr))
+					if addr.Plugin == "netbios" {
+						SaveAddr(checkUDP(addr))
+					} else {
+						SaveAddr(check(addr))
+					}
 					wg.Done()
 					select {
 					case <-ctx.Done():
@@ -99,6 +103,17 @@ func check(addr IpAddr) (bool, IpAddr) {
 	alive := false
 	log.Debugf("Port connect check: %s:%s", addr.Ip, addr.Port)
 	_, err := net.DialTimeout("tcp", fmt.Sprintf("%v:%v", addr.Ip, addr.Port), model.ConnectTimeout)
+	if err == nil {
+		log.Infof("%s:%s Open", addr.Ip, addr.Port)
+		alive = true
+	}
+	return alive, addr
+}
+
+func checkUDP(addr IpAddr) (bool, IpAddr) {
+	alive := false
+	log.Debugf("Port connect check: %s:%s", addr.Ip, addr.Port)
+	_, err := net.DialTimeout("udp", fmt.Sprintf("%v:%v", addr.Ip, addr.Port), model.ConnectTimeout)
 	if err == nil {
 		log.Infof("%s:%s Open", addr.Ip, addr.Port)
 		alive = true

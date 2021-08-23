@@ -28,3 +28,9 @@ func TestWmiProbe(t *testing.T) {
 	r := WmiProbe(task)
 	fmt.Println(r.Result)
 }
+
+func TestMssqlProbe(t *testing.T) {
+	task := model.ProbeTask{Ip: "172.16.157.190", Port: "1433", ScanPlugin: "smb"}
+	r := MssqlProbe(task)
+	fmt.Println(r.Result)
+}

@@ -85,6 +85,7 @@ Global Flags:
 
 ```
 Examples:
+cube crack -u root -p root -i 192.168.1.1 -x ALL //加载全部可组合插件
 cube crack -u root -p root -i 192.168.1.1 -x ssh
 cube crack -u root -p root -i 192.168.1.1 -x ssh --port 2222
 cube crack -u root,ubuntu -p 123,000111,root -x ssh -i 192.168.1.1

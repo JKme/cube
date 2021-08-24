@@ -54,7 +54,7 @@ func executeProbeTask(ctx context.Context, taskChan chan model.ProbeTask, wg *sy
 				return
 			}
 
-			log.Debugf("Checking %s Password: %s://%s:%s", task.ScanPlugin, task.ScanPlugin, task.Ip, task.Port)
+			log.Debugf("Probe %s: %s://%s:%s", task.ScanPlugin, task.ScanPlugin, task.Ip, task.Port)
 			fn := Plugins.ProbeFuncMap[task.ScanPlugin]
 			r := fn(task)
 			saveReport(r)
@@ -126,7 +126,7 @@ func StartProbeTask(opt *model.ProbeOptions, globalopts *model.GlobalOptions) {
 		wg.Add(1)
 		taskChan <- task
 	}
-
+	//wg.Wait()
 	waitTimeout(&wg, model.ThreadTimeout)
 	getFinishTime(t1)
 

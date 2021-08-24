@@ -1,4 +1,7 @@
 # cube
+### Bugs
+- [ ] netbios模块输出空白
+- [ ] probe加载全部插件异常退出
 
 ### CUBE
 

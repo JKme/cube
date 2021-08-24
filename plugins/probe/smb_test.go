@@ -36,7 +36,7 @@ func TestMssqlProbe(t *testing.T) {
 }
 
 func TestNetbiosProbe(t *testing.T) {
-	task := model.ProbeTask{Ip: "172.20.40.113", Port: "137", ScanPlugin: "netbios"}
+	task := model.ProbeTask{Ip: "172.20.40.218", Port: "137", ScanPlugin: "netbios"}
 	r := NetbiosProbe(task)
 	fmt.Println(r.Result)
 }

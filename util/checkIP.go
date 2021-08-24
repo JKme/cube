@@ -111,13 +111,13 @@ func check(addr IpAddr) (bool, IpAddr) {
 }
 
 func checkUDP(addr IpAddr) (bool, IpAddr) {
-	alive := false
-	log.Debugf("Port connect check: %s:%s", addr.Ip, addr.Port)
-	_, err := net.DialTimeout("udp", fmt.Sprintf("%v:%v", addr.Ip, addr.Port), model.ConnectTimeout)
-	if err == nil {
-		log.Infof("%s:%s Open", addr.Ip, addr.Port)
-		alive = true
-	}
+	alive := true
+	//log.Debugf("Port connect check: %s:%s", addr.Ip, addr.Port)
+	//_, err := net.DialTimeout("udp", fmt.Sprintf("%v:%v", addr.Ip, addr.Port), model.ConnectTimeout)
+	//if err == nil {
+	//	log.Infof("%s:%s Open", addr.Ip, addr.Port)
+	//	alive = true
+	//}
 	return alive, addr
 }
 

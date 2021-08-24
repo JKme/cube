@@ -87,7 +87,7 @@ func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	//fmt.Println(text)
 	sreply := parseReplay(ret2)
 
-	fmt.Printf("%x\n", sreply.Header.RecordType)
+	//fmt.Printf("%x\n", sreply.Header.RecordType)
 	_, err = conn.Write(createNameRequest(TrimName(string(sreply.HostName[:]))))
 	ret2, _ = readBytes(conn)
 	nreply := parseReplay(ret2)

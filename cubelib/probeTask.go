@@ -39,7 +39,7 @@ func generateTasks(AliveIPS []util.IpAddr, scanPlugin []string) (tasks []model.P
 func saveReport(taskResult model.ProbeTaskResult) {
 	if len(taskResult.Result) > 0 {
 		s := fmt.Sprintf("[*]: %s\n[*]: %s:%s\n", taskResult.ProbeTask.ScanPlugin, taskResult.ProbeTask.Ip, taskResult.ProbeTask.Port)
-		s1 := fmt.Sprintf("[*]: %s", taskResult.Result)
+		s1 := fmt.Sprintf("%s\n", taskResult.Result)
 		log.Infof(s + s1)
 	}
 }
@@ -111,7 +111,6 @@ func StartProbeTask(opt *model.ProbeOptions, globalopts *model.GlobalOptions) {
 	ctx := context.Background()
 
 	AliveIPS := util.CheckAlive(ctx, threadNum, delay, ips, pluginList, opt.Port)
-	log.Debugf("alive ips: %s", AliveIPS)
 	tasks := generateTasks(AliveIPS, pluginList)
 
 	taskChan := make(chan model.ProbeTask, threadNum*2)

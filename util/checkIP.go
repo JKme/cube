@@ -104,7 +104,7 @@ func check(addr IpAddr) (bool, IpAddr) {
 	log.Debugf("Port connect check: %s:%s", addr.Ip, addr.Port)
 	_, err := net.DialTimeout("tcp", fmt.Sprintf("%v:%v", addr.Ip, addr.Port), model.ConnectTimeout)
 	if err == nil {
-		log.Infof("%s:%s Open", addr.Ip, addr.Port)
+		log.Infof("Open %s:%s", addr.Ip, addr.Port)
 		alive = true
 	}
 	return alive, addr

@@ -135,7 +135,7 @@ func SmbProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 
 		bs := gss_native[off_ntlm:blob_length]
 		type2 := ntlmssp.ChallengeMsg{}
-		tinfo := "\n" + type2.String(bs)
+		tinfo := type2.String(bs)
 		//fmt.Println(tinfo)
 
 		NativeOS := TrimName(ss[0])

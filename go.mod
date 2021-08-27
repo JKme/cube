@@ -7,6 +7,7 @@ require (
 	github.com/JKme/gomanuf v1.0.1
 	github.com/denisenkom/go-mssqldb v0.10.0
 	github.com/go-sql-driver/mysql v1.6.0
+	github.com/grandcat/zeroconf v1.0.0
 	github.com/jlaffaye/ftp v0.0.0-20210307004419-5d4190119067
 	github.com/lib/pq v1.10.2
 	github.com/spf13/cobra v1.1.3

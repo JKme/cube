@@ -5,7 +5,7 @@ import (
 	"cube/model"
 	"encoding/binary"
 	"fmt"
-	//manuf "github.com/timest/gomanuf"
+	manuf "github.com/JKme/gomanuf"
 	"math/rand"
 	"net"
 	"strings"
@@ -127,8 +127,8 @@ func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	}
 
 	if sreply.HWAddr != "00:00:00:00:00:00" {
-		//m1 := manuf.Search(sreply.HWAddr) + fmt.Sprintf("\t\t%s", m1)
-		Info["Hwaddr"] = sreply.HWAddr
+		m1 := manuf.Search(sreply.HWAddr)
+		Info["Hwaddr"] = sreply.HWAddr + fmt.Sprintf("\t\t%s", m1)
 	}
 
 	username := TrimName(string(sreply.UserName[:]))
@@ -151,7 +151,7 @@ func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 
 	b := new(bytes.Buffer)
 	for key, value := range Info {
-		fmt.Fprintf(b, "%-8s: %s\n", key, value)
+		_, _ = fmt.Fprintf(b, "%-8s: %s\n", key, value)
 	}
 	result.Result += b.String()
 

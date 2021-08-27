@@ -44,6 +44,7 @@ func init() {
 	CommonPortMap["ntlm-winrm"] = 5985
 	CommonPortMap["ntlm-wmi"] = 135
 	CommonPortMap["ntlm-mssql"] = 1433
+	CommonPortMap["rmi"] = 1099
 
 	CommonPortMap["ms17010"] = 445
 	CommonPortMap["smbghost"] = 445

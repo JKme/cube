@@ -39,6 +39,7 @@ func init() {
 	ProbeFuncMap["ms17010"] = probe.Ms17010Probe
 	ProbeFuncMap["zookeeper"] = probe.ZookeeperProbe
 	ProbeFuncMap["smbghost"] = probe.SmbGhostProbe
+	ProbeFuncMap["rmi"] = probe.RmiProbe
 
 	ProbeFuncExclude = []string{"ms17010", "smbghost", "ntlm-winrm", "ntlm-mssql"}
 	for k := range ProbeFuncMap {

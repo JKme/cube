@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"cube/log"
 	"cube/model"
+	"cube/util"
 	"fmt"
 	"github.com/JKme/go-ntlmssp"
 	"net"
@@ -61,10 +62,10 @@ func MssqlProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	if err != nil {
 		return
 	}
-	_, _ = readBytes(conn)
+	_, _ = util.ReadBytes(conn)
 
 	conn.Write(SSPI_Message)
-	ret, _ := readBytes(conn)
+	ret, _ := util.ReadBytes(conn)
 
 	off_ntlm := bytes.Index(ret, []byte("NTLMSSP"))
 	type2 := ntlmssp.ChallengeMsg{}

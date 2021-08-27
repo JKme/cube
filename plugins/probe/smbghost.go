@@ -95,6 +95,7 @@ const (
 )
 
 func SmbGhostProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
+	result = model.ProbeTaskResult{ProbeTask: task, Result: "", Err: nil}
 	addr := fmt.Sprintf("%s:%v", task.Ip, task.Port)
 	conn, err := net.DialTimeout("tcp", addr, model.ConnectTimeout)
 	if err != nil {

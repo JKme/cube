@@ -5,6 +5,7 @@ import (
 	"cube/model"
 	"encoding/binary"
 	"fmt"
+	//manuf "github.com/timest/gomanuf"
 	"math/rand"
 	"net"
 	"strings"
@@ -63,7 +64,7 @@ type NetbiosReplyStatus struct {
 func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	result = model.ProbeTaskResult{ProbeTask: task, Result: "", Err: nil}
 
-	conn, err := net.DialTimeout("udp", fmt.Sprintf("%s:%v", task.Ip, 137), model.ConnectTimeout)
+	conn, err := net.DialTimeout("udp", fmt.Sprintf("%s:%v", task.Ip, task.Port), model.ConnectTimeout)
 	if err != nil {
 		return
 	}
@@ -84,30 +85,34 @@ func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	}
 	//fmt.Println(text)
 	sreply := parseReplay(ret2)
-	//if sreply.Header.RecordType == 0x21 {
-	//	// log.Printf("probe %s received a status reply of %d bytes from %s", this, rlen, raddr)
-	//
-	//}
-	if sreply.Header.RecordType == 0x00 {
-		return
-	}
-	//fmt.Printf("%x\n", sreply.Header.RecordType)
-	_, err = conn.Write(createNameRequest(TrimName(string(sreply.HostName[:]))))
-	ret2, _ = readBytes(conn)
-	nreply := parseReplay(ret2)
-
 	if len(sreply.Names) == 0 && len(sreply.Addresses) == 0 {
 		return
 	}
-	//
-	//if len(nreply.Names) == 0 && len(nreply.Addresses) == 0 {
+
+	var nreply NetbiosReplyStatus
+
+	if sreply.Header.RecordType == 0x21 {
+		_, err = conn.Write(createNameRequest(TrimName(string(sreply.HostName[:]))))
+		ret2, _ = readBytes(conn)
+		nreply = parseReplay(ret2)
+	}
+
+	//if sreply.Header.RecordType == 0x00 {
+	//	return
+	//}
+
+	//fmt.Printf("%x\n", sreply.Header.RecordType)
+	//if sreply.Header.RecordType != 0x20 {
 	//	return
 	//}
 
 	var Info map[string]string
 	Info = make(map[string]string)
 
-	Info["Name"] = TrimName(string(sreply.HostName[:]))
+	Name := TrimName(string(sreply.HostName[:]))
+	if len(Name) > 0 {
+		Info["Name"] = Name
+	}
 	var Nets []string
 	if nreply.Header.RecordType == 0x20 {
 		for _, ainfo := range nreply.Addresses {
@@ -122,6 +127,7 @@ func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	}
 
 	if sreply.HWAddr != "00:00:00:00:00:00" {
+		//m1 := manuf.Search(sreply.HWAddr) + fmt.Sprintf("\t\t%s", m1)
 		Info["Hwaddr"] = sreply.HWAddr
 	}
 
@@ -149,9 +155,9 @@ func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	}
 	result.Result += b.String()
 
-	//fmt.Println()
-	result.Result += fmt.Sprintf("%-8s: %s", "Nets", strings.Join(Nets, "\t"))
-
+	if len(Nets) > 0 {
+		result.Result += fmt.Sprintf("%-8s: %s", "Nets", strings.Join(Nets, "\t"))
+	}
 	return result
 }
 

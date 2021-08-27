@@ -3,6 +3,7 @@ package probe
 import (
 	"bytes"
 	"cube/model"
+	"cube/util"
 	"encoding/binary"
 	"fmt"
 	manuf "github.com/JKme/gomanuf"
@@ -79,7 +80,7 @@ func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	if err != nil {
 		return
 	}
-	ret2, err := readBytes(conn)
+	ret2, err := util.ReadBytes(conn)
 	if err != nil {
 		return
 	}
@@ -92,8 +93,8 @@ func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	var nreply NetbiosReplyStatus
 
 	if sreply.Header.RecordType == 0x21 {
-		_, err = conn.Write(createNameRequest(TrimName(string(sreply.HostName[:]))))
-		ret2, _ = readBytes(conn)
+		_, err = conn.Write(createNameRequest(util.TrimName(string(sreply.HostName[:]))))
+		ret2, _ = util.ReadBytes(conn)
 		nreply = parseReplay(ret2)
 	}
 
@@ -109,7 +110,7 @@ func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	var Info map[string]string
 	Info = make(map[string]string)
 
-	Name := TrimName(string(sreply.HostName[:]))
+	Name := util.TrimName(string(sreply.HostName[:]))
 	if len(Name) > 0 {
 		Info["Name"] = Name
 	}
@@ -117,12 +118,12 @@ func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	if nreply.Header.RecordType == 0x20 {
 		for _, ainfo := range nreply.Addresses {
 
-			net := fmt.Sprintf("%d.%d.%d.%d", ainfo.Address[0], ainfo.Address[1], ainfo.Address[2], ainfo.Address[3])
-			if net == "0.0.0.0" {
+			net1 := fmt.Sprintf("%d.%d.%d.%d", ainfo.Address[0], ainfo.Address[1], ainfo.Address[2], ainfo.Address[3])
+			if net1 == "0.0.0.0" {
 				continue
 			}
 
-			Nets = append(Nets, net)
+			Nets = append(Nets, net1)
 		}
 	}
 
@@ -131,14 +132,14 @@ func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 		Info["Hwaddr"] = sreply.HWAddr + fmt.Sprintf("\t\t%s", m1)
 	}
 
-	username := TrimName(string(sreply.UserName[:]))
+	username := util.TrimName(string(sreply.UserName[:]))
 	if len(username) > 0 && username != Info["Name"] {
 		Info["Username"] = username
 	}
 
 	for _, rname := range sreply.Names {
 
-		tname := TrimName(string(rname.Name[:]))
+		tname := util.TrimName(string(rname.Name[:]))
 		if tname == Info["Name"] {
 			continue
 		}

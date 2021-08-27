@@ -7,6 +7,7 @@ import (
 	"cube/model"
 	"fmt"
 	"io"
+	"net"
 	"os"
 	"regexp"
 	"strconv"
@@ -193,4 +194,36 @@ func WriteToFile(f *os.File, output string) error {
 		return fmt.Errorf("[!] Unable to write to file %w", err)
 	}
 	return nil
+}
+
+func ReadBytes(conn net.Conn) (result []byte, err error) {
+	buf := make([]byte, 4096)
+	for {
+		count, err := conn.Read(buf)
+		if err != nil {
+			break
+		}
+		result = append(result, buf[0:count]...)
+		if count < 4096 {
+			break
+		}
+	}
+	return result, err
+}
+
+func TrimName(name string) string {
+	return strings.TrimSpace(strings.Replace(name, "\x00", "", -1))
+}
+func Bytes2Uint(bs []byte, endian byte) uint64 {
+	var u uint64
+	if endian == '>' {
+		for i := 0; i < len(bs); i++ {
+			u += uint64(bs[i]) << (8 * (len(bs) - i - 1))
+		}
+	} else {
+		for i := 0; i < len(bs); i++ {
+			u += uint64(bs[len(bs)-i-1]) << (8 * (len(bs) - i - 1))
+		}
+	}
+	return u
 }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"cube/log"
 	"cube/model"
+	"cube/util"
 	"encoding/hex"
 	"fmt"
 	"github.com/JKme/go-ntlmssp"
@@ -23,7 +24,7 @@ func SmbProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	if err != nil {
 		return
 	}
-	r1, _ := readBytes(conn)
+	r1, _ := util.ReadBytes(conn)
 
 	//ff534d42 SMBv1的标示
 	//fe534d42 SMBv2的标示
@@ -35,14 +36,14 @@ func SmbProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 			return
 		}
 
-		ret, err := readBytes(conn)
+		ret, err := util.ReadBytes(conn)
 
 		if err != nil || len(ret) < 45 {
 			return
 		}
 
-		blob_length := uint16(bytes2Uint(ret[43:45], '<'))
-		blob_count := uint16(bytes2Uint(ret[45:47], '<'))
+		blob_length := uint16(util.Bytes2Uint(ret[43:45], '<'))
+		blob_count := uint16(util.Bytes2Uint(ret[45:47], '<'))
 
 		gss_native := ret[47:]
 		off_ntlm := bytes.Index(gss_native, []byte("NTLMSSP"))
@@ -60,8 +61,8 @@ func SmbProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 		tinfo := type2.String(bs)
 		//fmt.Println(tinfo)
 
-		NativeOS := TrimName(ss[0])
-		NativeLM := TrimName(ss[1])
+		NativeOS := util.TrimName(ss[0])
+		NativeLM := util.TrimName(ss[1])
 		//fmt.Println(NativeOS, NativeLM)
 		tinfo += fmt.Sprintf("NativeOS: %s\nNativeLM: %s\n", NativeOS, NativeLM)
 		result.Result = tinfo
@@ -74,7 +75,7 @@ func SmbProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 			fmt.Println(err)
 			return
 		}
-		r2, _ := readBytes(conn2)
+		r2, _ := util.ReadBytes(conn2)
 
 		var NTLMSSPNegotiatev2Data []byte
 		if hex.EncodeToString(r2[70:71]) == "03" {
@@ -89,10 +90,10 @@ func SmbProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 		if err != nil {
 			return
 		}
-		readBytes(conn2)
+		util.ReadBytes(conn2)
 
 		_, err = conn2.Write(NTLMSSPNegotiatev2Data)
-		ret, _ := readBytes(conn2)
+		ret, _ := util.ReadBytes(conn2)
 		ntlmOff := bytes.Index(ret, []byte("NTLMSSP"))
 		type2 := ntlmssp.ChallengeMsg{}
 		tinfo := type2.String(ret[ntlmOff:])
@@ -100,38 +101,6 @@ func SmbProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	}
 
 	return result
-}
-
-func readBytes(conn net.Conn) (result []byte, err error) {
-	buf := make([]byte, 4096)
-	for {
-		count, err := conn.Read(buf)
-		if err != nil {
-			break
-		}
-		result = append(result, buf[0:count]...)
-		if count < 4096 {
-			break
-		}
-	}
-	return result, err
-}
-
-func TrimName(name string) string {
-	return strings.TrimSpace(strings.Replace(name, "\x00", "", -1))
-}
-func bytes2Uint(bs []byte, endian byte) uint64 {
-	var u uint64
-	if endian == '>' {
-		for i := 0; i < len(bs); i++ {
-			u += uint64(bs[i]) << (8 * (len(bs) - i - 1))
-		}
-	} else {
-		for i := 0; i < len(bs); i++ {
-			u += uint64(bs[len(bs)-i-1]) << (8 * (len(bs) - i - 1))
-		}
-	}
-	return u
 }
 
 //var NbtiosTCPData = []byte{

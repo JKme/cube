@@ -13,16 +13,15 @@ import (
 	"time"
 )
 
-func ValidPlugin(plugin string) ([]string, error) {
+func validPlugin(plugin string) []string {
 	pluginList := strings.Split(plugin, ",")
-	if len(pluginList) > 1 && SliceContain("ALL", pluginList) {
-		return nil, fmt.Errorf("invalid plugin: %s", plugin)
+	if len(pluginList) > 1 && util.SliceContain("ALL", pluginList) {
+		log.Errorf("invalid plugin: %s", plugin)
 	}
-
 	if plugin == "ALL" {
-		pluginList = Plugins.ProbeKeys[1:]
+		pluginList = Plugins.ProbeKeys
 	}
-	return pluginList, nil
+	return pluginList
 }
 
 func generateTasks(AliveIPS []util.IpAddr, scanPlugin []string) (tasks []model.ProbeTask) {
@@ -39,7 +38,7 @@ func generateTasks(AliveIPS []util.IpAddr, scanPlugin []string) (tasks []model.P
 func saveReport(taskResult model.ProbeTaskResult) {
 	if len(taskResult.Result) > 0 {
 		s := fmt.Sprintf("[*]: %s\n[*]: %s:%s\n", taskResult.ProbeTask.ScanPlugin, taskResult.ProbeTask.Ip, taskResult.ProbeTask.Port)
-		s1 := fmt.Sprintf("[*]: %s", taskResult.Result)
+		s1 := fmt.Sprintf("%s\n", taskResult.Result)
 		log.Infof(s + s1)
 	}
 }
@@ -54,7 +53,7 @@ func executeProbeTask(ctx context.Context, taskChan chan model.ProbeTask, wg *sy
 				return
 			}
 
-			log.Debugf("Checking %s Password: %s://%s:%s", task.ScanPlugin, task.ScanPlugin, task.Ip, task.Port)
+			log.Debugf("Probe %s: %s://%s:%s", task.ScanPlugin, task.ScanPlugin, task.Ip, task.Port)
 			fn := Plugins.ProbeFuncMap[task.ScanPlugin]
 			r := fn(task)
 			saveReport(r)
@@ -100,18 +99,14 @@ func StartProbeTask(opt *model.ProbeOptions, globalopts *model.GlobalOptions) {
 	if err != nil {
 		log.Error(err)
 	}
-	pluginList, err := ValidPlugin(opt.ScanPlugin)
-	if err != nil {
-		log.Error(err)
-	}
-	if !Subset(pluginList, Plugins.ProbeKeys) {
+	pluginList := validPlugin(opt.ScanPlugin)
+	if !util.Subset(pluginList, Plugins.ProbeKeys) && !util.Subset(pluginList, Plugins.ProbeFuncExclude) {
 		log.Errorf("plugins not found: %s", pluginList)
 	}
 	log.Infof("Loading plugin: %s", strings.Join(pluginList, ","))
 	ctx := context.Background()
 
 	AliveIPS := util.CheckAlive(ctx, threadNum, delay, ips, pluginList, opt.Port)
-
 	tasks := generateTasks(AliveIPS, pluginList)
 
 	taskChan := make(chan model.ProbeTask, threadNum*2)
@@ -126,8 +121,8 @@ func StartProbeTask(opt *model.ProbeOptions, globalopts *model.GlobalOptions) {
 		wg.Add(1)
 		taskChan <- task
 	}
-
+	//wg.Wait()
 	waitTimeout(&wg, model.ThreadTimeout)
-	getFinishTime(t1)
+	util.GetFinishTime(t1)
 
 }

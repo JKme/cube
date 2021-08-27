@@ -4,6 +4,7 @@ import (
 	"cube/log"
 	"cube/model"
 	Plugins "cube/plugins"
+	"cube/util"
 	"fmt"
 	"strings"
 )
@@ -17,7 +18,7 @@ func SaveSqlcmdReport(taskResult model.SqlcmdTaskResult) {
 }
 
 func StartSqlcmdTask(opt *model.SqlcmdOptions, globalopts *model.GlobalOptions) {
-	s, err := ParseService(opt.Service)
+	s, err := util.ParseService(opt.Service)
 	if err != nil {
 		log.Error(err)
 	}

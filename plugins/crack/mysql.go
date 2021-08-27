@@ -25,7 +25,7 @@ func MysqlCrack(task model.CrackTask) (result model.CrackTaskResult) {
 					if err != nil {
 						fmt.Println(err)
 					}
-					s = s + fmt.Sprintf("OS=%s Version=%s Machine=%s File_Priv=%s\t", strings.Split(cols[1], "-")[0], cols[0], cols[2], cols[3])
+					s = s + fmt.Sprintf("OS=%s Version=%s Arch=%s File_Priv=%s\t", strings.Split(cols[1], "-")[0], cols[0], cols[2], cols[3])
 
 				}
 				result.Result = fmt.Sprintf("User: %s \tPassword: %s \t %s", task.Auth.User, task.Auth.Password, s)

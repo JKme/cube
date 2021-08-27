@@ -3,8 +3,10 @@ package probe
 import (
 	"bytes"
 	"cube/model"
+	"cube/util"
 	"encoding/binary"
 	"fmt"
+	manuf "github.com/JKme/gomanuf"
 	"math/rand"
 	"net"
 	"strings"
@@ -61,51 +63,83 @@ type NetbiosReplyStatus struct {
 }
 
 func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
-	result = model.ProbeTaskResult{ProbeTask: task, Result: "\n", Err: nil}
+	result = model.ProbeTaskResult{ProbeTask: task, Result: "", Err: nil}
 
-	//senddata1 := []byte{102, 102, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 32, 67, 75, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 0, 0, 33, 0, 1}
-
-	conn, err := net.DialTimeout("udp", fmt.Sprintf("%s:%v", task.Ip, 137), model.ConnectTimeout)
+	conn, err := net.DialTimeout("udp", fmt.Sprintf("%s:%v", task.Ip, task.Port), model.ConnectTimeout)
 	if err != nil {
 		return
 	}
 	defer conn.Close()
+
+	err = conn.SetReadDeadline(time.Now().Add(5 * time.Second))
+	if err != nil {
+		//log.Println("SetReadDeadline failed:", err)
+		return
+	}
 	_, err = conn.Write(createStatusRequest())
-	ret2, err := readBytes(conn)
+	if err != nil {
+		return
+	}
+	ret2, err := util.ReadBytes(conn)
+	if err != nil {
+		return
+	}
 	//fmt.Println(text)
 	sreply := parseReplay(ret2)
+	if len(sreply.Names) == 0 && len(sreply.Addresses) == 0 {
+		return
+	}
 
-	_, err = conn.Write(createNameRequest(TrimName(string(sreply.HostName[:]))))
-	ret2, _ = readBytes(conn)
-	nreply := parseReplay(ret2)
+	var nreply NetbiosReplyStatus
+
+	if sreply.Header.RecordType == 0x21 {
+		_, err = conn.Write(createNameRequest(util.TrimName(string(sreply.HostName[:]))))
+		ret2, _ = util.ReadBytes(conn)
+		nreply = parseReplay(ret2)
+	}
+
+	//if sreply.Header.RecordType == 0x00 {
+	//	return
+	//}
+
+	//fmt.Printf("%x\n", sreply.Header.RecordType)
+	//if sreply.Header.RecordType != 0x20 {
+	//	return
+	//}
 
 	var Info map[string]string
 	Info = make(map[string]string)
 
-	Info["Name"] = TrimName(string(sreply.HostName[:]))
+	Name := util.TrimName(string(sreply.HostName[:]))
+	if len(Name) > 0 {
+		Info["Name"] = Name
+	}
 	var Nets []string
 	if nreply.Header.RecordType == 0x20 {
 		for _, ainfo := range nreply.Addresses {
 
-			net := fmt.Sprintf("%d.%d.%d.%d", ainfo.Address[0], ainfo.Address[1], ainfo.Address[2], ainfo.Address[3])
-			if net == "0.0.0.0" {
+			net1 := fmt.Sprintf("%d.%d.%d.%d", ainfo.Address[0], ainfo.Address[1], ainfo.Address[2], ainfo.Address[3])
+			if net1 == "0.0.0.0" {
 				continue
 			}
 
-			Nets = append(Nets, net)
+			Nets = append(Nets, net1)
 		}
 	}
 
-	Info["Hwaddr"] = sreply.HWAddr
+	if sreply.HWAddr != "00:00:00:00:00:00" {
+		m1 := manuf.Search(sreply.HWAddr)
+		Info["Hwaddr"] = sreply.HWAddr + fmt.Sprintf("\t\t%s", m1)
+	}
 
-	username := TrimName(string(sreply.UserName[:]))
+	username := util.TrimName(string(sreply.UserName[:]))
 	if len(username) > 0 && username != Info["Name"] {
 		Info["Username"] = username
 	}
 
 	for _, rname := range sreply.Names {
 
-		tname := TrimName(string(rname.Name[:]))
+		tname := util.TrimName(string(rname.Name[:]))
 		if tname == Info["Name"] {
 			continue
 		}
@@ -118,13 +152,13 @@ func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 
 	b := new(bytes.Buffer)
 	for key, value := range Info {
-		fmt.Fprintf(b, "%-8s: %s\n", key, value)
+		_, _ = fmt.Fprintf(b, "%-8s: %s\n", key, value)
 	}
 	result.Result += b.String()
 
-	//fmt.Println()
-	result.Result += fmt.Sprintf("%-8s: %s", "Nets", strings.Join(Nets, ","))
-
+	if len(Nets) > 0 {
+		result.Result += fmt.Sprintf("%-8s: %s", "Nets", strings.Join(Nets, "\t"))
+	}
 	return result
 }
 
@@ -182,7 +216,13 @@ func parseReplay(buff []byte) NetbiosReplyStatus {
 	temp := bytes.NewBuffer(buff)
 
 	binary.Read(temp, binary.BigEndian, &resp.Header)
+	if resp.Header.QuestionCount != 0 {
+		return resp
+	}
 
+	if resp.Header.AnswerCount == 0 {
+		return resp
+	}
 	if resp.Header.RecordType == 0x21 {
 		var rcnt uint8
 		var ridx uint8
@@ -207,6 +247,16 @@ func parseReplay(buff []byte) NetbiosReplyStatus {
 		resp.HWAddr = fmt.Sprintf("%.2x:%.2x:%.2x:%.2x:%.2x:%.2x",
 			hwbytes[0], hwbytes[1], hwbytes[2], hwbytes[3], hwbytes[4], hwbytes[5],
 		)
+
+		if resp.Header.RecordType == 0x20 {
+			var ridx uint16
+			for ridx = 0; ridx < (resp.Header.RecordLength / 6); ridx++ {
+				addr := NetbiosReplyAddress{}
+				binary.Read(temp, binary.BigEndian, &addr)
+				resp.Addresses = append(resp.Addresses, addr)
+			}
+		}
+
 		return resp
 	}
 

@@ -26,12 +26,11 @@ func validPlugin(plugin string) []string {
 
 func generateTasks(AliveIPS []util.IpAddr, scanPlugin []string) (tasks []model.ProbeTask) {
 	tasks = make([]model.ProbeTask, 0)
-	for _, plugin := range scanPlugin {
-		for _, aliveAddr := range AliveIPS {
-			service := model.ProbeTask{Ip: aliveAddr.Ip, Port: aliveAddr.Port, ScanPlugin: plugin}
-			tasks = append(tasks, service)
-		}
+	for _, aliveAddr := range AliveIPS {
+		service := model.ProbeTask{Ip: aliveAddr.Ip, Port: aliveAddr.Port, ScanPlugin: aliveAddr.Plugin}
+		tasks = append(tasks, service)
 	}
+
 	return tasks
 }
 

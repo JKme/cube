@@ -62,3 +62,9 @@ func TestNetbiosProbe(t *testing.T) {
 	r := NetbiosProbe(task)
 	fmt.Println(r.Result)
 }
+
+func TestMdnsProbe(t *testing.T) {
+	task := model.ProbeTask{Ip: "127.0.0.1", Port: "1099", ScanPlugin: "netbios"}
+	r := RmiProbe(task)
+	fmt.Println(r)
+}

@@ -1,4 +1,4 @@
-package cubelib
+package util
 
 import (
 	"bufio"
@@ -175,7 +175,7 @@ func ReadResultMap() {
 	}
 }
 
-func getFinishTime(t1 time.Time) {
+func GetFinishTime(t1 time.Time) {
 
 	fmt.Println(strings.Repeat(">", 50))
 	End := time.Now().Format("2006-01-02 15:04:05")

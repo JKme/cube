@@ -27,7 +27,7 @@ func WinrmProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	ntlminfo := resp.Header.Get("Www-Authenticate")[10:]
 	data, err := base64.StdEncoding.DecodeString(ntlminfo)
 	type2 := ntlmssp.ChallengeMsg{}
-	tinfo := "\n" + type2.String(data)
+	tinfo := type2.String(data)
 	result.Result = tinfo
 
 	return result

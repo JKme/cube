@@ -23,6 +23,7 @@ var (
 	SqlcmdKeys       []string
 	CrackKeys        []string
 	CrackFuncExclude []string
+	ProbeFuncExclude []string
 	//CrackFuncMap map[string]CrackFunc
 )
 
@@ -39,10 +40,14 @@ func init() {
 	ProbeFuncMap["zookeeper"] = probe.ZookeeperProbe
 	ProbeFuncMap["smbghost"] = probe.SmbGhostProbe
 
-	ProbeKeys = append(ProbeKeys, "ALL")
+	ProbeFuncExclude = []string{"ms17010", "smbghost", "ntlm-winrm", "ntlm-mssql"}
 	for k := range ProbeFuncMap {
-		ProbeKeys = append(ProbeKeys, k)
+		if !util.SliceContain(k, ProbeFuncExclude) {
+			ProbeKeys = append(ProbeKeys, k)
+		}
 	}
+	ProbePluginKeys := make(map[string][]string)
+	ProbePluginKeys["ALL"] = ProbeKeys
 
 	SqlcmdFuncMap = make(map[string]SqlcmdFunc)
 	SqlcmdFuncMap["ssh"] = sqlcmd.SshCmd
@@ -79,5 +84,4 @@ func init() {
 
 	CrackPluginKeys := make(map[string][]string)
 	CrackPluginKeys["ALL"] = CrackKeys
-
 }

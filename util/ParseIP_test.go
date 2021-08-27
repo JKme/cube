@@ -46,3 +46,9 @@ func TestReadipfile2(t *testing.T) {
 	checkUDP(ip)
 
 }
+
+func TestSubset(t *testing.T) {
+	a := []string{"ntlm-winrm"}
+	b := []string{"ntlm-smb", "ntlm-wmi", "zookeeper", "oxid", "netbios", "ntlm-winrm"}
+	fmt.Println(Subset(a, b))
+}

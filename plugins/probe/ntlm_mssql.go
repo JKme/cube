@@ -68,7 +68,7 @@ func MssqlProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 
 	off_ntlm := bytes.Index(ret, []byte("NTLMSSP"))
 	type2 := ntlmssp.ChallengeMsg{}
-	tinfo := "\n" + type2.String(ret[off_ntlm:])
+	tinfo := type2.String(ret[off_ntlm:])
 	result.Result = tinfo
 	return result
 }

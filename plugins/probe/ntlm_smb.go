@@ -141,7 +141,7 @@ func SmbProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 		NativeOS := TrimName(ss[0])
 		NativeLM := TrimName(ss[1])
 		//fmt.Println(NativeOS, NativeLM)
-		tinfo += fmt.Sprintf("NativeOS: %s\nNativeLM: %s\n%s", NativeOS, NativeLM, strings.Repeat("<", 50))
+		tinfo += fmt.Sprintf("NativeOS: %s\nNativeLM: %s\n", NativeOS, NativeLM)
 		result.Result = tinfo
 	} else {
 		conn2, _ := net.DialTimeout("tcp", realhost, model.ConnectTimeout)
@@ -173,7 +173,7 @@ func SmbProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 		ret, _ := readBytes(conn2)
 		ntlmOff := bytes.Index(ret, []byte("NTLMSSP"))
 		type2 := ntlmssp.ChallengeMsg{}
-		tinfo := "\n" + type2.String(ret[ntlmOff:])
+		tinfo := type2.String(ret[ntlmOff:])
 		result.Result = tinfo
 	}
 

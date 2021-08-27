@@ -13,16 +13,15 @@ import (
 	"time"
 )
 
-func ValidPlugin(plugin string) ([]string, error) {
+func validPlugin(plugin string) []string {
 	pluginList := strings.Split(plugin, ",")
-	if len(pluginList) > 1 && SliceContain("ALL", pluginList) {
-		return nil, fmt.Errorf("invalid plugin: %s", plugin)
+	if len(pluginList) > 1 && util.SliceContain("ALL", pluginList) {
+		log.Errorf("invalid plugin: %s", plugin)
 	}
-
 	if plugin == "ALL" {
-		pluginList = Plugins.ProbeKeys[1:]
+		pluginList = Plugins.ProbeKeys
 	}
-	return pluginList, nil
+	return pluginList
 }
 
 func generateTasks(AliveIPS []util.IpAddr, scanPlugin []string) (tasks []model.ProbeTask) {
@@ -100,11 +99,8 @@ func StartProbeTask(opt *model.ProbeOptions, globalopts *model.GlobalOptions) {
 	if err != nil {
 		log.Error(err)
 	}
-	pluginList, err := ValidPlugin(opt.ScanPlugin)
-	if err != nil {
-		log.Error(err)
-	}
-	if !Subset(pluginList, Plugins.ProbeKeys) {
+	pluginList := validPlugin(opt.ScanPlugin)
+	if !util.Subset(pluginList, Plugins.ProbeKeys) && !util.Subset(pluginList, Plugins.ProbeFuncExclude) {
 		log.Errorf("plugins not found: %s", pluginList)
 	}
 	log.Infof("Loading plugin: %s", strings.Join(pluginList, ","))
@@ -127,6 +123,6 @@ func StartProbeTask(opt *model.ProbeOptions, globalopts *model.GlobalOptions) {
 	}
 	//wg.Wait()
 	waitTimeout(&wg, model.ThreadTimeout)
-	getFinishTime(t1)
+	util.GetFinishTime(t1)
 
 }

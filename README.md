@@ -11,7 +11,7 @@
 ![code](https://pbs.twimg.com/media/ElkdkAGXIAAl_4P?format=jpg&name=small)
 
 适用内网渗透测试。 ~~F-Scrack的翻版，给fscan和Ladon做了个分类，[X-Crack](https://github.com/netxfly/x-crack) 套壳~~
-，包括三个模块信息收集(probe)、弱密码爆破(crack)、命令执行(sqlcmd)，此处参考gobuster的爆破模式
+，包括三个模块信息收集(probe)、弱密码爆破(crack)、命令执行(sqlcmd)，参考gobuster的爆破模式
 
 ```bash
 Usage:
@@ -41,23 +41,28 @@ Flags:
 ### Probe 内网信息收集
 内网探测信息，有如下插件:
 
-| 插件名称      | 探测效果 | 默认端口 |
+| 插件名称      | 插件效果 | 默认端口 |
 | --------- | :-----|------|
 | oxid      | 多网卡 |   TCP 135 |
 | netbios     | Nbtscan     | UDP 137
 | ms17010     |  ms17010漏洞 | TCP 445 
 | zookeeper      |    zookeeper未授权 | TCP 2181
 | smbghost      | smbghost漏洞    | TCP 445
-|ntlm-smb       | NTLM信息收集(smbv1和smbv2) | TCP 445
-|ntlm-wmi       | NTLM信息收集     | TCP 135
-|ntlm-winrm     | NTLM信息收集     | TCP 5985
-|ntlm-mssql     | NTLM信息收集     | TCP 1433
+| ntlm-smb       | NTLM信息收集(smbv1和smbv2) | TCP 445
+| ntlm-wmi       | NTLM信息收集     | TCP 135
+| ntlm-winrm     | NTLM信息收集     | TCP 5985
+| ntlm-mssql     | NTLM信息收集     | TCP 1433
 
 
-```bash
+```
+ALL选项默认加载插件: ntlm-smb,oxid,netbios,ntlm-wmi,zookeeper
 cube probe -x oxid -i 192.168.2.1/24
 cube probe -x ALL -i 192.168.2.1/24
 ```
+
+#### Probe注意事项
+`ntlm-smb`模块发送了smbv1和smbv2探测包，smbv1的返回包会包含具体的操作系统，smbv2只会有一个Build版本号，比如Win10常见的`Build: 10.0.19041`,
+`10.0.19044`可以指 Windows 10 或 Windows Server 2019 的 21H1 版本。
 
 ### Crack 弱密码爆破
 ```bash
@@ -86,7 +91,26 @@ Global Flags:
 ```
 用户名(`-u/--user-file`)和密码(`-p/--pass-file`)成对出现，可以任意组合， 可用插件：`ssh，mysql，redis，elastic，ftp，httpbasic，mongo，mssql，smb，postgres`
 
+| 插件名称      | 插件效果 | 默认端口 |
+| --------- | :-----|------|
+| mysql     | Mysql爆破 | TCP 3306 |
+| mssql     | Mssql爆破 | TCP 1433
+| mongo     | Mongo爆破 | TCP 27017
+| elastic   | ES爆破    | TCP 9200
+| postgres  | postgres爆破(未测试) | TCP 5432
+| ssh       | SSH爆破     | TCP 22
+| redis     | redis爆破     | TCP 6379
+| ftp       | ftp爆破     | TCP 21
+
+
+| 插件名称      | 插件效果 | 默认端口 |
+| --------- | :-----|------|
+| httpbasic        | basic认证爆破     | 自己指定
+| jenkins          | jenkins爆破     | 自己指定
+| phpmyadmin       | phpmyadmin爆破     | 自己指定
+
 ```
+ALL默认加载插件：mysql,smb,mssql,mongo,elastic,postgres,ssh,redis,ftp
 Examples:
 cube crack -u root -p root -i 192.168.1.1 -x ALL //加载全部可组合插件
 cube crack -u root -p root -i 192.168.1.1 -x ssh
@@ -126,13 +150,7 @@ cube sqlcmd -x mssql-clr://172.16.157.163 -usa -p123456 -e "whoami"
 cube sqlcmd -x mssql-clr://172.16.157.163 -usa -p123456 -e "close" //close CLR
 ```
 
-#### ELK SIEM Detections Rule
-```
-1. mssql execute cmd
-process where event.type in ("start", "process_started") and
-process.name : "cmd.exe" and process.parent.name : "sqlservr.exe"
 
-```
 
 ### TODO
 NTLM信息识别收集：

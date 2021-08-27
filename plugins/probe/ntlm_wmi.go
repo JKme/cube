@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"cube/log"
 	"cube/model"
+	"cube/util"
 	"fmt"
 	"github.com/JKme/go-ntlmssp"
 	"net"
@@ -20,14 +21,17 @@ func WmiProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 		return
 	}
 	conn.Write(payload)
-	if err != nil {
-		return
-	}
-	ret, _ := readBytes(conn)
+	//if err != nil {
+	//	return
+	//}
+	ret, _ := util.ReadBytes(conn)
 
 	off_ntlm := bytes.Index(ret, []byte("NTLMSSP"))
+	if off_ntlm == -1 {
+		return
+	}
 	type2 := ntlmssp.ChallengeMsg{}
-	tinfo := "\n" + type2.String(ret[off_ntlm:])
+	tinfo := type2.String(ret[off_ntlm:])
 	result.Result = tinfo
 	return result
 }

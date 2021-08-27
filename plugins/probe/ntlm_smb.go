@@ -4,12 +4,112 @@ import (
 	"bytes"
 	"cube/log"
 	"cube/model"
+	"cube/util"
 	"encoding/hex"
 	"fmt"
 	"github.com/JKme/go-ntlmssp"
 	"net"
 	"strings"
 )
+
+func SmbProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
+	result = model.ProbeTaskResult{ProbeTask: task, Result: "", Err: nil}
+	realhost := fmt.Sprintf("%s:%v", task.Ip, task.Port)
+	conn, err := net.DialTimeout("tcp", realhost, model.ConnectTimeout)
+	if err != nil {
+		log.Debug(err)
+		return
+	}
+	_, err = conn.Write(NegotiateSMBv1Data1)
+	if err != nil {
+		return
+	}
+	r1, _ := util.ReadBytes(conn)
+
+	//ff534d42 SMBv1的标示
+	//fe534d42 SMBv2的标示
+	//先发送探测SMBv1的payload，不支持的SMBv1的时候返回为空，然后尝试发送SMBv2的探测数据包
+	//if hex.EncodeToString(r1[4:8]) == "ff534d42" {
+	if len(r1) > 0 {
+		_, err = conn.Write(NegotiateSMBv1Data2)
+		if err != nil {
+			return
+		}
+
+		ret, err := util.ReadBytes(conn)
+
+		if err != nil || len(ret) < 45 {
+			return
+		}
+
+		blob_length := uint16(util.Bytes2Uint(ret[43:45], '<'))
+		blob_count := uint16(util.Bytes2Uint(ret[45:47], '<'))
+
+		gss_native := ret[47:]
+		off_ntlm := bytes.Index(gss_native, []byte("NTLMSSP"))
+		//fmt.Println(off_ntlm)
+		//fmt.Printf("GSS-NATIVE: %x\n", gss[off_ntlm:])
+		//
+		//fmt.Printf("NTLM: %x\n", gss[off_ntlm:blob_length])
+		//fmt.Printf("native: %x\n", gss[int(blob_length):blob_count])
+		native := gss_native[int(blob_length):blob_count]
+		ss := strings.Split(string(native), "\x00\x00")
+		//fmt.Println(ss)
+
+		bs := gss_native[off_ntlm:blob_length]
+		type2 := ntlmssp.ChallengeMsg{}
+		tinfo := type2.String(bs)
+		//fmt.Println(tinfo)
+
+		NativeOS := util.TrimName(ss[0])
+		NativeLM := util.TrimName(ss[1])
+		//fmt.Println(NativeOS, NativeLM)
+		tinfo += fmt.Sprintf("NativeOS: %s\nNativeLM: %s\n", NativeOS, NativeLM)
+		result.Result = tinfo
+	} else {
+		conn2, _ := net.DialTimeout("tcp", realhost, model.ConnectTimeout)
+
+		_, err = conn2.Write(NegotiateSMBv2Data1)
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		r2, _ := util.ReadBytes(conn2)
+
+		var NTLMSSPNegotiatev2Data []byte
+		if hex.EncodeToString(r2[70:71]) == "03" {
+			flags := []byte{0x15, 0x82, 0x08, 0xa0}
+			NTLMSSPNegotiatev2Data = getNTLMSSPNegotiateData(flags)
+		} else {
+			flags := []byte{0x05, 0x80, 0x08, 0xa0}
+			NTLMSSPNegotiatev2Data = getNTLMSSPNegotiateData(flags)
+		}
+
+		_, err = conn2.Write(NegotiateSMBv2Data2)
+		if err != nil {
+			return
+		}
+		util.ReadBytes(conn2)
+
+		_, err = conn2.Write(NTLMSSPNegotiatev2Data)
+		ret, _ := util.ReadBytes(conn2)
+		ntlmOff := bytes.Index(ret, []byte("NTLMSSP"))
+		type2 := ntlmssp.ChallengeMsg{}
+		tinfo := type2.String(ret[ntlmOff:])
+		result.Result = tinfo
+	}
+
+	return result
+}
+
+//var NbtiosTCPData = []byte{
+//	0x81,0x00,0x00,0x44,0x20,0x43,0x4b,0x46,0x44,0x45,0x4e,0x45,0x43,0x46,0x44,0x45,
+//	0x46,0x46,0x43,0x46,0x47,0x45,0x46,0x46,0x43,0x43,0x41,0x43,0x41,0x43,0x41,0x43,
+//	0x41,0x43,0x41,0x43,0x41,0x00,0x20,0x43,0x41,0x43,0x41,0x43,0x41,0x43,0x41,0x43,
+//	0x41,0x43,0x41,0x43,0x41,0x43,0x41,0x43,0x41,0x43,0x41,0x43,0x41,0x43,0x41,0x43,
+//	0x41,0x43,0x41,0x43,0x41,0x41,0x41,0x00,
+//}
 
 var NegotiateSMBv1Data1 = []byte{
 	0x00, 0x00, 0x00, 0x85, 0xFF, 0x53, 0x4D, 0x42, 0x72, 0x00, 0x00, 0x00, 0x00, 0x18, 0x53, 0xC8,
@@ -87,127 +187,4 @@ func getNTLMSSPNegotiateData(Flags []byte) []byte {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	}
-}
-
-func SmbProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
-	result = model.ProbeTaskResult{ProbeTask: task, Result: "", Err: nil}
-	realhost := fmt.Sprintf("%s:%v", task.Ip, task.Port)
-	conn, err := net.DialTimeout("tcp", realhost, model.ConnectTimeout)
-	if err != nil {
-		log.Debug(err)
-		return
-	}
-	_, err = conn.Write(NegotiateSMBv1Data1)
-	if err != nil {
-		return
-	}
-	r1, _ := readBytes(conn)
-
-	//ff534d42 SMBv1的标示
-	//fe534d42 SMBv2的标示
-	//先发送探测SMBv1的payload，不支持的SMBv1的时候返回为空，然后尝试发送SMBv2的探测数据包
-	//if hex.EncodeToString(r1[4:8]) == "ff534d42" {
-	if len(r1) > 0 {
-		_, err = conn.Write(NegotiateSMBv1Data2)
-		if err != nil {
-			return
-		}
-
-		ret, err := readBytes(conn)
-
-		if err != nil || len(ret) < 45 {
-			return
-		}
-
-		blob_length := uint16(bytes2Uint(ret[43:45], '<'))
-		blob_count := uint16(bytes2Uint(ret[45:47], '<'))
-
-		gss_native := ret[47:]
-		off_ntlm := bytes.Index(gss_native, []byte("NTLMSSP"))
-		//fmt.Println(off_ntlm)
-		//fmt.Printf("GSS-NATIVE: %x\n", gss[off_ntlm:])
-		//
-		//fmt.Printf("NTLM: %x\n", gss[off_ntlm:blob_length])
-		//fmt.Printf("native: %x\n", gss[int(blob_length):blob_count])
-		native := gss_native[int(blob_length):blob_count]
-		ss := strings.Split(string(native), "\x00\x00")
-		//fmt.Println(ss)
-
-		bs := gss_native[off_ntlm:blob_length]
-		type2 := ntlmssp.ChallengeMsg{}
-		tinfo := "\n" + type2.String(bs)
-		//fmt.Println(tinfo)
-
-		NativeOS := TrimName(ss[0])
-		NativeLM := TrimName(ss[1])
-		//fmt.Println(NativeOS, NativeLM)
-		tinfo += fmt.Sprintf("NativeOS: %s\nNativeLM: %s\n%s", NativeOS, NativeLM, strings.Repeat("<", 50))
-		result.Result = tinfo
-	} else {
-		conn2, _ := net.DialTimeout("tcp", realhost, model.ConnectTimeout)
-
-		_, err = conn2.Write(NegotiateSMBv2Data1)
-
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		r2, _ := readBytes(conn2)
-
-		var NTLMSSPNegotiatev2Data []byte
-		if hex.EncodeToString(r2[70:71]) == "03" {
-			flags := []byte{0x15, 0x82, 0x08, 0xa0}
-			NTLMSSPNegotiatev2Data = getNTLMSSPNegotiateData(flags)
-		} else {
-			flags := []byte{0x05, 0x80, 0x08, 0xa0}
-			NTLMSSPNegotiatev2Data = getNTLMSSPNegotiateData(flags)
-		}
-
-		_, err = conn2.Write(NegotiateSMBv2Data2)
-		if err != nil {
-			return
-		}
-		readBytes(conn2)
-
-		_, err = conn2.Write(NTLMSSPNegotiatev2Data)
-		ret, _ := readBytes(conn2)
-		ntlmOff := bytes.Index(ret, []byte("NTLMSSP"))
-		type2 := ntlmssp.ChallengeMsg{}
-		tinfo := "\n" + type2.String(ret[ntlmOff:])
-		result.Result = tinfo
-	}
-
-	return result
-}
-
-func readBytes(conn net.Conn) (result []byte, err error) {
-	buf := make([]byte, 4096)
-	for {
-		count, err := conn.Read(buf)
-		if err != nil {
-			break
-		}
-		result = append(result, buf[0:count]...)
-		if count < 4096 {
-			break
-		}
-	}
-	return result, err
-}
-
-func TrimName(name string) string {
-	return strings.TrimSpace(strings.Replace(name, "\x00", "", -1))
-}
-func bytes2Uint(bs []byte, endian byte) uint64 {
-	var u uint64
-	if endian == '>' {
-		for i := 0; i < len(bs); i++ {
-			u += uint64(bs[i]) << (8 * (len(bs) - i - 1))
-		}
-	} else {
-		for i := 0; i < len(bs); i++ {
-			u += uint64(bs[len(bs)-i-1]) << (8 * (len(bs) - i - 1))
-		}
-	}
-	return u
 }

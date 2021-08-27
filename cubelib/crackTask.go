@@ -63,11 +63,11 @@ func saveCrackReport(taskResult model.CrackTaskResult) {
 	if len(taskResult.Result) > 0 {
 		log.Debugf("Put Result to Map: %v\n", taskResult)
 		k := fmt.Sprintf("%v-%v-%v", taskResult.CrackTask.Ip, taskResult.CrackTask.Port, taskResult.CrackTask.CrackPlugin)
-		h := MakeTaskHash(k)
-		SetTaskHash(h)
+		h := util.MakeTaskHash(k)
+		util.SetTaskHash(h)
 		//s1 := fmt.Sprintf("[+]: %s://%s:%s %s", taskResult.CrackTask.CrackPlugin, taskResult.CrackTask.Ip, taskResult.CrackTask.Port, taskResult.Result)
 		//fmt.Println(s1)
-		SetResultMap(taskResult)
+		util.SetResultMap(taskResult)
 	}
 }
 
@@ -91,8 +91,8 @@ func runUnitTask(ctx context.Context, tasks chan model.CrackTask, wg *sync.WaitG
 
 			log.Debugf("Checking %s Password: %s://%s:%s@%s:%s", task.CrackPlugin, task.CrackPlugin, task.Auth.User, task.Auth.Password, task.Ip, task.Port)
 			k := fmt.Sprintf("%v-%v-%v", task.Ip, task.Port, task.CrackPlugin)
-			h := MakeTaskHash(k)
-			if CheckTaskHash(h) {
+			h := util.MakeTaskHash(k)
+			if util.CheckTaskHash(h) {
 				wg.Done()
 				continue
 			}
@@ -120,13 +120,13 @@ func opt2slice(str string, file string) []string {
 
 		return r
 	}
-	r, _ := FileReader(file)
+	r, _ := util.FileReader(file)
 	return r
 }
 
 func genPlugins(plugin string) []string {
 	pluginList := strings.Split(plugin, ",")
-	if len(pluginList) > 1 && SliceContain("ALL", pluginList) {
+	if len(pluginList) > 1 && util.SliceContain("ALL", pluginList) {
 		log.Errorf("invalid plugin: %s", plugin)
 	}
 
@@ -175,7 +175,7 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 		num = globalopts.Threads
 	}
 
-	if SliceContain(opt.CrackPlugin, Plugins.CrackFuncExclude) {
+	if util.SliceContain(opt.CrackPlugin, Plugins.CrackFuncExclude) {
 		AliveIPS = append(AliveIPS, util.IpAddr{
 			Ip:     opt.Ip,
 			Port:   "",
@@ -212,6 +212,6 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 	}
 	//wg.Wait()
 	waitTimeout(&wg, model.ThreadTimeout*2)
-	ReadResultMap()
-	getFinishTime(t1)
+	util.ReadResultMap()
+	util.GetFinishTime(t1)
 }

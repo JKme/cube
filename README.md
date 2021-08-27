@@ -1,8 +1,3 @@
-# cube
-### Bugs
-- [ ] netbios模块输出空白
-- [ ] probe加载全部插件异常退出
-
 ### CUBE
 
  代码整体可读性比较差，各位师傅如果对源代码感兴趣，建议看netxfly师傅[X-Crack](https://github.com/netxfly/x-crack)仓库的

@@ -144,3 +144,17 @@ func TestJenkinsCrack(t *testing.T) {
 	r := JenkinsCrack(task)
 	fmt.Println(r)
 }
+
+func TestZabbixCrack(t *testing.T) {
+	task := model.CrackTask{
+		Ip: "http://127.0.0.1:8081",
+		//Port: "1433",
+		Auth: model.Auth{
+			User:     "guest",
+			Password: "",
+		},
+		CrackPlugin: "jenkins",
+	}
+	r := ZabbixCrack(task)
+	fmt.Println(r)
+}

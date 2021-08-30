@@ -68,3 +68,9 @@ func TestMdnsProbe(t *testing.T) {
 	r := RmiProbe(task)
 	fmt.Println(r)
 }
+
+func TestDockerProbe(t *testing.T) {
+	task := model.ProbeTask{Ip: "127.0.0.1", Port: "2375", ScanPlugin: "netbios"}
+	r := DockerProbe(task)
+	fmt.Println(r)
+}

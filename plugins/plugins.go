@@ -35,7 +35,7 @@ func init() {
 	ProbeFuncMap["ntlm-winrm"] = probe.WinrmProbe
 	ProbeFuncMap["ntlm-wmi"] = probe.WmiProbe
 	ProbeFuncMap["ntlm-mssql"] = probe.MssqlProbe
-
+	ProbeFuncMap["docker"] = probe.DockerProbe
 	ProbeFuncMap["ms17010"] = probe.Ms17010Probe
 	ProbeFuncMap["zookeeper"] = probe.ZookeeperProbe
 	ProbeFuncMap["smbghost"] = probe.SmbGhostProbe
@@ -74,8 +74,8 @@ func init() {
 	CrackFuncMap["phpmyadmin"] = crack.PhpmyadminCrack
 	CrackFuncMap["httpbasic"] = crack.HttpBasicCrack
 	CrackFuncMap["jenkins"] = crack.JenkinsCrack
-
-	CrackFuncExclude = []string{"phpmyadmin", "httpbasic", "jenkins"} //去除phpmyadmin这类单独使用的
+	CrackFuncMap["zabbix"] = crack.ZabbixCrack
+	CrackFuncExclude = []string{"phpmyadmin", "httpbasic", "jenkins", "zabbix"} //去除phpmyadmin这类单独使用的
 
 	for k := range CrackFuncMap {
 		if !util.SliceContain(k, CrackFuncExclude) {

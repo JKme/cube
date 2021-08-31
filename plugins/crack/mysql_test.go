@@ -150,11 +150,11 @@ func TestZabbixCrack(t *testing.T) {
 		Ip: "http://127.0.0.1:8081",
 		//Port: "1433",
 		Auth: model.Auth{
-			User:     "guest",
-			Password: "",
+			User:     "Admin",
+			Password: "zabbix",
 		},
 		CrackPlugin: "jenkins",
 	}
 	r := ZabbixCrack(task)
-	fmt.Println(r)
+	fmt.Println(r.Result)
 }

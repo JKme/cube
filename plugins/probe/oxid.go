@@ -8,13 +8,14 @@ import (
 	"golang.org/x/text/transform"
 	"io/ioutil"
 	"net"
+	"strings"
 )
 
 func OxidProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	result = model.ProbeTaskResult{ProbeTask: task, Result: "", Err: nil}
 	//log.Printf("Oxid Running Debug: %s", task.Ip)
 	dl := net.Dialer{Timeout: model.ConnectTimeout}
-	t := fmt.Sprintf("%s:%d", task.Ip, model.CommonPortMap[task.ScanPlugin])
+	t := fmt.Sprintf("%s:%s", task.Ip, task.Port)
 	conn, err := dl.Dial("tcp", t)
 
 	// defer conn.Close()
@@ -77,14 +78,37 @@ func OxidProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 		results = append(results, dataGet(r[:index+3]))
 		r = r[index+3:]
 	}
+	//var hostname string
+	var netAddr []string
 	if len(results) > 0 {
-		var s string
-		for _, v := range results {
-			s = s + fmt.Sprintf("\t"+v+"\n")
+		hostname := results[0]
+		for _, v := range results[1:] {
+			netAddr = append(netAddr, v)
 		}
-
-		result.Result = s
+		result.Result = fmt.Sprintf("Host: %s\nNets: %s", hostname, strings.Join(netAddr, "\n"))
 	}
+	arch := getArch(task)
+	if len(arch) > 0 {
+		result.Result += fmt.Sprintf("Arch: %s\n", arch)
+	}
+	return result
+}
+
+func dataGet(data []byte) string {
+	if bytes.HasPrefix(data, []byte("\x07\x00")) {
+		return string(data[:len(data)-3])
+	}
+	return ""
+}
+
+func getArch(task model.ProbeTask) (s string) {
+	dl := net.Dialer{Timeout: model.ConnectTimeout}
+	t := fmt.Sprintf("%s:%s", task.Ip, task.Port)
+	conn, err := dl.Dial("tcp", t)
+	if err != nil {
+		return
+	}
+
 	archPayload := []byte{ /* Packet 186 */
 		0x05, 0x00, 0x0b, 0x03, 0x10, 0x00, 0x00, 0x00,
 		0x48, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00,
@@ -94,15 +118,18 @@ func OxidProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 		0x91, 0xa4, 0x08, 0x00, 0x2b, 0x14, 0xa0, 0xfa,
 		0x03, 0x00, 0x00, 0x00, 0x33, 0x05, 0x71, 0x71,
 		0xba, 0xbe, 0x37, 0x49, 0x83, 0x19, 0xb5, 0xdb,
-		0xef, 0x9c, 0xcc, 0x36, 0x01, 0x00, 0x00, 0x00}
-	return result
-}
-
-func dataGet(data []byte) string {
-	if bytes.HasPrefix(data, []byte("\x07\x00")) {
-		return string(data[:len(data)-3])
+		0xef, 0x9c, 0xcc, 0x36, 0x01, 0x00, 0x00, 0x00,
 	}
-	return ""
+	conn.Write(archPayload)
+	tmpByte := make([]byte, 60)
+	conn.Read(tmpByte)
+	if bytes.Index(tmpByte, []byte("\x33\x05\x71\x71\xba\xbe\x37\x49\x83\x19\xb5\xdb\xef\x9c\xcc\x36")) > 0 {
+		s = "64-bit"
+	}
+	if strings.Contains(string(tmpByte), "syntaxes_not_supported") {
+		s = "32-bit"
+	}
+	return s
 }
 
 func gbkToUtf8(s []byte) ([]byte, error) {

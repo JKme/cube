@@ -9,10 +9,10 @@ import (
 //172.20.10.21
 //172.16.157.190
 func TestName(t *testing.T) {
-	task := model.ProbeTask{Ip: "172.20.40.108", Port: "135", ScanPlugin: "oxid"}
+	task := model.ProbeTask{Ip: "192.168.2.148", Port: "135", ScanPlugin: "oxid"}
 	r := OxidProbe(task)
 	//fmt.Println(reflect.TypeOf(r.Result))
-	fmt.Println(r.Result)
+	fmt.Println(r)
 
 	//for _, v := range r.Result {
 	//	fmt.Println( v)

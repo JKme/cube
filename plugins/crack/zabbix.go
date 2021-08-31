@@ -28,7 +28,6 @@ func ZabbixCrack(task model.CrackTask) (result model.CrackTaskResult) {
 	c := bufio.NewReader(resp.Body)
 	c.Read(data)
 	resp.Body.Close()
-	//content, _ := ioutil.ReadAll(resp.Body)
 	r := regexp.MustCompile(`(?U)name="sid" value="(.*)"`)
 	match := r.FindStringSubmatch(string(data))
 	if match == nil {
@@ -51,6 +50,7 @@ func ZabbixCrack(task model.CrackTask) (result model.CrackTaskResult) {
 	urlValues.Add("name", task.Auth.User)
 	urlValues.Add("password", task.Auth.Password)
 	urlValues.Add("form_refresh", "1")
+	urlValues.Add("enter", "Sign in")
 	urlValues.Add("sid", token)
 
 	body := strings.NewReader(urlValues.Encode())
@@ -60,11 +60,9 @@ func ZabbixCrack(task model.CrackTask) (result model.CrackTaskResult) {
 	req2.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp2, _ := crackClt.Do(req2)
-	//resp2, _ := crackClt.PostForm(task.Ip, urlValues)
-	//resp2, _ := crackClt.Post(task.Ip, urlValues)
 	defer resp2.Body.Close()
 	if resp2.StatusCode == 302 {
-		result.Result = fmt.Sprintf("Password: %s", task.Auth.Password)
+		result.Result = fmt.Sprintf("User: %s \tPassword: %s", task.Auth.User, task.Auth.Password)
 	}
 
 	return result

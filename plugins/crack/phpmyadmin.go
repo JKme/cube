@@ -65,7 +65,7 @@ func PhpmyadminCrack(task model.CrackTask) (result model.CrackTaskResult) {
 	//resp2, _ := crackClt.Post(task.Ip, urlValues)
 	defer resp2.Body.Close()
 	if resp2.StatusCode == 302 {
-		result.Result = fmt.Sprintf("Password: %s", task.Auth.Password)
+		result.Result = fmt.Sprintf("User: %s \tPassword: %s", task.Auth.User, task.Auth.Password)
 	}
 
 	return result

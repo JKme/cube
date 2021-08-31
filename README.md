@@ -117,11 +117,16 @@ cube crack -u root -p root -i 192.168.1.1/24 -x ssh
 cube crack -u root --pass-file pass.txt -i 192.168.1.1/24 -x ssh
 cube crack -u root --pass-file pass.txt -i 192.168.1.1/24 -x ssh,mysql
 
-phpmyadmin、httpbasic、jenkins插件只能单独使用，不可组合:
+phpmyadmin、httpbasic、jenkins、zabbix插件只能单独使用，不可组合:
 cube crack -u root --pass-file pass.txt -i http://192.168.1.1 -x phpmyadmin
 cube crack -u root --pass-file pass.txt -i http://192.168.1.1 -x httpbasic
 cube crack -u root --pass-file pass.txt -i http://192.168.1.1 -x jenkins
 ```
+
+##### 知识点
+
+* zabbix爆破5次失败之后账号默认拦截30s，所以zabbix这个插件鸡肋，手动都能完成的事情。(~~离线除外~~)
+
 
 sqlserver爆破密码的代码(Event Code): 18456
 

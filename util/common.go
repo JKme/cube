@@ -144,15 +144,17 @@ func MakeTaskHash(k string) string {
 }
 
 func CheckTaskHash(hash string) bool {
-	_, ok := model.SuccessHash[hash]
+	model.SuccessHash.Lock()
+	_, ok := model.SuccessHash.S[hash]
+	model.SuccessHash.Unlock()
 	//log.Debugf("Success: %#v\n", model.SuccessHash)
 	return ok
 }
 
 func SetTaskHash(hash string) {
-	model.Mutex.Lock()
-	model.SuccessHash[hash] = true
-	model.Mutex.Unlock()
+	model.SuccessHash.Lock()
+	model.SuccessHash.S[hash] = true
+	model.SuccessHash.Unlock()
 }
 
 // ResultMap 当Mysql或者redis空密码的时候，任何密码都正确，会导致密码刷屏

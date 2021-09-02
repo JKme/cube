@@ -66,37 +66,37 @@ jobs:
               with:
                 name: ${{ env.RELEASE }}
                 path: ${{ matrix.bin }}
-#    package:
-#        name: Package Assets
-#        runs-on: ubuntu-latest
-#        needs: build
-#        steps:
-#            - uses: actions/checkout@v2
-#            - uses: actions/download-artifact@v2
-#              with:
-#                path: bin
-#            - name: Package Releases
-#              run: |
-#                mkdir releases;
-#                for RELEASE_DIR in bin/*
-#                do
-#                  echo "Creating release $RELEASE_DIR"
-#                  for BINARY in $RELEASE_DIR/*
-#                  do
-#                    chmod 777 $BINARY;
-#                    cp $BINARY .;
-#                    zip -r releases/$(basename $RELEASE_DIR).zip \
-#                      $(basename ${BINARY}) \
-#                      README.md \
-#                      README_ZH.md;
-#                    rm $BINARY;
-#                  done
-#                done
-#            - name: Upload to artifacts
-#              uses: actions/upload-artifact@v2
-#              with:
-#                name: releases
-#                path: releases/*.zip
+    package:
+        name: Package Assets
+        runs-on: ubuntu-latest
+        needs: build
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/download-artifact@v2
+              with:
+                path: bin
+            - name: Package Releases
+              run: |
+                mkdir releases;
+                for RELEASE_DIR in bin/*
+                do
+                  echo "Creating release $RELEASE_DIR"
+                  for BINARY in $RELEASE_DIR/*
+                  do
+                    chmod 777 $BINARY;
+                    cp $BINARY .;
+                    zip -r releases/$(basename $RELEASE_DIR).zip \
+                      $(basename ${BINARY}) \
+                      README.md \
+                      README_ZH.md;
+                    rm $BINARY;
+                  done
+                done
+            - name: Upload to artifacts
+              uses: actions/upload-artifact@v2
+              with:
+                name: releases
+                path: releases/*.zip
 
     upload:
         name: Upload to the Release
@@ -106,7 +106,7 @@ jobs:
             - uses: actions/download-artifact@v2
               with:
                 name: releases
-                path: bin/
+                path: releases/
                 
             - name: Create Release
               id: create_release
@@ -126,10 +126,15 @@ jobs:
                 AUTH_HEADER: "Authorization: token ${{ secrets.ACCESS_TOKEN }}"
               run: |
                 UPLOAD_URL=$(echo -n $UPLOAD_URL | sed s/\{.*//g)
-                
-                for FILE in bin/*
+                for FILE in releases/*
                 do
-                  chmod +x $FILE
+                  FILENAME=$(basename ${FILE})
+                  HASH=$(sha256sum ${FILE} | cut -d ' ' -f 1)
+                  echo "${HASH}    $FILENAME" >> releases/sha256.txt
+                done
+                
+                for FILE in releases/*
+                do
                   echo "Uploading ${FILE}";
                   curl \
                     -H "${API_HEADER}" \

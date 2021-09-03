@@ -2,140 +2,147 @@ name: Build Cube Release
 on:
   push:
     tags:
-      - "**" # triggers only if push new tag version, like `0.8.4` or else
+      - "v*" # triggers only if push new tag version, like `0.8.4` or else
 jobs:
-    build:
-        name: Build Binary
-        runs-on: ${{ matrix.os }}
-        strategy:
-            matrix:
-                os: [windows-latest, macos-latest, ubuntu-latest]
-                arch: [amd64, '386']
-                include:
-                    - os: windows-latest
-                      goos: windows
-                      bin: 'cube.exe'
-                      args: -9
-                      strip: true
-                      releaseos: windows
-                    - os: macos-latest
-                      goos: darwin
-                      bin: 'cube'
-                      args: -9
-                      strip: false
-                      releaseos: osx
-                    - os: ubuntu-latest
-                      goos: linux
-                      bin: 'cube'
-                      args: -9
-                      strip: true
-                      releaseos: linux
-                exclude:
-                    - os: macos-latest
-                      arch: '386'
-                    - os: windows-latest
-                      arch: '386'
-        steps:
-            - name: Set up Go
-              uses: actions/setup-go@v2
-              with:
-                go-version: 1.16
-            - if: matrix.os == 'ubuntu-latest'
-              run: sudo apt-get update && sudo apt-get install -y gcc-multilib
-            - if: matrix.arch == '386'
-              run: echo "RELEASE=cube${{ github.event.release.tag_name}}-${{ matrix.releaseos}}-32bit" >> $GITHUB_ENV
-            - if: matrix.arch == 'amd64'
-              run: echo "RELEASE=cube${{ github.event.release.tag_name}}-${{ matrix.releaseos}}-64bit" >> $GITHUB_ENV
-            - if: matrix.os == 'windows-latest'
-              shell: powershell
-              run: echo "RELEASE=cube${{ github.event.release.tag_name}}-${{ matrix.releaseos}}-64bit" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-            - uses: actions/checkout@v2
-            - name: Build ${{ matrix.goos }}/${{ matrix.arch }}
-              run: go build -ldflags '-w -s' -o ${{ matrix.bin }}
-              env:
-                GOOS: ${{ matrix.goos }}
-                GOARCH: ${{ matrix.arch }}
-                CGO_ENABLED: 1
-            - uses: svenstaro/upx-action@v2
-              with:
-                args: ${{ matrix.args }}
-                file: ${{ matrix.bin }}
-                strip: ${{ matrix.strip }}
-            - name: Upload to artifacts
-              uses: actions/upload-artifact@v2
-              with:
-                name: ${{ env.RELEASE }}
-                path: ${{ matrix.bin }}
-#    package:
-#        name: Package Assets
-#        runs-on: ubuntu-latest
-#        needs: build
-#        steps:
-#            - uses: actions/checkout@v2
-#            - uses: actions/download-artifact@v2
-#              with:
-#                path: bin
-#            - name: Package Releases
-#              run: |
-#                mkdir releases;
-#                for RELEASE_DIR in bin/*
-#                do
-#                  echo "Creating release $RELEASE_DIR"
-#                  for BINARY in $RELEASE_DIR/*
-#                  do
-#                    chmod 777 $BINARY;
-#                    cp $BINARY .;
-#                    zip -r releases/$(basename $RELEASE_DIR).zip \
-#                      $(basename ${BINARY}) \
-#                      README.md \
-#                      README_ZH.md;
-#                    rm $BINARY;
-#                  done
-#                done
-#            - name: Upload to artifacts
-#              uses: actions/upload-artifact@v2
-#              with:
-#                name: releases
-#                path: releases/*.zip
+  build:
+    name: Build Binary
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+        arch: [amd64, '386']
+        include:
+          - os: windows-latest
+            goos: windows
+            bin: 'cube.exe'
+            args: -9
+            strip: true
+            releaseos: windows
+          - os: macos-latest
+            goos: darwin
+            bin: 'cube'
+            args: -9
+            strip: false
+            releaseos: osx
+          - os: ubuntu-latest
+            goos: linux
+            bin: 'cube'
+            args: -9
+            strip: true
+            releaseos: linux
+        exclude:
+          - os: macos-latest
+            arch: '386'
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16
+      - if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y gcc-multilib
+      - if: matrix.arch == '386'
+        run: echo "RELEASE=cube${{ github.event.release.tag_name}}-${{ matrix.releaseos}}-32" >> $GITHUB_ENV
+      - if: matrix.arch == 'amd64'
+        run: echo "RELEASE=cube${{ github.event.release.tag_name}}-${{ matrix.releaseos}}-64" >> $GITHUB_ENV
+      - if: matrix.os == 'windows-latest' && matrix.arch == 'amd64'
+        shell: powershell
+        run: echo "RELEASE=cube${{ github.event.release.tag_name}}-${{ matrix.releaseos}}-64" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+      - if: matrix.os == 'windows-latest' && matrix.arch == '386'
+        shell: powershell
+        run: echo "RELEASE=cube${{ github.event.release.tag_name}}-${{ matrix.releaseos}}-32" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+      - uses: actions/checkout@v2
+      - name: Build ${{ matrix.goos }}/${{ matrix.arch }}
+        run: go build -trimpath -ldflags '-w -s' -o ${{ matrix.bin }}
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.arch }}
+          CGO_ENABLED: 1
+      - uses: svenstaro/upx-action@v2
+        with:
+          args: ${{ matrix.args }}
+          file: ${{ matrix.bin }}
+          strip: ${{ matrix.strip }}
+      - name: Upload to artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.RELEASE }}
+          path: ${{ matrix.bin }}
+  package:
+    name: Package Assets
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          path: bin
+      - name: Set env
+        run: echo "TAG_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Package Releases
+        run: |
+          echo $TAG_VERSION
+          mkdir releases;
+          mv bin/cube-linux-32/cube releases/cube_linux_386
+          mv bin/cube-linux-64/cube releases/cube_linux_amd64
+          mv bin/cube-osx-64/cube releases/cube_darwin_amd64
+          mv bin/cube-windows-32/cube.exe releases/cube_windows_386.exe
+          mv bin/cube-windows-64/cube.exe releases/cube_windows_amd64.exe
+      #              for RELEASE_DIR in bin/*
+      #              do
+      #                echo "Creating release $RELEASE_DIR"
+      #                for BINARY in $RELEASE_DIR/*
+      #                do
+      #                  chmod +x $BINARY;
+      #                  cp $BINARY .;
+      #                  cp  $(basename ${BINARY}) releases/$(basename $RELEASE_DIR);
+      #                  rm $BINARY;
+      #                  tree
+      #                done
+      #              done
+      - name: Upload to artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: releases
+          path: releases/
 
-    upload:
-        name: Upload to the Release
-        runs-on: ubuntu-latest
-        needs: package
-        steps:
-            - uses: actions/download-artifact@v2
-              with:
-                name: releases
-                path: bin/
-                
-            - name: Create Release
-              id: create_release
-              uses: monkeyWie/create-release@master
-              env:
-                GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-              with:
-                tag_name: ${{ github.ref }}
-                release_name: Release ${{ github.ref }}
-                draft: false
-                prerelease: false
-                  
-            - name: Upload Archives to Release
-              env:
-                UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
-                API_HEADER: "Accept: application/vnd.github.v3+json"
-                AUTH_HEADER: "Authorization: token ${{ secrets.ACCESS_TOKEN }}"
-              run: |
-                UPLOAD_URL=$(echo -n $UPLOAD_URL | sed s/\{.*//g)
-                
-                for FILE in bin/*
-                do
-                  chmod +x $FILE
-                  echo "Uploading ${FILE}";
-                  curl \
-                    -H "${API_HEADER}" \
-                    -H "${AUTH_HEADER}" \
-                    -H "Content-Type: $(file -b --mime-type ${FILE})" \
-                    --data-binary "@${FILE}" \
-                    "${UPLOAD_URL}?name=$(basename ${FILE})";
-                done
+  upload:
+    name: Upload to the Release
+    runs-on: ubuntu-latest
+    needs: package
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: releases
+          path: releases/
+
+      - name: Create Release
+        id: create_release
+        uses: monkeyWie/create-release@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Archives to Release
+        env:
+          UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
+          API_HEADER: "Accept: application/vnd.github.v3+json"
+          AUTH_HEADER: "Authorization: token ${{ secrets.GITHUB_TOKEN }}"
+        run: |
+          UPLOAD_URL=$(echo -n $UPLOAD_URL | sed s/\{.*//g)
+
+          for FILE in releases/*
+          do
+            chmod +x $FILE
+            echo "Uploading ${FILE}";
+            curl \
+              -H "${API_HEADER}" \
+              -H "${AUTH_HEADER}" \
+              -H "Content-Type: $(file -b --mime-type ${FILE})" \
+              --data-binary "@${FILE}" \
+              "${UPLOAD_URL}?name=$(basename ${FILE})";
+          done
             

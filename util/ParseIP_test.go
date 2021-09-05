@@ -6,7 +6,7 @@ import (
 )
 
 func TestName(t *testing.T) {
-	ips, _ := ParseIP("172.20.42.5/24", "")
+	ips, _ := ParseIP("172.20.42.5/24,10.0.0.5-a", "")
 	fmt.Println(ips)
 	for _, ip := range ips {
 		fmt.Println(ip)

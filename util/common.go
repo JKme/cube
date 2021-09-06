@@ -2,11 +2,15 @@ package util
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/md5"
 	"cube/log"
 	"cube/model"
 	"fmt"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
 	"io"
+	"io/ioutil"
 	"net"
 	"os"
 	"reflect"
@@ -16,6 +20,7 @@ import (
 	"sync"
 	"time"
 	"unicode/utf16"
+	"unicode/utf8"
 	"unsafe"
 )
 
@@ -251,4 +256,22 @@ func Bytes2StringUTF16(bs []byte) string {
 
 	s := (*[]uint16)(unsafe.Pointer(&bs))
 	return string(utf16.Decode(*s))
+}
+
+func GbkToUtf8(s []byte) ([]byte, error) {
+	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewDecoder())
+	d, e := ioutil.ReadAll(reader)
+	if e != nil {
+		return nil, e
+	}
+	return d, nil
+}
+
+func ByteToString(buf []byte) (string, error) {
+	if utf8.Valid(buf) {
+		return TrimName(string(buf)), nil
+	} else {
+		s1, _ := GbkToUtf8(buf)
+		return TrimName(string(string(s1))), nil
+	}
 }

@@ -3,6 +3,8 @@ package cmd
 import (
 	"cube/cubelib"
 	"cube/log"
+	Plugins "cube/plugins"
+	"strings"
 
 	//"cube/log"
 	"cube/model"
@@ -49,7 +51,7 @@ func parseProbeOptions() (*model.GlobalOptions, *model.ProbeOptions, error) {
 func init() {
 	probeCli = &cobra.Command{
 		Use:   "probe",
-		Short: "collect pentest environment information",
+		Short: fmt.Sprintf("collect pentest environment information\n avaliable plugins %s", strings.Join(Plugins.ProbeKeys, ",")),
 		Run:   runProbe,
 		Example: `cube probe -i 192.168.1.1 -x oxid
 cube probe -i 192.168.1.1 -x oxid,zookeeper,ms17010

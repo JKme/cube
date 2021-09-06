@@ -3,6 +3,7 @@ package probe
 import (
 	"bytes"
 	"cube/model"
+	"cube/util"
 	"fmt"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
@@ -75,7 +76,8 @@ func OxidProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 			break
 		}
 		index = bytes.Index(r, []byte("\x00\x00\x00"))
-		results = append(results, dataGet(r[:index+3]))
+		hosts := util.Bytes2StringUTF16(r[:index+3])
+		results = append(results, hosts)
 		r = r[index+3:]
 	}
 	//var hostname string

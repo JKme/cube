@@ -9,11 +9,14 @@ import (
 	"io"
 	"net"
 	"os"
+	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+	"unicode/utf16"
+	"unsafe"
 )
 
 func ValidIp(ip string) bool {
@@ -240,4 +243,12 @@ func RemoveDuplicate(old []string) []string {
 		}
 	}
 	return result
+}
+
+func Bytes2StringUTF16(bs []byte) string {
+	ptr := (*reflect.SliceHeader)(unsafe.Pointer(&bs))
+	(*ptr).Len = ptr.Len / 2
+
+	s := (*[]uint16)(unsafe.Pointer(&bs))
+	return string(utf16.Decode(*s))
 }

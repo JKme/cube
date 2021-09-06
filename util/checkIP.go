@@ -112,23 +112,11 @@ func check(addr IpAddr) (bool, IpAddr) {
 
 func checkUDP(addr IpAddr) (bool, IpAddr) {
 	//https://github.com/bronzdoc/gops
-	alive := true
-	//A2S_INFO := []byte{0xFF, 0xFF, 0xFF, 0xFF, 0x54, 0x53, 0x6F, 0x75, 0x72, 0x63, 0x65, 0x20, 0x45, 0x6E, 0x67, 0x69, 0x6E, 0x65, 0x20, 0x51, 0x75, 0x65, 0x72, 0x79, 0x00}
-	//
-	//log.Debugf("Port connect check: %s:%s", addr.Ip, addr.Port)
-	//conn, err := net.DialTimeout("udp", fmt.Sprintf("%v:%v", addr.Ip, addr.Port), model.ConnectTimeout)
-	//_, err = conn.Write(A2S_INFO)
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return false, IpAddr{}
-	//}
-	//data, _ := ReadBytes(conn)
-	//fmt.Println(data)
-	//if err == nil {
-	//	log.Infof("Open %s:%s", addr.Ip, addr.Port)
-	//	alive = true
-	//}
-	return alive, addr
+	//alive := true
+	log.Debugf("Port connect check: %s:%s", addr.Ip, addr.Port)
+	time.Sleep(time.Millisecond * 100)
+
+	return true, addr
 }
 
 func SaveAddr(alive bool, addr IpAddr) {

@@ -52,3 +52,9 @@ func TestSubset(t *testing.T) {
 	b := []string{"ntlm-smb", "ntlm-wmi", "zookeeper", "oxid", "netbios", "ntlm-winrm"}
 	fmt.Println(Subset(a, b))
 }
+
+func TestBytes2Uint(t *testing.T) {
+	//a := []byte("\xcb\xef\xd2\xc0\xc1\xd5\x2d\x34\x35\x36\x20\x20\x20\x20\x20\x20")
+	//s := bytes2StringUTF16(a)
+	//fmt.Println(s)
+}

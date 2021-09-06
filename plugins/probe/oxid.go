@@ -87,7 +87,7 @@ func OxidProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 		for _, v := range results[1:] {
 			netAddr = append(netAddr, v)
 		}
-		result.Result = fmt.Sprintf("Host: %s\nNets: %s", hostname, strings.Join(netAddr, "\n"))
+		result.Result = fmt.Sprintf("Host: %s\nNets: %s\n", hostname, strings.Join(netAddr, "\t"))
 	}
 	arch := getArch(task)
 	if len(arch) > 0 {

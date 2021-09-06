@@ -84,7 +84,6 @@ func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	if err != nil {
 		return
 	}
-	fmt.Printf("%x\n", ret2)
 	//fmt.Println(text)
 	sreply := parseReplay(ret2)
 	if len(sreply.Names) == 0 && len(sreply.Addresses) == 0 {
@@ -111,11 +110,13 @@ func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	var Info map[string]string
 	Info = make(map[string]string)
 
-	//Name := util.TrimName(string(sreply.HostName[:]))
-	Name := "22"
+	//N, _ := util.GbkToUtf8(sreply.HostName[:])
+	//fmt.Println(util.IsUtf8(sreply.HostName[:]))
+	//fmt.Printf("%x\n", sreply.HostName[:])
+	//fmt.Printf("%x\n", N)
+	//fmt.Println(string(N))
 
-	fmt.Printf("%x\n", sreply.HostName[:])
-	//Name := util.TrimName(util.Bytes2StringUTF16(sreply.HostName[:]))
+	Name, _ := util.ByteToString(sreply.HostName[:])
 	if len(Name) > 0 {
 		Info["Name"] = Name
 	}
@@ -144,7 +145,8 @@ func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 
 	for _, rname := range sreply.Names {
 
-		tname := util.TrimName(string(rname.Name[:]))
+		//tname := util.TrimName(string(rname.Name[:]))
+		tname, _ := util.ByteToString(rname.Name[:])
 		if tname == Info["Name"] {
 			continue
 		}

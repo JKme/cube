@@ -33,7 +33,7 @@ func TestZookeeperProbe(t *testing.T) {
 }
 func TestSMB(t *testing.T) {
 
-	task := model.ProbeTask{Ip: "172.20.40.147", Port: "445", ScanPlugin: "smb"}
+	task := model.ProbeTask{Ip: "172.20.40.140", Port: "139", ScanPlugin: "smb"}
 	r := SmbProbe(task)
 	//fmt.Printf("%v\n", r.Result)
 	fmt.Println(r.Result)
@@ -58,7 +58,7 @@ func TestMssqlProbe(t *testing.T) {
 }
 
 func TestNetbiosProbe(t *testing.T) {
-	task := model.ProbeTask{Ip: "192.168.2.146", Port: "137", ScanPlugin: "netbios"}
+	task := model.ProbeTask{Ip: "172.20.40.140", Port: "137", ScanPlugin: "netbios"}
 	r := NetbiosProbe(task)
 	fmt.Println(r.Result)
 }

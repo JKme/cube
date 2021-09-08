@@ -6,6 +6,7 @@ import (
 	"cube/util"
 	"encoding/binary"
 	"fmt"
+	"github.com/JKme/go-ntlmssp"
 	manuf "github.com/JKme/gomanuf"
 	"math/rand"
 	"net"
@@ -52,6 +53,8 @@ type NetbiosReplyAddress struct {
 	Flag    uint16
 	Address [4]uint8
 }
+
+var uniqueName []byte
 
 type NetbiosReplyStatus struct {
 	Header    NetbiosReplyHeader
@@ -115,6 +118,9 @@ func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	//fmt.Printf("%x\n", sreply.HostName[:])
 	//fmt.Printf("%x\n", N)
 	//fmt.Println(string(N))
+	uniqueName = sreply.HostName[:]
+	payload := getNbssPayload(uniqueName)
+	ntlminfo := probe139(task, payload)
 
 	Name, _ := util.ByteToString(sreply.HostName[:])
 	if len(Name) > 0 {
@@ -164,8 +170,9 @@ func NetbiosProbe(task model.ProbeTask) (result model.ProbeTaskResult) {
 	result.Result += b.String()
 
 	if len(Nets) > 0 {
-		result.Result += fmt.Sprintf("%-8s: %s", "Nets", strings.Join(Nets, "\t"))
+		result.Result += fmt.Sprintf("%-8s: %s\n", "Nets", strings.Join(Nets, "\t"))
 	}
+	result.Result += ntlminfo
 	return result
 }
 
@@ -277,4 +284,75 @@ func parseReplay(buff []byte) NetbiosReplyStatus {
 		}
 	}
 	return resp
+}
+
+func getNbssPayload(name []byte) []byte {
+	var payload0 []byte
+	n := netbiosEncode(string(name))
+	payload0 = append(payload0, []byte("\x81\x00\x00D ")...)
+	payload0 = append(payload0, n...)
+	payload0 = append(payload0, []byte("\x00 EOENEBFACACACACACACACACACACACACA\x00")...)
+	return payload0
+}
+
+func probe139(task model.ProbeTask, payload []byte) (s string) {
+	realhost := fmt.Sprintf("%s:%v", task.Ip, 139)
+	conn, err := net.DialTimeout("tcp", realhost, model.ConnectTimeout)
+	if err != nil {
+		return
+	}
+	conn.Write(payload)
+	util.ReadBytes(conn)
+	_, err = conn.Write(NegotiateSMBv1Data1)
+	if err != nil {
+		return
+	}
+	_, _ = util.ReadBytes(conn)
+	_, err = conn.Write(NegotiateSMBv1Data2)
+	if err != nil {
+		return
+	}
+
+	ret, err := util.ReadBytes(conn)
+
+	if err != nil || len(ret) < 45 {
+		return
+	}
+
+	blob_length := uint16(util.Bytes2Uint(ret[43:45], '<'))
+	blob_count := uint16(util.Bytes2Uint(ret[45:47], '<'))
+
+	gss_native := ret[47:]
+	off_ntlm := bytes.Index(gss_native, []byte("NTLMSSP"))
+	native := gss_native[int(blob_length):blob_count]
+	ss := strings.Split(string(native), "\x00\x00")
+	//fmt.Println(ss)
+
+	bs := gss_native[off_ntlm:blob_length]
+	type2 := ntlmssp.ChallengeMsg{}
+	//fmt.Printf("%x\n", bs)
+	tinfo := type2.String(bs)
+	//fmt.Println(tinfo)
+
+	NativeOS := util.TrimName(ss[0])
+	NativeLM := util.TrimName(ss[1])
+	//fmt.Println(NativeOS, NativeLM)
+	tinfo += fmt.Sprintf("NativeOS: %s\nNativeLM: %s\n", NativeOS, NativeLM)
+	return tinfo
+}
+
+func netbiosEncode(name string) (output []byte) {
+	var names []int
+	src := fmt.Sprintf("%-16s", name)
+	for _, a := range src {
+		char_ord := int(a)
+		high_4_bits := char_ord >> 4
+		low_4_bits := char_ord & 0x0f
+		names = append(names, high_4_bits, low_4_bits)
+	}
+	for _, one := range names {
+		out := (one + 0x41)
+		output = append(output, byte(out))
+	}
+	return
 }

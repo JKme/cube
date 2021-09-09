@@ -41,7 +41,7 @@ func init() {
 	ProbeFuncMap["smbghost"] = probe.SmbGhostProbe
 	ProbeFuncMap["rmi"] = probe.RmiProbe
 
-	ProbeFuncExclude = []string{"ms17010", "smbghost", "ntlm-winrm", "ntlm-mssql"}
+	ProbeFuncExclude = []string{"ms17010", "smbghost", "ntlm-winrm", "ntlm-mssql", "ntlm-wmi"}
 	for k := range ProbeFuncMap {
 		if !util.SliceContain(k, ProbeFuncExclude) {
 			ProbeKeys = append(ProbeKeys, k)

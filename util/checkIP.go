@@ -24,11 +24,13 @@ var (
 )
 
 func CheckAlive(ctx context.Context, Num int, delay int, ips []string, plugins []string, port string) []IpAddr {
+	//指定插件端口的时候，只允许加载一个插件
 	if len(port) > 0 {
 		for _, ip := range ips {
 			ipList = append(ipList, IpAddr{
-				Ip:   ip,
-				Port: port,
+				Ip:     ip,
+				Port:   port,
+				Plugin: plugins[0],
 			})
 		}
 	} else {
@@ -111,14 +113,12 @@ func check(addr IpAddr) (bool, IpAddr) {
 }
 
 func checkUDP(addr IpAddr) (bool, IpAddr) {
-	alive := true
-	//log.Debugf("Port connect check: %s:%s", addr.Ip, addr.Port)
-	//_, err := net.DialTimeout("udp", fmt.Sprintf("%v:%v", addr.Ip, addr.Port), model.ConnectTimeout)
-	//if err == nil {
-	//	log.Infof("%s:%s Open", addr.Ip, addr.Port)
-	//	alive = true
-	//}
-	return alive, addr
+	//https://github.com/bronzdoc/gops
+	//alive := true
+	log.Debugf("Port connect check: %s:%s", addr.Ip, addr.Port)
+	time.Sleep(time.Millisecond * 100)
+
+	return true, addr
 }
 
 func SaveAddr(alive bool, addr IpAddr) {

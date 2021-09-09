@@ -51,7 +51,8 @@ func parseProbeOptions() (*model.GlobalOptions, *model.ProbeOptions, error) {
 func init() {
 	probeCli = &cobra.Command{
 		Use:   "probe",
-		Short: fmt.Sprintf("-x ALL will load plugins: [%s]\nAnother plugins: [%s]", strings.Join(Plugins.ProbeKeys, ","), strings.Join(Plugins.ProbeFuncExclude, ",")),
+		Long:  fmt.Sprintf("-x ALL will load plugins: [%s]\nAnother plugins: [%s]", strings.Join(Plugins.ProbeKeys, ","), strings.Join(Plugins.ProbeFuncExclude, ",")),
+		Short: "probe pentest env",
 		Run:   runProbe,
 		Example: `cube probe -i 192.168.1.1 -x oxid
 cube probe -i 192.168.1.1 -x oxid,zookeeper,ms17010

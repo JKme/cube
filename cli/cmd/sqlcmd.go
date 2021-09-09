@@ -3,8 +3,10 @@ package cmd
 import (
 	"cube/cubelib"
 	"cube/model"
+	Plugins "cube/plugins"
 	"fmt"
 	"github.com/spf13/cobra"
+	"strings"
 )
 
 var sqlCli *cobra.Command
@@ -52,7 +54,7 @@ func parseSqlcmdOptions() (*model.GlobalOptions, *model.SqlcmdOptions, error) {
 func init() {
 	sqlCli = &cobra.Command{
 		Use:   "sqlcmd",
-		Short: "exec sql query or cmd",
+		Short: fmt.Sprintf("Avaliable plugins: [%s]", strings.Join(Plugins.SqlcmdKeys, ",")),
 		Run:   runSqlcmd,
 		Example: `cube sqlcmd -x ssh://192.168.0.0:2200 -uroot -proot -e "whoami"
 		`,

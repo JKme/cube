@@ -24,11 +24,13 @@ var (
 )
 
 func CheckAlive(ctx context.Context, Num int, delay int, ips []string, plugins []string, port string) []IpAddr {
+	//指定插件端口的时候，只允许加载一个插件
 	if len(port) > 0 {
 		for _, ip := range ips {
 			ipList = append(ipList, IpAddr{
-				Ip:   ip,
-				Port: port,
+				Ip:     ip,
+				Port:   port,
+				Plugin: plugins[0],
 			})
 		}
 	} else {

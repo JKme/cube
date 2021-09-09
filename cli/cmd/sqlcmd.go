@@ -54,7 +54,8 @@ func parseSqlcmdOptions() (*model.GlobalOptions, *model.SqlcmdOptions, error) {
 func init() {
 	sqlCli = &cobra.Command{
 		Use:   "sqlcmd",
-		Short: fmt.Sprintf("Avaliable plugins: [%s]", strings.Join(Plugins.SqlcmdKeys, ",")),
+		Short: "exec sql or cmd",
+		Long:  fmt.Sprintf("Avaliable plugins: [%s]", strings.Join(Plugins.SqlcmdKeys, ",")),
 		Run:   runSqlcmd,
 		Example: `cube sqlcmd -x ssh://192.168.0.0:2200 -uroot -proot -e "whoami"
 		`,

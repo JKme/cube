@@ -2,18 +2,26 @@ package util
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/md5"
 	"cube/log"
 	"cube/model"
 	"fmt"
+	"golang.org/x/text/encoding/simplifiedchinese"
+	"golang.org/x/text/transform"
 	"io"
+	"io/ioutil"
 	"net"
 	"os"
+	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+	"unicode/utf16"
+	"unicode/utf8"
+	"unsafe"
 )
 
 func ValidIp(ip string) bool {
@@ -144,15 +152,17 @@ func MakeTaskHash(k string) string {
 }
 
 func CheckTaskHash(hash string) bool {
-	_, ok := model.SuccessHash[hash]
+	model.SuccessHash.Lock()
+	_, ok := model.SuccessHash.S[hash]
+	model.SuccessHash.Unlock()
 	//log.Debugf("Success: %#v\n", model.SuccessHash)
 	return ok
 }
 
 func SetTaskHash(hash string) {
-	model.Mutex.Lock()
-	model.SuccessHash[hash] = true
-	model.Mutex.Unlock()
+	model.SuccessHash.Lock()
+	model.SuccessHash.S[hash] = true
+	model.SuccessHash.Unlock()
 }
 
 // ResultMap 当Mysql或者redis空密码的时候，任何密码都正确，会导致密码刷屏
@@ -226,4 +236,42 @@ func Bytes2Uint(bs []byte, endian byte) uint64 {
 		}
 	}
 	return u
+}
+
+func RemoveDuplicate(old []string) []string {
+	result := make([]string, 0, len(old))
+	temp := map[string]struct{}{}
+	for _, item := range old {
+		if _, ok := temp[item]; !ok {
+			temp[item] = struct{}{}
+			result = append(result, item)
+		}
+	}
+	return result
+}
+
+func Bytes2StringUTF16(bs []byte) string {
+	ptr := (*reflect.SliceHeader)(unsafe.Pointer(&bs))
+	(*ptr).Len = ptr.Len / 2
+
+	s := (*[]uint16)(unsafe.Pointer(&bs))
+	return string(utf16.Decode(*s))
+}
+
+func GbkToUtf8(s []byte) ([]byte, error) {
+	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewDecoder())
+	d, e := ioutil.ReadAll(reader)
+	if e != nil {
+		return nil, e
+	}
+	return d, nil
+}
+
+func ByteToString(buf []byte) (string, error) {
+	if utf8.Valid(buf) {
+		return TrimName(string(buf)), nil
+	} else {
+		s1, _ := GbkToUtf8(buf)
+		return TrimName(string(string(s1))), nil
+	}
 }

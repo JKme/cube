@@ -9,10 +9,10 @@ import (
 //172.20.10.21
 //172.16.157.190
 func TestName(t *testing.T) {
-	task := model.ProbeTask{Ip: "172.20.40.108", Port: "135", ScanPlugin: "oxid"}
+	task := model.ProbeTask{Ip: "192.168.2.148", Port: "135", ScanPlugin: "oxid"}
 	r := OxidProbe(task)
 	//fmt.Println(reflect.TypeOf(r.Result))
-	fmt.Println(r.Result)
+	fmt.Println(r)
 
 	//for _, v := range r.Result {
 	//	fmt.Println( v)
@@ -33,7 +33,7 @@ func TestZookeeperProbe(t *testing.T) {
 }
 func TestSMB(t *testing.T) {
 
-	task := model.ProbeTask{Ip: "172.20.40.210", Port: "445", ScanPlugin: "smb"}
+	task := model.ProbeTask{Ip: "172.20.40.140", Port: "139", ScanPlugin: "smb"}
 	r := SmbProbe(task)
 	//fmt.Printf("%v\n", r.Result)
 	fmt.Println(r.Result)
@@ -58,7 +58,7 @@ func TestMssqlProbe(t *testing.T) {
 }
 
 func TestNetbiosProbe(t *testing.T) {
-	task := model.ProbeTask{Ip: "172.20.40.130", Port: "137", ScanPlugin: "netbios"}
+	task := model.ProbeTask{Ip: "172.20.40.140", Port: "137", ScanPlugin: "netbios"}
 	r := NetbiosProbe(task)
 	fmt.Println(r.Result)
 }
@@ -66,5 +66,11 @@ func TestNetbiosProbe(t *testing.T) {
 func TestMdnsProbe(t *testing.T) {
 	task := model.ProbeTask{Ip: "127.0.0.1", Port: "1099", ScanPlugin: "netbios"}
 	r := RmiProbe(task)
+	fmt.Println(r)
+}
+
+func TestDockerProbe(t *testing.T) {
+	task := model.ProbeTask{Ip: "127.0.0.1", Port: "2375", ScanPlugin: "netbios"}
+	r := DockerProbe(task)
 	fmt.Println(r)
 }

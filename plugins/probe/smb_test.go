@@ -74,3 +74,9 @@ func TestDockerProbe(t *testing.T) {
 	r := DockerProbe(task)
 	fmt.Println(r)
 }
+
+func TestDubboProbe(t *testing.T) {
+	task := model.ProbeTask{Ip: "127.0.0.1", Port: "20880", ScanPlugin: "netbios"}
+	r := DubboProbe(task)
+	fmt.Println(r)
+}

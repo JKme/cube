@@ -156,13 +156,13 @@ cube sqlcmd -x mssql-clr://172.16.157.163 -usa -p123456 -e "close" //close CLR
 
 
 ### TODO
-- [ ] [WidnowsEDR探测](https://www.rumble.run/blog/research-dcerpc/)
+- [ ] [WidnowsEDR探测](https://www.rumble.run/blog/research-dcerpc/) [Fingerprinting Through RPC](https://www.blackhat.com/presentations/win-usa-04/bh-win-04-seki-up2.pdf)
 - [x] NTLM SSP信息收集扫描, 
 - [ ] 增加输出CSV
 - [x] 增加sqlcmd的mssql命令执行
 - [x] 增加请求间隔延迟 --delay，当设定这个选项的时候，线程强制设为1，这个选项大概用不上？
 - [ ] 变量名和函数名优化
-
+- [ ] mssql UDP端口探测: `nmap -sU --script=ms-sql-info 192.168.1.108`
 - [x] SMB和OXID输出的中文乱码问题 [Golang的字符编码与regexp](https://mp.weixin.qq.com/s/MgkRkCgqkvOL81gokP4gAg)
 - [x] NetBios模块复制[nextnet](https://github.com/hdm/nextnet)
 - [ ] **尝试改造为interface实现**

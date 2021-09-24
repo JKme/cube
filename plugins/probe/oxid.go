@@ -5,9 +5,6 @@ import (
 	"cube/model"
 	"cube/util"
 	"fmt"
-	"golang.org/x/text/encoding/simplifiedchinese"
-	"golang.org/x/text/transform"
-	"io/ioutil"
 	"net"
 	"strings"
 )
@@ -116,13 +113,4 @@ func getArch(task model.ProbeTask) (s string) {
 		s = "32-bit"
 	}
 	return s
-}
-
-func gbkToUtf8(s []byte) ([]byte, error) {
-	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewDecoder())
-	d, err := ioutil.ReadAll(reader)
-	if err != nil {
-		return nil, err
-	}
-	return d, nil
 }

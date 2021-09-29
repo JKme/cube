@@ -36,19 +36,20 @@ Flags:
 ### Probe 内网信息收集
 内网探测信息，有如下插件:
 
-| 插件名称      | 插件效果 | 默认端口 | extra|
-| --------- | :-----|------|------|
-| oxid           | 探测多网卡和windows位数          |   TCP 135 |    
-| netbios        | Nbtscan        | UDP 137和TCP 139  |  支持中文主机名称
-| ms17010        | ms17010漏洞    | TCP 445            | 
-| zookeeper      | zookeeper未授权 | TCP 2181          |          
-| smbghost       | smbghost漏洞    | TCP 445           |
-| ntlm-smb       | NTLM信息收集(smbv1和smbv2) | TCP 445|  
-| ntlm-wmi       | NTLM信息收集     | TCP 135          |  
-| ntlm-winrm     | NTLM信息收集     | TCP 5985         |
-| ntlm-mssql     | NTLM信息收集     | TCP 1433         |
-| rmi            | RMI服务探测      | TCP 1099         |
-| docker         | Docker API探测   | TCP 2375         |
+| 插件名称      | 插件效果 | 默认端口 |
+| --------- | :-----|------|
+| oxid           | 探测多网卡和windows位数          |   TCP 135 
+| netbios        | netscan        | UDP 137和TCP 139   
+| ms17010        | ms17010漏洞    | TCP 445             
+| zookeeper      | zookeeper未授权 | TCP 2181                    
+| smbghost       | smbghost漏洞    | TCP 445           
+| ntlm-smb       | NTLM信息收集(smbv1和smbv2) | TCP 445  
+| ntlm-wmi       | NTLM信息收集     | TCP 135            
+| ntlm-winrm     | NTLM信息收集     | TCP 5985         
+| ntlm-mssql     | NTLM信息收集     | TCP 1433        
+| rmi            | RMI服务探测      | TCP 1099    
+| dubbo            | Dubbo服务探测      | TCP 20880
+| docker         | Docker API探测   | TCP 2375         
 
 
 ```
@@ -64,7 +65,7 @@ cube probe -x ALL -i 192.168.2.1/24
 - netbios使用udp扫描，udp本身是不可靠协议，建议低线程，比如`--threads 10`，netbios也可以扫描多网卡并且支持中文主机名
 - `ntlm-smb ntlm-wmi ntlm-winrm ntlm-mssql`都是获取NTLM信息的插件，全部支持中文主机名
 - `oxid`扫描多网卡和主机位数，从impacket的`getArch.py`抄来的，支持中文主机名
-- 内网Linux主机比较多的时候使用crack模块探测`ssh,mysql,redis`，Windows主机较多的时候使用probe模块下的`netbios`和ntlm系探测
+- 内网Linux主机比较多的时候使用crack模块探测`ssh,mysql,redis`，Windows主机较多的时候使用probe模块下的`netbios`和`ntlm-*`探测
 
 ### Crack 弱密码爆破
 ```bash
@@ -157,6 +158,12 @@ cube sqlcmd -x mssql-clr://172.16.157.163 -usa -p123456 -e "close" //close CLR
 
 ### TODO
 - [ ] [WidnowsEDR探测](https://www.rumble.run/blog/research-dcerpc/) [Fingerprinting Through RPC](https://www.blackhat.com/presentations/win-usa-04/bh-win-04-seki-up2.pdf)
+AVG和avast安装之后在135端口会存在UUID，但是未找到一种方式可以单独探测，EDR探测先过啦
+```sh
+dbe95f8e-2be7-4b70-96f3-369be27fa432
+27ecede4-7987-44af-ab7d-eeacd740a084
+74103b90-29af-413f-b203-a3eb4f7e95b8
+```
 - [x] NTLM SSP信息收集扫描, 
 - [ ] 增加输出CSV
 - [x] 增加sqlcmd的mssql命令执行

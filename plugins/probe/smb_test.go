@@ -80,3 +80,9 @@ func TestDubboProbe(t *testing.T) {
 	r := DubboProbe(task)
 	fmt.Println(r)
 }
+
+func TestPingProbe(t *testing.T) {
+	task := model.ProbeTask{Ip: "172.20.40.29", Port: "20880", ScanPlugin: "ping"}
+	r := PingProbe(task)
+	fmt.Println(r)
+}

@@ -63,7 +63,7 @@ cube probe -x ALL -i 192.168.2.1/24
 - `ntlm-smb`模块发送了smbv1和smbv2探测包，smbv1的返回包会包含具体的操作系统，smbv2只会有一个Build版本号，比如Win10常见的`Build: 10.0.19041`,
 `10.0.19044`可以指 Windows 10 或 Windows Server 2019 的 21H1 版本。
 - netbios使用udp扫描，udp本身是不可靠协议，建议低线程，比如`--threads 10`，netbios也可以扫描多网卡并且支持中文主机名
-- `ntlm-smb ntlm-wmi ntlm-winrm ntlm-mssql`都是获取NTLM信息的插件，全部支持中文主机名
+- `ntlm-smb、ntlm-wmi、ntlm-winrm、ntlm-mssql`都是获取NTLM信息的插件，全部支持中文主机名
 - `oxid`扫描多网卡和主机位数，从impacket的`getArch.py`抄来的，支持中文主机名
 - 内网Linux主机比较多的时候使用crack模块探测`ssh,mysql,redis`，Windows主机较多的时候使用probe模块下的`netbios`和`ntlm-*`探测
 
@@ -169,7 +169,6 @@ dbe95f8e-2be7-4b70-96f3-369be27fa432
 - [x] 增加sqlcmd的mssql命令执行
 - [x] 增加请求间隔延迟 --delay，当设定这个选项的时候，线程强制设为1，这个选项大概用不上？
 - [ ] 变量名和函数名优化
-- [ ] mssql UDP端口探测: `nmap -sU --script=ms-sql-info 192.168.1.108`
 - [x] SMB和OXID输出的中文乱码问题 [Golang的字符编码与regexp](https://mp.weixin.qq.com/s/MgkRkCgqkvOL81gokP4gAg)
 - [x] NetBios模块复制[nextnet](https://github.com/hdm/nextnet)
 - [ ] **尝试改造为interface实现**

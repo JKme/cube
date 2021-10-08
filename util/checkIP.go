@@ -77,7 +77,7 @@ func CheckAlive(ctx context.Context, Num int, delay int, ips []string, plugins [
 					if !ok {
 						return
 					}
-					if addr.Plugin == "netbios" {
+					if SliceContain(addr.Plugin, []string{"netbios", "ping"}) {
 						SaveAddr(checkUDP(addr))
 					} else {
 						SaveAddr(check(addr))

@@ -99,7 +99,8 @@ func StartProbeTask(opt *model.ProbeOptions, globalopts *model.GlobalOptions) {
 		log.Error(err)
 	}
 	pluginList := validPlugin(opt.ScanPlugin)
-	if !util.Subset(pluginList, Plugins.ProbeKeys) && !util.Subset(pluginList, Plugins.ProbeFuncExclude) {
+	//&& !util.Subset(pluginList, Plugins.ProbeFuncExclude)
+	if !util.Subset(pluginList, append([]string{}, append(Plugins.ProbeKeys, Plugins.ProbeFuncExclude...)...) )  {
 		log.Errorf("plugins not found: %s", pluginList)
 	}
 	log.Infof("Loading plugin: %s", strings.Join(pluginList, ","))

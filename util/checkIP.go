@@ -116,7 +116,7 @@ func checkUDP(addr IpAddr) (bool, IpAddr) {
 	//https://github.com/bronzdoc/gops
 	//alive := true
 	log.Debugf("Port connect check: %s:%s", addr.Ip, addr.Port)
-	time.Sleep(time.Millisecond * 100)
+	time.Sleep(time.Millisecond * 10)
 
 	return true, addr
 }

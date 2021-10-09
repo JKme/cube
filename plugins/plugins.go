@@ -12,8 +12,6 @@ type ProbeFunc func(task model.ProbeTask) (taskResult model.ProbeTaskResult)
 type SqlcmdFunc func(task model.SqlcmdTask) (taskResult model.SqlcmdTaskResult)
 type CrackFunc func(task model.CrackTask) (taskResult model.CrackTaskResult)
 
-//type CrackFunc func(task model.Task) (taskResult model.TaskResult)
-
 var (
 	ProbeFuncMap  map[string]ProbeFunc
 	SqlcmdFuncMap map[string]SqlcmdFunc
@@ -43,7 +41,7 @@ func init() {
 	ProbeFuncMap["dubbo"] = probe.DubboProbe
 	ProbeFuncMap["ping"] = probe.PingProbe
 
-	ProbeFuncExclude = []string{"ms17010", "smbghost", "ntlm-winrm", "ntlm-mssql", "ntlm-wmi"}
+	ProbeFuncExclude = []string{"ms17010", "smbghost", "ntlm-winrm", "ntlm-mssql", "ntlm-wmi", "ping"}
 	for k := range ProbeFuncMap {
 		if !util.SliceContain(k, ProbeFuncExclude) {
 			ProbeKeys = append(ProbeKeys, k)

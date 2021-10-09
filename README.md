@@ -49,12 +49,14 @@ Flags:
 | ntlm-mssql     | NTLM信息收集     | TCP 1433        
 | rmi            | RMI服务探测      | TCP 1099    
 | dubbo            | Dubbo服务探测      | TCP 20880
-| docker         | Docker API探测   | TCP 2375         
+| docker         | Docker API探测   | TCP 2375
+| ping         | 主机存活探测   | N/A
 
 
 ```
 ALL选项默认加载插件: docker,rmi,oxid,netbios,ntlm-smb,zookeeper
 cube probe -x oxid -i 192.168.2.1/24
+cube probe -x oxid,ms17010 -i 192.168.2.1/24
 cube probe -x ALL -i 192.168.2.1/24
 ```
 

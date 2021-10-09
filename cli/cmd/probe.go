@@ -61,7 +61,7 @@ cube probe -i 192.168.1.1/24 -x ALL
 	}
 
 	probeCli.Flags().StringP("port", "p", "", "target port")
-	probeCli.Flags().StringP("plugin", "x", "", "plugin to scan(e.g. OXID)")
+	probeCli.Flags().StringP("plugin", "x", "", "plugin to scan(e.g. oxid,ms17010)")
 	probeCli.Flags().StringP("ip", "i", "", "ip (e.g. 10.0.0.1, 10.0.0.5-10, 192.168.1.*, 192.168.10.0/24, in the nmap format.)")
 	probeCli.Flags().StringP("ip-file", "", "", "File to probe for(e.g. ip.txt)")
 

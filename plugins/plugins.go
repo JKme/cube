@@ -56,6 +56,7 @@ func init() {
 	SqlcmdFuncMap["mssql-wscript"] = sqlcmd.MssqlWscript
 	SqlcmdFuncMap["mssql-com"] = sqlcmd.MssqlCom
 	SqlcmdFuncMap["mssql-clr"] = sqlcmd.MssqlClr
+	SqlcmdFuncMap["mysql"] = sqlcmd.Mysql
 
 	for k := range SqlcmdFuncMap {
 		SqlcmdKeys = append(SqlcmdKeys, k)

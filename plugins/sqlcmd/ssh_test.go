@@ -21,7 +21,7 @@ func TestMssql3Cmd(t *testing.T) {
 }
 
 func TestMysql(t *testing.T) {
-	task := model.SqlcmdTask{Ip: "172.16.157.4", Port: 3306, User: "root", Password: "root", SqlcmdPlugin: "mysql", Query: "tasklist"}
+	task := model.SqlcmdTask{Ip: "172.16.157.4", Port: 3306, User: "root", Password: "root", SqlcmdPlugin: "mysql", Query: "dir C:\\Progra~1\\Redis"}
 	//fmt.Println(SshCmd(task))
 	r := Mysql(task)
 	fmt.Println(r)

@@ -92,8 +92,8 @@ func createUDF(db *sql.DB, pluginDir string) {
 
 func exec(db *sql.DB, cmd string) {
 	var r sql.NullString
-	sql := fmt.Sprintf("select sys_eval(\"%s\")", fmt.Sprintf(strings.Replace(cmd, "\\", "\\\\", -1)))
-	rows, err := db.Query(sql)
+	sqlQuery := fmt.Sprintf("select sys_eval(\"%s\")", fmt.Sprintf(strings.Replace(cmd, "\\", "\\\\", -1)))
+	rows, err := db.Query(sqlQuery)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -2,6 +2,7 @@ package crack
 
 import (
 	"bufio"
+	"cube/log"
 	"cube/model"
 	"fmt"
 	"net/http"
@@ -14,6 +15,9 @@ import (
 func PhpmyadminCrack(task model.CrackTask) (result model.CrackTaskResult) {
 	result = model.CrackTaskResult{CrackTask: task, Result: "", Err: nil}
 	clt := http.Client{}
+	if !strings.HasPrefix(task.Ip, "http://") {
+		log.Errorf("Invalid URL, eg: http://%s", task.Ip)
+	}
 	req, _ := http.NewRequest("GET", task.Ip, nil)
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1468.0 Safari/537.36")
 	req.Header.Add("Connection", "close")

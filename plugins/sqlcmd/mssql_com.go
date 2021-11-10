@@ -19,9 +19,9 @@ func MssqlCom(task model.SqlcmdTask) (result model.SqlcmdTaskResult) {
 	if err != nil {
 		log.Error(err.Error())
 	}
-	if task.Query == "close" {
+	if task.Query == "clear" {
 		closeOle(*conn)
-		fmt.Println("Close sp_oacreate Successful")
+		fmt.Println("Clear sp_oacreate Successful")
 		return
 	}
 	OpenOle(*conn)

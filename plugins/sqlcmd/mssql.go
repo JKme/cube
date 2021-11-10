@@ -19,9 +19,9 @@ func Mssql(task model.SqlcmdTask) (result model.SqlcmdTaskResult) {
 	if err != nil {
 		log.Error(err.Error())
 	}
-	if task.Query == "close" {
+	if task.Query == "clear" {
 		closeCmdShell(*conn)
-		fmt.Println("Close xp_cmdshell Successful")
+		fmt.Println("Clear xp_cmdshell Successful")
 		return
 	}
 	Open(*conn)

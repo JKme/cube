@@ -19,9 +19,9 @@ func MssqlClr(task model.SqlcmdTask) (result model.SqlcmdTaskResult) {
 	if err != nil {
 		log.Error(err.Error())
 	}
-	if task.Query == "close" {
+	if task.Query == "clear" {
 		closeClr(*conn)
-		fmt.Println("Close mssql Clr Successful")
+		fmt.Println("Clear mssql Clr Successful")
 		return
 	}
 	v, err := conn.Prepare("select assembly_method from sys.assembly_modules;")

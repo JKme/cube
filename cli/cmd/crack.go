@@ -78,7 +78,7 @@ func parseCrackOptions() (*model.GlobalOptions, *model.CrackOptions, error) {
 func init() {
 	crackCli = &cobra.Command{
 		Use:   "crack",
-		Long:  fmt.Sprintf("-x ALL will load plugins: [%s]\nAnother plugins: [%s]", strings.Join(Plugins.CrackKeys, ","), strings.Join(Plugins.CrackFuncExclude, ",")),
+		Long:  crackDesc(),
 		Short: "crack service password",
 		Run:   runCrack,
 		Example: `cube crack -u root -p root -i 192.168.1.1 -x ssh
@@ -105,4 +105,9 @@ cube crack -u root --pass-file pass.txt -i http://127.0.0.1:8080 -x phpmyadmin
 	}
 
 	rootCmd.AddCommand(crackCli)
+}
+
+func crackDesc() (s string) {
+	s = fmt.Sprintf("Plugins(-x ALL):\n  %s\n\nPlugins: \n  %s", strings.Join(Plugins.CrackKeys, "\n  "), strings.Join(Plugins.CrackFuncExclude, "\n  "))
+	return s
 }

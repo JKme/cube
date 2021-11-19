@@ -55,9 +55,11 @@ func init() {
 	sqlCli = &cobra.Command{
 		Use:   "sqlcmd",
 		Short: "exec sql or cmd",
-		Long:  fmt.Sprintf("Avaliable plugins: [%s]", strings.Join(Plugins.SqlcmdKeys, ",")),
+		Long:  sqlcmdDesc(),
 		Run:   runSqlcmd,
 		Example: `cube sqlcmd -x ssh://192.168.0.0:2200 -uroot -proot -e "whoami"
+cube sqlcmd -x mssql://192.168.0.0:2200 -uroot -proot -e "whoami"
+cube sqlcmd -x mssql://192.168.0.0:2200 -uroot -proot -e "clear"
 		`,
 	}
 
@@ -67,4 +69,9 @@ func init() {
 	sqlCli.Flags().StringP("query", "e", "", "string to query or exec")
 
 	rootCmd.AddCommand(sqlCli)
+}
+
+func sqlcmdDesc() (s string) {
+	s = fmt.Sprintf("Plugins:\n  %s", strings.Join(Plugins.SqlcmdKeys, "\n  "))
+	return s
 }

@@ -135,10 +135,20 @@ cube crack -u root --pass-file pass.txt -i http://192.168.1.1 -x zabbix
 - redis未授权也会爆破出来一个密码，可忽略
 
 #### Sqlcmd 命令执行
-执行命令，可用插件： `ssh`,`mssql`(开启xp_cmdshell),`mssql-wscript`,`mssql-com`,`mssql-clr`
+执行命令，可用插件： `ssh`,`mssql`(开启xp_cmdshell),`mssql-wscript`,`mssql-com`,`mssql-clr`, `mysql`
+
+| 插件名称      | 插件效果 | 默认端口 |
+| --------- | :-----|------|
+| ssh     | ssh命令执行，仅支持密码 | TCP 22 |
+| mssql     | mssql开启命令执行 | TCP 1433
+| mssql-wscript     | mssql开启命令执行 | TCP 1433
+| mssql-com     | mssql开启命令执行 | TCP 1433
+| mssql-clr     | mssql开启命令执行 | TCP 1433
+| mysql     | msql开启命令执行，仅支持Windows x64 | TCP 3306
+
 ```
 Examples:
-cube sqlcmd -x ssh://172.16.157.163:2222 -usa -p123456 -e "whoami"
+cube sqlcmd -x ssh://172.16.157.163:2222 -usa -p123456 -e "whoami"  //指定端口
 
 
 cube sqlcmd -x mssql://172.16.157.163 -usa -p123456 -e "whoami"

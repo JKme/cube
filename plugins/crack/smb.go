@@ -5,17 +5,24 @@ import (
 	"fmt"
 	"github.com/stacktitan/smb/smb"
 	"strconv"
+	"strings"
 )
 
 func SmbCrack(task model.CrackTask) (result model.CrackTaskResult) {
 	result = model.CrackTaskResult{CrackTask: task, Result: "", Err: nil}
 	Port, _ := strconv.Atoi(task.Port)
+	User := task.Auth.User
+	Domain := ""
+	if strings.Contains(User, "\\") {
+		l := strings.Split(User, "\\")
+		Domain, User = l[0], l[1]
+	}
 	options := smb.Options{
 		Host:        task.Ip,
 		Port:        Port,
-		User:        task.Auth.User,
+		User:        User,
 		Password:    task.Auth.Password,
-		Domain:      "",
+		Domain:      Domain,
 		Workstation: "",
 	}
 	session, err := smb.NewSession(options, false)

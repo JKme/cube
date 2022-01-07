@@ -54,6 +54,7 @@ func init() {
 
 	CommonPortMap["ms17010"] = 445
 	CommonPortMap["smbghost"] = 445
+	CommonPortMap["smb"] = 445
 	CommonPortMap["mssql"] = 1433
 	CommonPortMap["mssql-wscript"] = 1433
 	CommonPortMap["mssql-com"] = 1433

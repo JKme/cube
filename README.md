@@ -92,6 +92,7 @@ Global Flags:
   -v, --verbose       Verbose output (errors)
 ```
 用户名(`-u/--user-file`)和密码(`-p/--pass-file`)成对出现，可以任意组合， 可用插件：`ssh，mysql，redis，elastic，ftp，httpbasic，mongo，mssql，smb，postgres`
+smb插件的域爆破没有充分测试
 
 | 插件名称      | 插件效果 | 默认端口 |
 | --------- | :-----|------|
@@ -103,6 +104,7 @@ Global Flags:
 | ssh       | SSH爆破     | TCP 22
 | redis     | redis爆破     | TCP 6379
 | ftp       | ftp爆破     | TCP 21
+| smb       | smb爆破(支持域爆破: 用户名 DC1\administrator )     | TCP 445
 
 
 | 插件名称      | 插件效果 | 默认端口 |

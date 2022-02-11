@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"crypto/md5"
-	"cube/log"
+	"cube/gologger"
 	"cube/model"
 	"fmt"
 	"golang.org/x/text/encoding/simplifiedchinese"
@@ -71,7 +71,7 @@ func SliceContain(str string, slice []string) bool {
 func FileReader(filename string) ([]string, error) {
 	file, err := os.Open(filename)
 	if err != nil {
-		log.Errorf("Open file %s error, %v\n", filename, err)
+		gologger.Errorf("Open file %s error, %v\n", filename, err)
 	}
 	defer file.Close()
 	var content []string
@@ -182,7 +182,7 @@ func ReadResultMap() {
 	n := ResultMap.m
 	ResultMap.RUnlock()
 	for k, v := range n {
-		log.Infof("[*]: %s %v", k, v)
+		gologger.Infof("[*]: %s %v", k, v)
 	}
 }
 

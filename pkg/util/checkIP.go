@@ -2,7 +2,7 @@ package util
 
 import (
 	"context"
-	"cube/log"
+	"cube/gologger"
 	"cube/model"
 	"fmt"
 	"net"
@@ -103,10 +103,10 @@ func CheckAlive(ctx context.Context, Num int, delay int, ips []string, plugins [
 
 func check(addr IpAddr) (bool, IpAddr) {
 	alive := false
-	log.Debugf("Port connect check: %s:%s", addr.Ip, addr.Port)
+	gologger.Debugf("Port connect check: %s:%s", addr.Ip, addr.Port)
 	_, err := net.DialTimeout("tcp", fmt.Sprintf("%v:%v", addr.Ip, addr.Port), model.ConnectTimeout)
 	if err == nil {
-		log.Infof("Open %s:%s", addr.Ip, addr.Port)
+		gologger.Infof("Open %s:%s", addr.Ip, addr.Port)
 		alive = true
 	}
 	return alive, addr
@@ -115,7 +115,7 @@ func check(addr IpAddr) (bool, IpAddr) {
 func checkUDP(addr IpAddr) (bool, IpAddr) {
 	//https://github.com/bronzdoc/gops
 	//alive := true
-	log.Debugf("Port connect check: %s:%s", addr.Ip, addr.Port)
+	gologger.Debugf("Port connect check: %s:%s", addr.Ip, addr.Port)
 	time.Sleep(time.Millisecond * 10)
 
 	return true, addr

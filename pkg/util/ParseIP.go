@@ -2,7 +2,7 @@ package util
 
 import (
 	"bufio"
-	"cube/log"
+	"cube/gologger"
 	"errors"
 	"fmt"
 	"github.com/malfunkt/iprange"
@@ -32,7 +32,7 @@ func ParseIPs(ip string) (hosts []string) {
 
 	list, err := iprange.ParseList(ip)
 	if err != nil {
-		log.Error("IP parsing error\nformat: 10.0.0.1, 10.0.0.5-10, 192.168.1.*, 192.168.10.0/24")
+		gologger.Errorf("IP parsing error\nformat: 10.0.0.1, 10.0.0.5-10, 192.168.1.*, 192.168.10.0/24")
 	}
 	rng := list.Expand()
 	for _, v := range rng {

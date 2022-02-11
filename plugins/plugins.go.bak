@@ -1,11 +1,11 @@
 package Plugins
 
 import (
-	"cube/model"
+	"cube/pkg/model"
+	"cube/pkg/util"
 	"cube/plugins/crack"
 	"cube/plugins/probe"
 	"cube/plugins/sqlcmd"
-	"cube/util"
 )
 
 type ProbeFunc func(task model.ProbeTask) (taskResult model.ProbeTaskResult)

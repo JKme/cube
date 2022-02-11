@@ -1,8 +1,7 @@
 package cmd
 
 import (
-	"cube/log"
-	"cube/model"
+	"cube/pkg/model"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
@@ -38,11 +37,11 @@ func parseGlobalOptions() (*model.GlobalOptions, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid value for verbose: %w", err)
 	}
-	if verbose {
-		log.InitLog("DEBUG")
-	} else {
-		log.InitLog("INFO")
-	}
+	//if verbose {
+	//	log.InitLog("DEBUG")
+	//} else {
+	//	log.InitLog("INFO")
+	//}
 	globalopts.Verbose = verbose
 
 	return globalopts, nil

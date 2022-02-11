@@ -12,22 +12,7 @@ type ProbeTaskResult struct {
 	Err       error
 }
 
-type Auth struct {
-	User     string
-	Password string
-}
-type CrackTask struct {
-	Ip          string
-	Port        string
-	Auth        Auth
-	CrackPlugin string
-}
 
-type CrackTaskResult struct {
-	CrackTask CrackTask
-	Result    string
-	Err       error
-}
 
 type SqlcmdTask struct {
 	Ip           string

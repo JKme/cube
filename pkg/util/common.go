@@ -4,8 +4,9 @@ import (
 	"bufio"
 	"bytes"
 	"crypto/md5"
+	"cube/conf"
 	"cube/gologger"
-	"cube/model"
+	"cube/pkg/model"
 	"fmt"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
@@ -51,7 +52,7 @@ func ParseService(str string) (service model.Service, err error) {
 	}
 
 	if len(a) == 2 {
-		service.Port = model.CommonPortMap[service.Schema]
+		service.Port = conf.CommonPortMap[service.Schema]
 	} else {
 		service.Port, _ = strconv.Atoi(a[2])
 	}
@@ -152,17 +153,17 @@ func MakeTaskHash(k string) string {
 }
 
 func CheckTaskHash(hash string) bool {
-	model.SuccessHash.Lock()
-	_, ok := model.SuccessHash.S[hash]
-	model.SuccessHash.Unlock()
+	conf.SuccessHash.Lock()
+	_, ok := conf.SuccessHash.S[hash]
+	conf.SuccessHash.Unlock()
 	//log.Debugf("Success: %#v\n", model.SuccessHash)
 	return ok
 }
 
 func SetTaskHash(hash string) {
-	model.SuccessHash.Lock()
-	model.SuccessHash.S[hash] = true
-	model.SuccessHash.Unlock()
+	conf.SuccessHash.Lock()
+	conf.SuccessHash.S[hash] = true
+	conf.SuccessHash.Unlock()
 }
 
 // ResultMap 当Mysql或者redis空密码的时候，任何密码都正确，会导致密码刷屏

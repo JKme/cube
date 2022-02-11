@@ -2,8 +2,8 @@ package util
 
 import (
 	"context"
+	"cube/conf"
 	"cube/gologger"
-	"cube/model"
 	"fmt"
 	"net"
 	"strconv"
@@ -38,7 +38,7 @@ func CheckAlive(ctx context.Context, Num int, delay int, ips []string, plugins [
 			for _, ip := range ips {
 				ipList = append(ipList, IpAddr{
 					Ip:     ip,
-					Port:   strconv.Itoa(model.CommonPortMap[plugin]),
+					Port:   strconv.Itoa(conf.CommonPortMap[plugin]),
 					Plugin: plugin,
 				})
 			}
@@ -104,7 +104,7 @@ func CheckAlive(ctx context.Context, Num int, delay int, ips []string, plugins [
 func check(addr IpAddr) (bool, IpAddr) {
 	alive := false
 	gologger.Debugf("Port connect check: %s:%s", addr.Ip, addr.Port)
-	_, err := net.DialTimeout("tcp", fmt.Sprintf("%v:%v", addr.Ip, addr.Port), model.ConnectTimeout)
+	_, err := net.DialTimeout("tcp", fmt.Sprintf("%v:%v", addr.Ip, addr.Port), conf.ConnectTimeout)
 	if err == nil {
 		gologger.Infof("Open %s:%s", addr.Ip, addr.Port)
 		alive = true

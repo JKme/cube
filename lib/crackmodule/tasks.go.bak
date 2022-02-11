@@ -1,29 +1,30 @@
-package cubelib
+package crackmodule
 
 import (
 	"context"
-	"cube/log"
-	"cube/model"
-	Plugins "cube/plugins"
-	"cube/util"
+	"cube/conf"
+	"cube/gologger"
+	"cube/lib/crackmodule/plugins"
+	"cube/pkg/model"
+	"cube/pkg/util"
 	"fmt"
 	"strings"
 	"sync"
 	"time"
 )
 
-func loadDefaultDict(p string) map[string][]model.Auth {
-	authSlice := make([]model.Auth, 0)
-	r := make(map[string][]model.Auth, 0)
-	users, ok := model.UserDict[p]
+func loadDefaultDict(p string) map[string][]plugins.Auth {
+	authSlice := make([]plugins.Auth, 0)
+	r := make(map[string][]plugins.Auth, 0)
+	users, ok := conf.UserDict[p]
 	if !ok {
 		users = []string{""}
 	}
 	for _, user := range users {
-		log.Debugf("User: %s", user)
-		for _, pass := range model.PassDict {
+		gologger.Debugf("User: %s", user)
+		for _, pass := range conf.PassDict {
 			pass = strings.Replace(pass, "{user}", user, -1)
-			authSlice = append(authSlice, model.Auth{
+			authSlice = append(authSlice, plugins.Auth{
 				User:     user,
 				Password: pass,
 			})
@@ -33,13 +34,13 @@ func loadDefaultDict(p string) map[string][]model.Auth {
 	return r
 }
 
-func genDefaultTasks(AliveIPS []util.IpAddr) (tasks []model.CrackTask) {
-	tasks = make([]model.CrackTask, 0)
+func genDefaultTasks(AliveIPS []util.IpAddr) (tasks []plugins.CrackTask) {
+	tasks = make([]plugins.CrackTask, 0)
 	for _, addr := range AliveIPS {
 		mapAuthSlice := loadDefaultDict(addr.Plugin)
 		authSlice := mapAuthSlice[addr.Plugin]
 		for _, auth := range authSlice {
-			s := model.CrackTask{Ip: addr.Ip, Port: addr.Port, Auth: auth, CrackPlugin: addr.Plugin}
+			s := plugins.CrackTask{Ip: addr.Ip, Port: addr.Port, Auth: auth, CrackPlugin: addr.Plugin}
 			tasks = append(tasks, s)
 		}
 
@@ -47,21 +48,21 @@ func genDefaultTasks(AliveIPS []util.IpAddr) (tasks []model.CrackTask) {
 	return tasks
 }
 
-func genCrackTasks(AliveIPS []util.IpAddr, auths []model.Auth) (tasks []model.CrackTask) {
-	tasks = make([]model.CrackTask, 0)
+func genCrackTasks(AliveIPS []util.IpAddr, auths []plugins.Auth) (tasks []plugins.CrackTask) {
+	tasks = make([]plugins.CrackTask, 0)
 	for _, addr := range AliveIPS {
 		for _, auth := range auths {
-			s := model.CrackTask{Ip: addr.Ip, Port: addr.Port, Auth: auth, CrackPlugin: addr.Plugin}
+			s := plugins.CrackTask{Ip: addr.Ip, Port: addr.Port, Auth: auth, CrackPlugin: addr.Plugin}
 			tasks = append(tasks, s)
 		}
 	}
 	return tasks
 }
 
-func saveCrackReport(taskResult model.CrackTaskResult) {
+func saveCrackReport(taskResult plugins.CrackTaskResult) {
 
 	if len(taskResult.Result) > 0 {
-		log.Debugf("Put Result to Map: %v\n", taskResult)
+		gologger.Debugf("Put Result to Map: %v\n", taskResult)
 		k := fmt.Sprintf("%v-%v-%v", taskResult.CrackTask.Ip, taskResult.CrackTask.Port, taskResult.CrackTask.CrackPlugin)
 		h := util.MakeTaskHash(k)
 		util.SetTaskHash(h)
@@ -71,7 +72,7 @@ func saveCrackReport(taskResult model.CrackTaskResult) {
 	}
 }
 
-func runUnitTask(ctx context.Context, tasks chan model.CrackTask, wg *sync.WaitGroup, delay int) {
+func runUnitTask(ctx context.Context, tasks chan plugins.CrackTask, wg *sync.WaitGroup, delay int) {
 	for {
 		select {
 		case <-ctx.Done():
@@ -89,7 +90,7 @@ func runUnitTask(ctx context.Context, tasks chan model.CrackTask, wg *sync.WaitG
 			//	continue
 			//}
 
-			log.Debugf("Checking %s Password: %s://%s:%s@%s:%s", task.CrackPlugin, task.CrackPlugin, task.Auth.User, task.Auth.Password, task.Ip, task.Port)
+			gologger.Debugf("Checking %s Password: %s://%s:%s@%s:%s", task.CrackPlugin, task.CrackPlugin, task.Auth.User, task.Auth.Password, task.Ip, task.Port)
 			k := fmt.Sprintf("%v-%v-%v", task.Ip, task.Port, task.CrackPlugin)
 			h := util.MakeTaskHash(k)
 			if util.CheckTaskHash(h) {
@@ -113,7 +114,7 @@ func runUnitTask(ctx context.Context, tasks chan model.CrackTask, wg *sync.WaitG
 
 func opt2slice(str string, file string) []string {
 	if len(str+file) == 0 {
-		log.Error("-h for Help, Please set User and Password flag")
+		gologger.Errorf("-h for Help, Please set User and Password flag")
 	}
 	if len(str) > 0 {
 		r := strings.Split(str, ",")
@@ -127,7 +128,7 @@ func opt2slice(str string, file string) []string {
 func genPlugins(plugin string) []string {
 	pluginList := strings.Split(plugin, ",")
 	if len(pluginList) > 1 && util.SliceContain("ALL", pluginList) {
-		log.Errorf("invalid plugin: %s", plugin)
+		gologger.Errorf("invalid plugin: %s", plugin)
 	}
 
 	if plugin == "ALL" {
@@ -183,12 +184,12 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 		})
 	} else {
 		optPlugins = genPlugins(opt.CrackPlugin)
-		log.Infof("Loading plugin: %s", strings.Join(optPlugins, ","))
+		gologger.Infof("Loading plugin: %s", strings.Join(optPlugins, ","))
 		ips, _ = util.ParseIP(opt.Ip, opt.IpFile)
 
 		AliveIPS = util.CheckAlive(ctx, num, delay, ips, optPlugins, opt.Port)
 		//AliveIPS = RemoveRepByMap(AliveIPS)  // 去重IP
-		log.Debugf("Receive alive IP: %s", AliveIPS)
+		gologger.Debugf("Receive alive IP: %s", AliveIPS)
 	}
 
 	if len(opt.User+opt.UserFile+opt.Pass+opt.PassFile) > 0 {
@@ -197,7 +198,7 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 	} else {
 		tasks = genDefaultTasks(AliveIPS)
 	}
-	log.Debugf("Receive %d tasks", len(tasks))
+	gologger.Debugf("Receive %d tasks", len(tasks))
 
 	var wg sync.WaitGroup
 	taskChan := make(chan model.CrackTask, num*2)
@@ -211,7 +212,7 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 		taskChan <- task
 	}
 	//wg.Wait()
-	waitTimeout(&wg, model.ThreadTimeout*2)
+	cubelib.waitTimeout(&wg, conf.ThreadTimeout*2)
 	util.ReadResultMap()
 	util.GetFinishTime(t1)
 }

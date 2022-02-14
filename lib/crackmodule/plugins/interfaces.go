@@ -39,8 +39,8 @@ func init() {
 func (c *Crack) New() ICrack {
 	switch c.Name {
 	case "ssh":
-		return &SshCrack{*c}
+		return &SshCrack{c}
 	default:
-		return &FtpCrack{*c}
+		return &FtpCrack{c}
 	}
 }

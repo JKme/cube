@@ -6,26 +6,27 @@ import (
 )
 
 type SshCrack struct {
-	Crack
+	*Crack
 }
+
 //type SshCrack = Crack
 
-func (sshCrack *SshCrack) SetName() (s string){
+func (sshCrack SshCrack) SetName() (s string) {
 	return "ssh"
 }
 
-func (sshCrack *SshCrack) Desc() (s string){
+func (sshCrack SshCrack) Desc() (s string) {
 	return "crack ssh service password"
 }
-func (sshCrack *SshCrack) Load() (b bool){
+func (sshCrack SshCrack) Load() (b bool) {
 	return true
 }
-func (sshCrack *SshCrack) GetPort() (s string){
+func (sshCrack SshCrack) GetPort() (s string) {
 	return "22"
 }
 
-func (sshCrack *SshCrack) Exec() (crackResult CrackResult) {
-	crackResult = CrackResult{Crack: sshCrack.Crack, Result: "", Err: nil}
+func (sshCrack SshCrack) Exec() (crackResult CrackResult) {
+	crackResult = CrackResult{Crack: *sshCrack.Crack, Result: "", Err: nil}
 	config := &ssh.ClientConfig{
 		User: sshCrack.Auth.User,
 		Auth: []ssh.AuthMethod{
@@ -35,7 +36,7 @@ func (sshCrack *SshCrack) Exec() (crackResult CrackResult) {
 		//HostKeyCallback: hostKeyCallBackFunc(h.Host),
 	}
 	conn, err := ssh.Dial("tcp", fmt.Sprintf("%s:%s", sshCrack.Ip, sshCrack.Port), config)
-	if err!= nil {
+	if err != nil {
 		crackResult.Err = err
 		return
 	}
@@ -49,6 +50,3 @@ func (sshCrack *SshCrack) Exec() (crackResult CrackResult) {
 	}
 	return crackResult
 }
-
-
-

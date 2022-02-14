@@ -5,12 +5,6 @@ import (
 	"testing"
 )
 
-
-func Hello(c ICrack){
-	fmt.Println(c.Desc())
-	fmt.Println(c.Exec())
-}
-
 func TestCrackPluginInterface(t *testing.T) {
 	c := Crack{
 		Ip:   "127.0.0.1",

@@ -8,8 +8,9 @@ import (
 type SshCrack struct {
 	Crack
 }
+//type SshCrack = Crack
 
-func (sshCrack *SshCrack) Name() (s string){
+func (sshCrack *SshCrack) SetName() (s string){
 	return "ssh"
 }
 
@@ -19,7 +20,7 @@ func (sshCrack *SshCrack) Desc() (s string){
 func (sshCrack *SshCrack) Load() (b bool){
 	return true
 }
-func (sshCrack *SshCrack) Port() (s string){
+func (sshCrack *SshCrack) GetPort() (s string){
 	return "22"
 }
 

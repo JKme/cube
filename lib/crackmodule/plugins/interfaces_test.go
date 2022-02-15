@@ -1,6 +1,7 @@
 package plugins
 
 import (
+	"cube/gologger"
 	"fmt"
 	"testing"
 )
@@ -13,13 +14,21 @@ func TestCrackPluginInterface(t *testing.T) {
 			User:     "root",
 			Password: "root",
 		},
-		Name: "ssh",
+		Name: "ssh2",
 	}
 
-	task := c.New()
+	task := c.NewCrack()
 	fmt.Println(task.Exec())
 	fmt.Println(task.GetPort())
 	fmt.Println(task.SetName())
 	fmt.Println(task.Desc())
 	fmt.Println(task.Load())
+	gologger.Infof("INFO\n")
+
+	gologger.Printf("Hello\n")
+	gologger.Labelf("Label\n")
+	gologger.Silentf("silent\n")
+	gologger.Debugf("Debug\n")
+	gologger.Fatalf("Fetalf\n")
+
 }

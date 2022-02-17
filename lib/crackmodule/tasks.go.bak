@@ -20,7 +20,7 @@ func loadDefaultDict(p string) map[string][]plugins.Auth {
 	if !ok {
 		users = []string{""}
 	}
-	for _, user := range users {
+	  {
 		gologger.Debugf("User: %s", user)
 		for _, pass := range conf.PassDict {
 			pass = strings.Replace(pass, "{user}", user, -1)

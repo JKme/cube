@@ -1,11 +1,16 @@
 package plugins
 
+var CRACK_KEYS []string
+
 type ICrack interface {
 	SetName() string   // 插件名称
-	Desc() string      //插件作用描述
-	Load() bool        // ALL选项的时候，是否加载
-	GetPort() string   //设置端口
+	IsLoad() bool      // ALL选项的时候，是否加载
+	SetPort() string   //设置端口
 	Exec() CrackResult //运行task，返回string
+}
+
+func AddKeys(s string) {
+	CRACK_KEYS = append(CRACK_KEYS, s)
 }
 
 //type Result interface {
@@ -19,11 +24,27 @@ type ICrack interface {
 //	ICrackMap = make(map[string]ICrack)
 //}
 
-func (c *Crack) NewCrack() ICrack {
+func (c *Crack) NewICrack() ICrack {
 	switch c.Name {
 	case "ssh":
 		return &SshCrack{c}
-	default:
+	case "ftp":
 		return &FtpCrack{c}
+	default:
+		return nil
+	}
+}
+
+func (c *Crack) GetPort() string {
+	ic := c.NewICrack()
+	return ic.SetPort()
+}
+
+func (c *Crack) GetLoadStatus() string {
+	ic := c.NewICrack()
+	if ic.IsLoad() == true {
+		return "Y"
+	} else {
+		return "N"
 	}
 }

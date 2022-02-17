@@ -17,12 +17,12 @@ func TestCrackPluginInterface(t *testing.T) {
 		Name: "ssh2",
 	}
 
-	task := c.NewCrack()
-	fmt.Println(task.Exec())
-	fmt.Println(task.GetPort())
-	fmt.Println(task.SetName())
-	fmt.Println(task.Desc())
-	fmt.Println(task.Load())
+	fmt.Println(CRACK_KEYS)
+	task := c.NewICrack()
+	if task == nil {
+		gologger.Fatalf("未找到插件")
+	}
+
 	gologger.Infof("INFO\n")
 
 	gologger.Printf("Hello\n")

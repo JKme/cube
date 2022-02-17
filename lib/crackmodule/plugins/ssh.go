@@ -15,13 +15,10 @@ func (sshCrack SshCrack) SetName() (s string) {
 	return "ssh"
 }
 
-func (sshCrack SshCrack) Desc() (s string) {
-	return "crack ssh service password"
-}
-func (sshCrack SshCrack) Load() (b bool) {
+func (sshCrack SshCrack) IsLoad() (b bool) {
 	return true
 }
-func (sshCrack SshCrack) GetPort() (s string) {
+func (sshCrack SshCrack) SetPort() (s string) {
 	return "22"
 }
 
@@ -49,4 +46,8 @@ func (sshCrack SshCrack) Exec() (crackResult CrackResult) {
 
 	}
 	return crackResult
+}
+
+func init() {
+	AddKeys("ssh")
 }

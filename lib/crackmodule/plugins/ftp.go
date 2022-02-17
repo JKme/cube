@@ -8,13 +8,10 @@ func (ftpCrack *FtpCrack) SetName() (s string) {
 	return "ftp"
 }
 
-func (ftpCrack *FtpCrack) Desc() (s string) {
-	return "crack ftp service password"
-}
-func (ftpCrack *FtpCrack) Load() (b bool) {
+func (ftpCrack *FtpCrack) IsLoad() (b bool) {
 	return true
 }
-func (ftpCrack *FtpCrack) GetPort() (s string) {
+func (ftpCrack *FtpCrack) SetPort() (s string) {
 	return "21"
 }
 
@@ -24,6 +21,6 @@ func (ftpCrack *FtpCrack) Exec() (result CrackResult) {
 	return result
 }
 
-//func init(){
-//	RegisterCrackFuncMap("ftp", &FtpCrack{})
-//}
+func init() {
+	AddKeys("ftp")
+}

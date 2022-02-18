@@ -90,3 +90,14 @@ func GetPluginAuths(p string) []Auth {
 	}
 	return auths
 }
+
+func GetDefaultPlugins() []string {
+	//当-x X 的时候，加载对应的插件
+	var p []string
+	for _, k := range CrackKeys {
+		if GetLoadStatus(k) == "Y" {
+			p = append(p, k)
+		}
+	}
+	return p
+}

@@ -1,6 +1,7 @@
 package plugins
 
 import (
+	"cube/conf"
 	"fmt"
 	"golang.org/x/crypto/ssh"
 )
@@ -9,17 +10,24 @@ type SshCrack struct {
 	*Crack
 }
 
-//type SshCrack = Crack
-
-func (sshCrack SshCrack) SetName() (s string) {
+func (sshCrack SshCrack) SetName() string {
 	return "ssh"
 }
 
-func (sshCrack SshCrack) IsLoad() (b bool) {
-	return true
-}
-func (sshCrack SshCrack) SetPort() (s string) {
+func (sshCrack SshCrack) SetPort() string {
 	return "22"
+}
+
+func (sshCrack SshCrack) SetAuthUser() []string {
+	return []string{"root", "admin"}
+}
+
+func (sshCrack SshCrack) SetAuthPass() []string {
+	return conf.PASSWORDS
+}
+
+func (sshCrack SshCrack) IsLoad() bool {
+	return true
 }
 
 func (sshCrack SshCrack) Exec() (crackResult CrackResult) {
@@ -49,5 +57,5 @@ func (sshCrack SshCrack) Exec() (crackResult CrackResult) {
 }
 
 func init() {
-	AddKeys("ssh")
+	AddCrackKeys("ssh")
 }

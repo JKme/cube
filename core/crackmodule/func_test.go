@@ -1,6 +1,8 @@
 package crackmodule
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestCrackHelp(t *testing.T) {
 	CrackHelpTable()

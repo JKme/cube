@@ -17,7 +17,7 @@ func TestCrackPluginInterface(t *testing.T) {
 		Name: "ssh2",
 	}
 
-	fmt.Println(CRACK_KEYS)
+	fmt.Println(CrackKeys)
 	task := c.NewICrack()
 	if task == nil {
 		gologger.Fatalf("未找到插件")

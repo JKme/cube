@@ -28,10 +28,6 @@ type SqlcmdOptions struct {
 	Query    string
 }
 
-func NewGlobalOptions() *GlobalOptions {
-	return &GlobalOptions{}
-}
-
 func NewProbeOptions() *ProbeOptions {
 	return &ProbeOptions{}
 }
@@ -39,5 +35,3 @@ func NewProbeOptions() *ProbeOptions {
 func NewSqlcmdOptions() *SqlcmdOptions {
 	return &SqlcmdOptions{}
 }
-
-

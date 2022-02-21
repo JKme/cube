@@ -1,4 +1,4 @@
-package crackmodule
+package plugins
 
 type CrackOptions struct {
 	Ip          string

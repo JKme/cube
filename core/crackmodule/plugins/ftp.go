@@ -21,8 +21,13 @@ func (ftpCrack FtpCrack) SetAuthUser() []string {
 func (ftpCrack FtpCrack) SetAuthPass() []string {
 	return conf.PASSWORDS
 }
+
 func (ftpCrack FtpCrack) IsLoad() bool {
 	return true
+}
+
+func (ftpCrack FtpCrack) IsMutex() bool {
+	return false
 }
 
 func (ftpCrack FtpCrack) Exec() (result CrackResult) {

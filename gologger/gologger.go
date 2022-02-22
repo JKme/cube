@@ -1,183 +1,134 @@
 package gologger
 
 import (
-"fmt"
-"github.com/logrusorgru/aurora"
-"github.com/mattn/go-colorable"
-"os"
-"strings"
-"sync"
+	"fmt"
+	"io"
+	"log"
+	"os"
 )
 
-// Level defines all the available levels we can log at
 type Level int
 
-// Available logging levels
 const (
-	Null Level = iota
-	Fatal
-	Silent
-	Label
-	Misc
-	Error
-	Warning
-	Info
-	Debug
-	Verbose
+	LevelDebug Level = iota
+	LevelInfo
+	LevelWarn
+	LevelError
 )
+
+func (l Level) String() string {
+	switch l {
+	case LevelDebug:
+		return "DEBUG"
+	case LevelInfo:
+		return "INFO"
+	case LevelError:
+		return "ERROR"
+	}
+	return ""
+}
 
 var (
-	// UseColors can be used to control coloring of the output
-	UseColors = true
-	// MaxLevel is the maximum level to log at. By default, logging
-	// is done at Info level. Using verbose will display all the errors too,
-	// Using silent will display only the most relevant information.
-	MaxLevel = Info
-
-	labels = map[Level]string{
-		Warning: "Warning",
-		Error:   "Error",
-		Label:   "WRN",
-		Fatal:   "Fatal",
-		Debug:   "DEBUG",
-		Info:    "INFO",
+	formatLogger *Logger
+	levelMap     = map[string]Level{
+		"DEBUG": LevelDebug,
+		"INFO":  LevelInfo,
+		"ERROR": LevelError,
 	}
-
-	mutex  = &sync.Mutex{}
-	output = colorable.NewColorableStdout()
 )
 
-var stringBuilderPool = &sync.Pool{New: func() interface{} {
-	return new(strings.Builder)
-}}
+func init() {
+	InitLog("INFO")
 
-// wrap wraps a given label for a message to a logg-able representation.
-// It checks if colors are specified and what level we are logging at.
-func wrap(label string, level Level) string {
-	// Check if we are not using colors, if not, return
-	if !UseColors {
-		return label
-	}
+}
 
-	switch level {
-	case Silent:
-		return label
-	case Info, Verbose:
-		return aurora.Blue(label).String()
-	case Fatal:
-		return aurora.Bold(aurora.Red(label)).String()
-	case Error:
-		return aurora.Red(label).String()
-	case Debug:
-		return aurora.Magenta(label).String()
-	case Warning, Label:
-		return aurora.Yellow(label).String()
+func InitLog(l string) {
+	switch {
+	case l == "INFO":
+		formatLogger = newLog(os.Stdout).setLevel(levelMap[l])
 	default:
-		return label
+		formatLogger = newLog(os.Stdout).setFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	}
 }
 
-// getLabel generates a label for a given message, depending on the level
-// and the label passed.
-func getLabel(level Level, label string, sb *strings.Builder) {
-	switch level {
-	case Silent, Misc:
-		return
-	case Error, Fatal, Info, Warning, Debug, Label:
-		sb.WriteString("[")
-		sb.WriteString(wrap(labels[level], level))
-		sb.WriteString("]")
-		sb.WriteString(" ")
-		return
-	case Verbose:
-		sb.WriteString("[")
-		sb.WriteString(wrap(label, level))
-		sb.WriteString("]")
-		sb.WriteString(" ")
-		return
-	default:
-		return
+type Logger struct {
+	level Level
+	l     *log.Logger
+}
+
+func newLog(w io.Writer) *Logger {
+	return &Logger{
+		l: log.New(w, "", 0),
 	}
 }
 
-// log logs the actual message to the screen
-func log(level Level, label string, format string, args ...interface{}) {
-	// Don't log if the level is null
-	if level == Null {
-		return
+func (l *Logger) setFlags(flag int) *Logger {
+	l.l.SetFlags(flag)
+	return l
+}
+
+func (l *Logger) setLevel(level Level) *Logger {
+	l.level = level
+	return l
+}
+
+func (l *Logger) doLog(level Level, v ...interface{}) bool {
+	if level < l.level {
+		return false
 	}
-
-	if level <= MaxLevel {
-		// Build the log message using the string builder pool
-		sb := stringBuilderPool.Get().(*strings.Builder)
-
-		// Get the label and append it to string builder
-		getLabel(level, label, sb)
-
-		message := fmt.Sprintf(format, args...)
-		sb.WriteString(message)
-
-		//if strings.HasSuffix(message, "\n") == false {
-		//	sb.WriteString("\n")
-		//}
-
-		mutex.Lock()
-		switch level {
-		case Silent:
-			fmt.Fprint(os.Stdout, sb.String())
-		default:
-			fmt.Fprint(output, sb.String())
-		}
-		mutex.Unlock()
-
-		sb.Reset()
-		stringBuilderPool.Put(sb)
+	if level == 1 {
+		l.l.Output(3, fmt.Sprintln(fmt.Sprintln(v...)))
+	} else {
+		//l.l.Output(3, "\t"+level.String()+"\t"+fmt.Sprintln(fmt.Sprintln(v...)))
+		l.l.Output(3, fmt.Sprintln(fmt.Sprintln(v...)))
 	}
+	return true
 }
 
+func (l *Logger) doLogf(level Level, format string, v ...interface{}) bool {
+	if level < l.level {
+		return false
+	}
+	if level == 1 {
+		l.l.Output(3, fmt.Sprintln(fmt.Sprintf(format, v...)))
+	} else {
+		//l.l.Output(3, 	"\t"+level.String()+"\t"+fmt.Sprintln(fmt.Sprintf(format, v...)))
+		l.l.Output(3, fmt.Sprintln(fmt.Sprintf(format, v...)))
 
-// Infof writes a info message on the screen with the default label
-func Infof(format string, args ...interface{}) {
-	log(Info, "", format, args...)
+	}
+	return true
 }
 
-// Warningf writes a warning message on the screen with the default label
-func Warningf(format string, args ...interface{}) {
-	log(Warning, "", format, args...)
+func Debug(v ...interface{}) {
+	formatLogger.doLog(LevelDebug, v...)
 }
 
-// Errorf writes an error message on the screen with the default label
-func Errorf(format string, args ...interface{}) {
-	log(Error, "", format, args...)
+func Info(v ...interface{}) {
+	formatLogger.doLog(LevelInfo, v...)
 }
 
-// Debugf writes an error message on the screen with the default label
-func Debugf(format string, args ...interface{}) {
-	log(Debug, "", format, args...)
+func Warn(v ...interface{}) {
+	formatLogger.doLog(LevelWarn, v...)
 }
 
-// Verbosef writes a verbose message on the screen with a tabel
-func Verbosef(format string, label string, args ...interface{}) {
-	log(Verbose, label, format, args...)
+func Error(v ...interface{}) {
+	formatLogger.doLog(LevelError, v...)
+	os.Exit(2)
 }
 
-// Silentf writes a message on the stdout with no label
-func Silentf(format string, args ...interface{}) {
-	log(Silent, "", format, args...)
+func Errorf(format string, v ...interface{}) {
+	formatLogger.doLogf(LevelError, format, v...)
+	os.Exit(2)
 }
 
-// Fatalf exits the program if we encounter a fatal error
-func Fatalf(format string, args ...interface{}) {
-	log(Fatal, "", format, args...)
-	os.Exit(1)
+func Warnf(format string, v ...interface{}) {
+	formatLogger.doLogf(LevelWarn, format, v...)
 }
 
-// Printf prints a string on screen without any extra stuff
-func Printf(format string, args ...interface{}) {
-	log(Misc, "", format, args...)
+func Debugf(format string, v ...interface{}) {
+	formatLogger.doLogf(LevelDebug, format, v...)
 }
 
-// Labelf prints a string on screen with a label interface
-func Labelf(format string, args ...interface{}) {
-	log(Label, "", format, args...)
+func Infof(format string, v ...interface{}) {
+	formatLogger.doLogf(LevelInfo, format, v...)
 }

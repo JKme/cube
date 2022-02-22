@@ -31,6 +31,9 @@ func ParsePluginOpt(n string) (pluginNameList []string) {
 				}
 			}
 		}
+		if util.Contains(pns[0], CrackKeys) {
+			pluginNameList = pns
+		}
 	default:
 		for _, k := range pns {
 			if util.Contains(k, CrackKeys) {

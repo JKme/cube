@@ -3,14 +3,12 @@ package util
 import (
 	"bufio"
 	"bytes"
-	"crypto/md5"
 	"cube/conf"
 	"cube/gologger"
 	"cube/pkg/model"
 	"fmt"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
-	"io"
 	"io/ioutil"
 	"net"
 	"os"
@@ -19,7 +17,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
 	"unicode/utf16"
 	"unicode/utf8"
 	"unsafe"
@@ -58,15 +55,6 @@ func ParseService(str string) (service model.Service, err error) {
 	}
 
 	return service, nil
-}
-
-func SliceContain(str string, slice []string) bool {
-	for _, value := range slice {
-		if str == value {
-			return true
-		}
-	}
-	return false
 }
 
 func FileReader(filename string) ([]string, error) {
@@ -139,60 +127,6 @@ func Subset(first, second []string) bool {
 		}
 	}
 	return true
-}
-
-func MD5(s string) (m string) {
-	h := md5.New()
-	io.WriteString(h, s)
-	return fmt.Sprintf("%x", h.Sum(nil))
-}
-
-func MakeTaskHash(k string) string {
-	hash := MD5(k)
-	return hash
-}
-
-func CheckTaskHash(hash string) bool {
-	conf.SuccessHash.Lock()
-	_, ok := conf.SuccessHash.S[hash]
-	conf.SuccessHash.Unlock()
-	//log.Debugf("Success: %#v\n", model.SuccessHash)
-	return ok
-}
-
-func SetTaskHash(hash string) {
-	conf.SuccessHash.Lock()
-	conf.SuccessHash.S[hash] = true
-	conf.SuccessHash.Unlock()
-}
-
-// ResultMap 当Mysql或者redis空密码的时候，任何密码都正确，会导致密码刷屏
-var ResultMap = struct {
-	sync.RWMutex
-	m map[string]string
-}{m: make(map[string]string)}
-
-func SetResultMap(r model.CrackTaskResult) {
-	ResultMap.Lock()
-	ResultMap.m[fmt.Sprintf("%s==>%s:%s", r.CrackTask.CrackPlugin, r.CrackTask.Ip, r.CrackTask.Port)] = r.Result
-	ResultMap.Unlock()
-}
-
-func ReadResultMap() {
-	ResultMap.RLock()
-	n := ResultMap.m
-	ResultMap.RUnlock()
-	for k, v := range n {
-		gologger.Infof("[*]: %s %v", k, v)
-	}
-}
-
-func GetFinishTime(t1 time.Time) {
-
-	fmt.Println(strings.Repeat(">", 50))
-	End := time.Now().Format("2006-01-02 15:04:05")
-	fmt.Printf("Finished:%s  Cost:%s", End, time.Since(t1))
-
 }
 
 var mu *sync.RWMutex

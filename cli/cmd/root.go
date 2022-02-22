@@ -1,7 +1,8 @@
 package cmd
 
 import (
-	"cube/pkg/model"
+	"cube/core"
+	"cube/gologger"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
@@ -22,35 +23,35 @@ func Execute() {
 	}
 }
 
-func parseGlobalOptions() (*model.GlobalOptions, error) {
-	globalopts := model.NewGlobalOptions()
+func parseGlobalOptions() (*core.GlobalOptions, error) {
+	globalopts := core.NewGlobalOptions()
 	threads, _ := rootCmd.Flags().GetInt("threads")
 	if threads <= 0 {
-		return nil, fmt.Errorf("threads must be bigger than 0")
+		return nil, fmt.Errorf("threads must be greater than 0")
 	}
 	globalopts.Threads = threads
 
 	globalopts.Timeout, _ = rootCmd.Flags().GetInt("timeout")
-	globalopts.Delay, _ = rootCmd.Flags().GetInt("delay")
+	globalopts.Delay, _ = rootCmd.Flags().GetFloat64("delay")
 
 	verbose, err := rootCmd.Flags().GetBool("verbose")
 	if err != nil {
 		return nil, fmt.Errorf("invalid value for verbose: %w", err)
 	}
-	//if verbose {
-	//	log.InitLog("DEBUG")
-	//} else {
-	//	log.InitLog("INFO")
-	//}
+	if verbose {
+		gologger.InitLog("DEBUG")
+	} else {
+		gologger.InitLog("INFO")
+	}
 	globalopts.Verbose = verbose
 
 	return globalopts, nil
 }
 
 func init() {
-	rootCmd.PersistentFlags().IntP("threads", "n", 30, "Number of concurrent threads")
-	rootCmd.PersistentFlags().IntP("timeout", "", 5, "Timeout each thread waits")
-	rootCmd.PersistentFlags().IntP("delay", "", 0, "delay for request")
+	rootCmd.PersistentFlags().IntP("threads", "n", 30, "Number of concurrent requests")
+	rootCmd.PersistentFlags().IntP("timeout", "", 5, "Seconds to wait before timeout connection")
+	rootCmd.PersistentFlags().Float64P("delay", "", 0, "Delay in random seconds between each TCP/UDP request")
 	//rootCmd.PersistentFlags().StringP("output", "o", "", "Output file to write results to (defaults to stdout)")
-	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Verbose output (errors)")
+	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Verbose (Default error)")
 }

@@ -20,15 +20,14 @@ func TestCrackPluginInterface(t *testing.T) {
 	fmt.Println(CrackKeys)
 	task := c.NewICrack()
 	if task == nil {
-		gologger.Fatalf("未找到插件")
+		gologger.Error("未找到插件")
 	}
 
 	gologger.Infof("INFO\n")
 
-	gologger.Printf("Hello\n")
-	gologger.Labelf("Label\n")
-	gologger.Silentf("silent\n")
-	gologger.Debugf("Debug\n")
-	gologger.Fatalf("Fetalf\n")
+}
 
+func TestParsePluginOpt(t *testing.T) {
+	l := ParsePluginOpt("Y")
+	fmt.Println(l)
 }

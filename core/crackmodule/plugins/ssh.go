@@ -30,6 +30,10 @@ func (sshCrack SshCrack) IsLoad() bool {
 	return true
 }
 
+func (sshCrack SshCrack) IsMutex() bool {
+	return false
+}
+
 func (sshCrack SshCrack) Exec() (crackResult CrackResult) {
 	crackResult = CrackResult{Crack: *sshCrack.Crack, Result: "", Err: nil}
 	config := &ssh.ClientConfig{

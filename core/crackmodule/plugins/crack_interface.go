@@ -12,7 +12,8 @@ type ICrack interface {
 	SetPort() string       //设置端口
 	SetAuthUser() []string //设置默认爆破的用户名
 	SetAuthPass() []string //设置默认爆破的密码
-	IsLoad() bool          // ALL选项的时候，是否加载
+	IsLoad() bool          // -x X选项的时候，是否加载
+	IsMutex() bool         //phpmyadmin爆破的时候，只能单独使用的插件
 	Exec() CrackResult     //运行task，返回string
 }
 
@@ -64,6 +65,12 @@ func GetLoadStatus(s string) string {
 	}
 }
 
+func GetMutexStatus(s string) bool {
+	c := NewCrack(s)
+	ic := c.NewICrack()
+	return ic.IsMutex()
+}
+
 func getPluginAuthUser(s string) []string {
 	c := NewCrack(s)
 	ic := c.NewICrack()
@@ -80,7 +87,7 @@ func GetPluginAuths(p string) []Auth {
 	auths := make([]Auth, 0)
 	for _, user := range getPluginAuthUser(p) {
 		for _, pass := range getPluginAuthPass(p) {
-			gologger.Debugf("% is preparing credentials: %s <=> %s", p, user, pass)
+			gologger.Debugf("%s is preparing credentials: %s <=> %s", p, user, pass)
 			pass = strings.Replace(pass, "{user}", user, -1)
 			auths = append(auths, Auth{
 				User:     user,

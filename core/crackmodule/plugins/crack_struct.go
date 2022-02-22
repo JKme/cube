@@ -16,3 +16,18 @@ type CrackResult struct {
 	Result string
 	Err    error
 }
+
+type CrackOptions struct {
+	Ip              string
+	IpFile          string
+	User            string
+	UserFile        string
+	Pass            string
+	PassFile        string
+	Port            string
+	CrackPluginName string
+}
+
+func NewCrackOptions() *CrackOptions {
+	return &CrackOptions{}
+}

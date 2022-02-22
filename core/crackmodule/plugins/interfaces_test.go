@@ -28,6 +28,6 @@ func TestCrackPluginInterface(t *testing.T) {
 }
 
 func TestParsePluginOpt(t *testing.T) {
-	l := ParsePluginOpt("Y")
+	l := ParsePluginOpt("ssh")
 	fmt.Println(l)
 }

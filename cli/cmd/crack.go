@@ -22,7 +22,7 @@ func runCrack(cmd *cobra.Command, args []string) {
 	plugins.StartCrack(opt, globalopts)
 }
 
-func parseCrackOptions() (*core.GlobalOptions, *plugins.CrackOptions, error) {
+func parseCrackOptions() (*core.GlobalOption, *plugins.CrackOption, error) {
 	globalOpts, err := parseGlobalOptions()
 	if err != nil {
 		return nil, nil, err
@@ -65,7 +65,7 @@ func parseCrackOptions() (*core.GlobalOptions, *plugins.CrackOptions, error) {
 		return nil, nil, fmt.Errorf("invalid value for target-file: %w", err)
 	}
 
-	crackOption.CrackPluginName, err = crackCli.Flags().GetString("plugin")
+	crackOption.PluginName, err = crackCli.Flags().GetString("plugin")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for scan plugin: %w", err)
 	}

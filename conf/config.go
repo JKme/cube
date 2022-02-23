@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	ConnectTimeout = 5 * time.Second
+	TcpConnTimeout = 5 * time.Second
 	ThreadTimeout  = 7 * time.Second
 )
 

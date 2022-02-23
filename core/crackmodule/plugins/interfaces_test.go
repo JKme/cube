@@ -3,6 +3,7 @@ package plugins
 import (
 	"cube/gologger"
 	"fmt"
+	"strconv"
 	"testing"
 )
 
@@ -28,6 +29,8 @@ func TestCrackPluginInterface(t *testing.T) {
 }
 
 func TestParsePluginOpt(t *testing.T) {
-	l := ParsePluginOpt("ssh")
-	fmt.Println(l)
+	//l := ParsePluginOpt("smb")
+	//fmt.Println(l)
+	b, _ := strconv.ParseBool("222")
+	fmt.Println(b)
 }

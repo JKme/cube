@@ -57,7 +57,7 @@ func ParseService(str string) (service model.Service, err error) {
 	return service, nil
 }
 
-func FileReader(filename string) ([]string, error) {
+func FileReader(filename string) []string {
 	file, err := os.Open(filename)
 	if err != nil {
 		gologger.Errorf("Open file %s error, %v\n", filename, err)
@@ -72,7 +72,7 @@ func FileReader(filename string) ([]string, error) {
 			content = append(content, scanner.Text())
 		}
 	}
-	return content, nil
+	return content
 }
 
 func SameStringSlice(x, y []string) bool {

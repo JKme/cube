@@ -198,6 +198,7 @@ func StartCrackTask(opt *model.CrackOptions, globalopts *model.GlobalOptions) {
 	} else {
 		tasks = genDefaultTasks(AliveIPS)
 	}
+
 	gologger.Debugf("Receive %d tasks", len(tasks))
 
 	var wg sync.WaitGroup

@@ -5,15 +5,33 @@ import (
 	"strings"
 )
 
+type Auth struct {
+	User     string
+	Password string
+}
+type Crack struct {
+	Ip   string
+	Port string
+	Auth Auth
+	Name string
+}
+
+type CrackResult struct {
+	Crack  Crack
+	Result string
+	Err    error
+}
+
 var CrackKeys []string
 
 type ICrack interface {
-	SetName() string       // 插件名称
+	SetName() string       //插件名称
 	SetPort() string       //设置端口
 	SetAuthUser() []string //设置默认爆破的用户名
 	SetAuthPass() []string //设置默认爆破的密码
-	IsLoad() bool          // -x X选项的时候，是否加载
-	IsMutex() bool         //phpmyadmin爆破的时候，只能单独使用的插件
+	IsLoad() bool          //-x X选项的时候，是否加载
+	IsMutex() bool         //只能单独使用的插件，比如phpmyadmin
+	IsTcp() bool           //TCP需要先进行端口开放探测，UDP跳过
 	Exec() CrackResult     //运行task，返回string
 }
 
@@ -71,6 +89,12 @@ func GetMutexStatus(s string) bool {
 	return ic.IsMutex()
 }
 
+func GetTCP(s string) bool {
+	c := NewCrack(s)
+	ic := c.NewICrack()
+	return ic.IsTcp()
+}
+
 func getPluginAuthUser(s string) []string {
 	c := NewCrack(s)
 	ic := c.NewICrack()
@@ -83,11 +107,12 @@ func getPluginAuthPass(s string) []string {
 	return ic.SetAuthPass()
 }
 
-func GetPluginAuths(p string) []Auth {
+func GetPluginAuthMap(s string) map[string][]Auth {
 	auths := make([]Auth, 0)
-	for _, user := range getPluginAuthUser(p) {
-		for _, pass := range getPluginAuthPass(p) {
-			gologger.Debugf("%s is preparing credentials: %s <=> %s", p, user, pass)
+	authMaps := make(map[string][]Auth, 0)
+	for _, user := range getPluginAuthUser(s) {
+		for _, pass := range getPluginAuthPass(s) {
+			gologger.Debugf("%s is preparing credentials: %s <=> %s", s, user, pass)
 			pass = strings.Replace(pass, "{user}", user, -1)
 			auths = append(auths, Auth{
 				User:     user,
@@ -95,16 +120,6 @@ func GetPluginAuths(p string) []Auth {
 			})
 		}
 	}
-	return auths
-}
-
-func GetDefaultPlugins() []string {
-	//当-x X 的时候，加载对应的插件
-	var p []string
-	for _, k := range CrackKeys {
-		if GetLoadStatus(k) == "Y" {
-			p = append(p, k)
-		}
-	}
-	return p
+	authMaps[s] = auths
+	return authMaps
 }

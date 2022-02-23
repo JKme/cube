@@ -23,7 +23,7 @@ func Execute() {
 	}
 }
 
-func parseGlobalOptions() (*core.GlobalOptions, error) {
+func parseGlobalOptions() (*core.GlobalOption, error) {
 	globalopts := core.NewGlobalOptions()
 	threads, _ := rootCmd.Flags().GetInt("threads")
 	if threads <= 0 {

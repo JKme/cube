@@ -30,6 +30,10 @@ func (ftpCrack FtpCrack) IsMutex() bool {
 	return false
 }
 
+func (ftpCrack FtpCrack) IsTcp() bool {
+	return true
+}
+
 func (ftpCrack FtpCrack) Exec() (result CrackResult) {
 	result = CrackResult{Crack: *ftpCrack.Crack, Result: "", Err: nil}
 

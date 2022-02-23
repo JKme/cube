@@ -30,6 +30,10 @@ func (sshCrack SshCrack) IsLoad() bool {
 	return true
 }
 
+func (sshCrack SshCrack) IsTcp() bool {
+	return true
+}
+
 func (sshCrack SshCrack) IsMutex() bool {
 	return false
 }

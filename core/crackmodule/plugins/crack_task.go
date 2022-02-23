@@ -6,7 +6,6 @@ import (
 	"cube/conf"
 	"cube/core"
 	"cube/gologger"
-	"cube/pkg/util"
 	"fmt"
 	"io"
 	"strings"
@@ -68,16 +67,101 @@ func GetFinishTime(t1 time.Time) {
 
 }
 
-func buildTasks() {
-	// 生成任务
+func WaitThreadTimeout(wg *sync.WaitGroup, timeout time.Duration) bool {
+	c := make(chan struct{})
+	go func() {
+		defer close(c)
+		wg.Wait()
+	}()
+	select {
+	case <-c:
+		return false // completed normally
+	case <-time.After(timeout):
+		return true // timed out
+	}
+}
+
+func buildDefaultTasks(AliveIPS []IpAddr) (cracks []Crack) {
+	cracks = make([]Crack, 0)
+	for _, addr := range AliveIPS {
+		authMaps := GetPluginAuthMap(addr.PluginName)
+		auths := authMaps[addr.PluginName]
+		for _, auth := range auths {
+			s := Crack{Ip: addr.Ip, Port: addr.Port, Auth: auth, Name: addr.PluginName}
+			cracks = append(cracks, s)
+		}
+	}
+	return cracks
+}
+
+func buildTasks(AliveIPS []IpAddr, auths []Auth) (cracks []Crack) {
+	cracks = make([]Crack, 0)
+	for _, addr := range AliveIPS {
+		for _, auth := range auths {
+			s := Crack{Ip: addr.Ip, Port: addr.Port, Auth: auth, Name: addr.PluginName}
+			cracks = append(cracks, s)
+		}
+	}
+	return cracks
 }
 
 func saveResult() {
 
 }
 
-func runSingleTask() {
+func saveCrackReport(crackResult CrackResult) {
 
+	if len(taskResult.Result) > 0 {
+		gologger.Debugf("Put Result to Map: %v\n", taskResult)
+		k := fmt.Sprintf("%v-%v-%v", taskResult.CrackTask.Ip, taskResult.CrackTask.Port, taskResult.CrackTask.CrackPlugin)
+		h := util.MakeTaskHash(k)
+		util.SetTaskHash(h)
+		//s1 := fmt.Sprintf("[+]: %s://%s:%s %s", taskResult.CrackTask.CrackPlugin, taskResult.CrackTask.Ip, taskResult.CrackTask.Port, taskResult.Result)
+		//fmt.Println(s1)
+		util.SetResultMap(taskResult)
+	}
+}
+
+func runSingleTask(ctx context.Context, crackTasksChan chan Crack, wg *sync.WaitGroup, delay float64) {
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case crackTask, ok := <-crackTasksChan:
+			if !ok {
+				return
+			}
+			//if task.Port == "" {
+			//	task.Port =  strconv.Itoa(model.CommonPortMap[task.CrackPlugin])
+			//}
+			//alive := CheckAlive(task)
+			//if !alive {
+			//	wg.Done()
+			//	continue
+			//}
+
+			//gologger.Debugf("Cracking %s password ", crackTask.Ip, crackTask.CrackPlugin, task.Auth.User, task.Auth.Password, task.Ip, task.Port)
+			k := fmt.Sprintf("%v-%v-%v", crackTask.Ip, crackTask.Port, crackTask.Name)
+			h := MakeTaskHash(k)
+			if CheckTaskHash(h) {
+				wg.Done()
+				continue
+			}
+			c := crackTask.NewICrack()
+			r := c.Exec()
+			//fn := CrackFuncMap[task.CrackPlugin]
+			//r := fn(task)
+			saveCrackReport(r)
+			wg.Done()
+
+			select {
+			case <-ctx.Done():
+			case <-time.After(time.Duration(delay) * time.Second):
+			}
+
+		}
+
+	}
 }
 
 func parseAuthOption() {
@@ -92,27 +176,65 @@ func getAuthList() {
 
 }
 
-func StartCrack(opt *CrackOptions, globalopts *core.GlobalOptions) {
+func StartCrack(opt *CrackOption, globalopt *core.GlobalOption) {
 	var (
-		//optPlugins []string
-		//ips        []string
-		//auths      []Auth
-		//crackTasks []Crack
-		num      int
-		delay    float64
-		aliveIPS []util.IpAddr
+		crackPlugins []string
+		crackIPS     []string
+		crackAuths   []Auth
+		crackTasks   []Crack
+		threadNum    int
+		delay        float64
+		aliveIPS     []IpAddr
 	)
+
 	ctx := context.Background()
 	t1 := time.Now()
-	delay = globalopts.Delay
+	delay = globalopt.Delay
 
 	if delay > 0 {
-		//添加使用--delay选项的时候，强制单线程。PS：用到的时候提个ISSUE，现在还停留在想象中的攻击
-		num = 1
+		//添加使用--delay选项的时候，强制单线程。现在还停留在想象中的攻击
+		threadNum = 1
 	} else {
-		num = globalopts.Threads
+		threadNum = globalopt.Threads
 	}
 
+	crackPlugins = opt.ParsePluginName()
+	crackIPS = opt.ParseIP()
+
+	if opt.Port != "" {
+		validPort := opt.ParsePort()
+		if len(crackPlugins) > 1 && validPort {
+			//指定端口的时候仅限定一个插件使用
+			gologger.Errorf("plugins are limited to single one when --port is set\n")
+		}
+	}
+	aliveIPS = CheckPort(ctx, threadNum, delay, crackIPS, crackPlugins, opt.Port)
+
+	gologger.Infof("crackPlugins: %s\n", crackPlugins)
+	gologger.Infof("crackIPS: %s\n", crackIPS)
+
+	if len(opt.User+opt.UserFile+opt.Pass+opt.PassFile) > 0 {
+		crackAuths = opt.ParseAuth()
+		crackTasks = buildTasks(aliveIPS, crackAuths)
+	} else {
+		crackTasks = buildDefaultTasks(aliveIPS)
+	}
+	gologger.Debugf("build tasks: %v", crackTasks)
+	var wg sync.WaitGroup
+	taskChan := make(chan Crack, threadNum*2)
+
+	for i := 0; i < threadNum; i++ {
+		go runSingleTask(ctx, taskChan, &wg, delay)
+	}
+
+	for _, task := range crackTasks {
+		wg.Add(1)
+		taskChan <- task
+	}
+	//wg.Wait()
+	WaitThreadTimeout(&wg, conf.ThreadTimeout*2)
+	ReadResultMap()
+	GetFinishTime(t1)
 	//if util.Contains(opt.CrackPluginName, Plugins.CrackFuncExclude) {
 	//	//当-x是单独使用的插件，比如phpmyadmin、basicAuth类型的时候
 	//	AliveIPS = append(AliveIPS, util.IpAddr{
@@ -130,6 +252,5 @@ func StartCrack(opt *CrackOptions, globalopts *core.GlobalOptions) {
 	//	gologger.Debugf("Receive alive IP: %s", AliveIPS)
 	//}
 
-	gologger.Debugf(opt.CrackPluginName)
-	gologger.Debugf(string(rune(num)), aliveIPS, ctx, t1)
+	gologger.Debugf(string(rune(threadNum)), aliveIPS, ctx, t1, crackPlugins, crackIPS, crackAuths)
 }

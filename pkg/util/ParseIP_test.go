@@ -1,6 +1,8 @@
 package util
 
 import (
+	"cube/core/crackmodule/plugins"
+	"cube/pkg"
 	"fmt"
 	"testing"
 )
@@ -38,12 +40,12 @@ func TestReadipfile(t *testing.T) {
 }
 
 func TestReadipfile2(t *testing.T) {
-	ip := IpAddr{
+	ip := plugins.IpAddr{
 		Ip:     "172.20.40.1",
 		Port:   "137",
 		Plugin: "netbios",
 	}
-	checkUDP(ip)
+	pkg.checkUDP(ip)
 
 }
 

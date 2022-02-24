@@ -29,7 +29,6 @@ func CheckTaskHash(hash string) bool {
 	config.SuccessHash.Lock()
 	_, ok := config.SuccessHash.S[hash]
 	config.SuccessHash.Unlock()
-	//log.Debugf("Success: %#v\n", model.SuccessHash)
 	return ok
 }
 

@@ -1,7 +1,7 @@
-package plugins
+package crackmodule
 
 import (
-	"cube/conf"
+	"cube/config"
 	"fmt"
 	"golang.org/x/crypto/ssh"
 )
@@ -23,7 +23,7 @@ func (sshCrack SshCrack) SetAuthUser() []string {
 }
 
 func (sshCrack SshCrack) SetAuthPass() []string {
-	return conf.PASSWORDS
+	return config.PASSWORDS
 }
 
 func (sshCrack SshCrack) IsLoad() bool {

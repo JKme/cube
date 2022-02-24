@@ -1,4 +1,4 @@
-package conf
+package config
 
 import (
 	"sync"
@@ -7,13 +7,12 @@ import (
 
 const (
 	TcpConnTimeout = 5 * time.Second
-	ThreadTimeout  = 7 * time.Second
+	ThreadTimeout  = 14 * time.Second
 )
 
 var (
 	CommonPortMap map[string]int
-	//SuccessHash   map[string]bool
-	Mutex sync.Mutex
+	Mutex         sync.Mutex
 )
 
 var SuccessHash = struct {

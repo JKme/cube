@@ -1,4 +1,4 @@
-package plugins
+package crackmodule
 
 import (
 	"cube/gologger"
@@ -39,17 +39,6 @@ func AddCrackKeys(s string) {
 	CrackKeys = append(CrackKeys, s)
 }
 
-//type Result interface {
-//	ResultToString() (string, error)  //probe、crack、sqlcmd都实现获取结果的接口
-//}
-//
-
-//var ICrackMap map[string]ICrack
-//
-//func init() {
-//	ICrackMap = make(map[string]ICrack)
-//}
-
 func (c *Crack) NewICrack() ICrack {
 	switch c.Name {
 	case "ssh":
@@ -73,14 +62,10 @@ func GetPort(s string) string {
 	return ic.SetPort()
 }
 
-func GetLoadStatus(s string) string {
+func GetLoadStatus(s string) bool {
 	c := NewCrack(s)
 	ic := c.NewICrack()
-	if ic.IsLoad() == true {
-		return "Y"
-	} else {
-		return "N"
-	}
+	return ic.IsLoad()
 }
 
 func GetMutexStatus(s string) bool {
@@ -107,13 +92,25 @@ func getPluginAuthPass(s string) []string {
 	return ic.SetAuthPass()
 }
 
+func getPluginAuthCred(s string) bool {
+	//检查插件是否设置了默认的用户和密码
+	if len(getPluginAuthPass(s)) == 0 || len(getPluginAuthPass(s)) == 0 {
+		return false
+	}
+	return true
+}
+
 func GetPluginAuthMap(s string) map[string][]Auth {
 	auths := make([]Auth, 0)
 	authMaps := make(map[string][]Auth, 0)
+	credStatus := getPluginAuthCred(s)
+	if !credStatus {
+		gologger.Errorf("SetAuthUser() or SetAuthPass() is Empty for %s", s)
+	}
 	for _, user := range getPluginAuthUser(s) {
 		for _, pass := range getPluginAuthPass(s) {
-			gologger.Debugf("%s is preparing credentials: %s <=> %s", s, user, pass)
 			pass = strings.Replace(pass, "{user}", user, -1)
+			gologger.Debugf("%s is preparing default credentials: %s <=> %s", s, user, pass)
 			auths = append(auths, Auth{
 				User:     user,
 				Password: pass,

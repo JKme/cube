@@ -8,13 +8,6 @@ type GlobalOptions struct {
 	Delay   int
 }
 
-type ProbeOptions struct {
-	Target     string
-	TargetFile string
-	Port       string
-	ScanPlugin string
-}
-
 type Service struct {
 	Schema string
 	Ip     string
@@ -26,10 +19,6 @@ type SqlcmdOptions struct {
 	User     string
 	Password string
 	Query    string
-}
-
-func NewProbeOptions() *ProbeOptions {
-	return &ProbeOptions{}
 }
 
 func NewSqlcmdOptions() *SqlcmdOptions {

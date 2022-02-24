@@ -6,6 +6,7 @@ import (
 	"cube/config"
 	"cube/core"
 	"cube/gologger"
+	"cube/report"
 	"fmt"
 	"io"
 	"strings"
@@ -106,6 +107,15 @@ func buildTasks(AliveIPS []IpAddr, auths []Auth) (cracks []Crack) {
 		}
 	}
 	return cracks
+}
+
+func resultToCsvObj(crackResult CrackResult) report.CSV {
+	CSVObj := report.CSV{
+		Ip:     crackResult.Crack.Ip,
+		Module: "CRACK_" + crackResult.Crack.Name,
+		Cell:   crackResult.Result,
+	}
+	return CSVObj
 }
 
 func saveCrackResult(crackResult CrackResult) {

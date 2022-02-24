@@ -1,6 +1,8 @@
-package plugins
+package crackmodule
 
-import "cube/conf"
+import (
+	"cube/config"
+)
 
 type FtpCrack struct {
 	*Crack
@@ -19,7 +21,7 @@ func (ftpCrack FtpCrack) SetAuthUser() []string {
 }
 
 func (ftpCrack FtpCrack) SetAuthPass() []string {
-	return conf.PASSWORDS
+	return config.PASSWORDS
 }
 
 func (ftpCrack FtpCrack) IsLoad() bool {

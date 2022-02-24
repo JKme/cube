@@ -2,10 +2,12 @@ package cmd
 
 import (
 	"cube/core"
-	"cube/core/crackmodule/plugins"
+	"cube/core/crackmodule"
 	"cube/gologger"
 	"fmt"
+	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 var crackCli *cobra.Command
@@ -19,16 +21,16 @@ func runCrack(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	plugins.StartCrack(opt, globalopts)
+	crackmodule.StartCrack(opt, globalopts)
 }
 
-func parseCrackOptions() (*core.GlobalOption, *plugins.CrackOption, error) {
+func parseCrackOptions() (*core.GlobalOption, *crackmodule.CrackOption, error) {
 	globalOpts, err := parseGlobalOptions()
 	if err != nil {
 		return nil, nil, err
 	}
 
-	crackOption := plugins.NewCrackOptions()
+	crackOption := crackmodule.NewCrackOptions()
 
 	crackOption.Ip, err = crackCli.Flags().GetString("service")
 	if err != nil {
@@ -69,14 +71,13 @@ func parseCrackOptions() (*core.GlobalOption, *plugins.CrackOption, error) {
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for scan plugin: %w", err)
 	}
-	gologger.Debugf("ip: %s, ipfile: %s, user: %s, uf:%s, pass:%s, pf:%s", crackOption.Ip, crackOption.IpFile, crackOption.User, crackOption.UserFile, crackOption.Pass, crackOption.PassFile)
 	return globalOpts, crackOption, nil
 }
 
 func init() {
 	crackCli = &cobra.Command{
 		Use:   "crack",
-		Long:  "Hello",
+		Long:  "Hello", //TODO
 		Short: "crack service password",
 		Run:   runCrack,
 		Example: `cube crack -u root -p root -i 192.168.1.1 -x ssh
@@ -103,4 +104,18 @@ cube crack -u root -pass-file pass.txt -i http://127.0.0.1:8080 -x phpmyadmin
 	}
 
 	rootCmd.AddCommand(crackCli)
+}
+
+func CrackHelpTable() {
+	flag := "N"
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Func", "Port", "Load By ALL"})
+	for _, k := range crackmodule.CrackKeys {
+		if crackmodule.GetLoadStatus(k) {
+			flag = "Y"
+		}
+		table.Append([]string{k, crackmodule.GetPort(k), flag})
+		table.SetRowLine(true)
+	}
+	table.Render()
 }

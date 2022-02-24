@@ -1,19 +1,5 @@
 package model
 
-type ProbeTask struct {
-	Ip         string
-	Port       string
-	ScanPlugin string
-}
-
-type ProbeTaskResult struct {
-	ProbeTask ProbeTask
-	Result    string
-	Err       error
-}
-
-
-
 type SqlcmdTask struct {
 	Ip           string
 	Port         int

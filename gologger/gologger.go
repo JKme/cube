@@ -79,8 +79,8 @@ func (l *Logger) doLog(level Level, v ...interface{}) bool {
 	if level == 1 {
 		l.l.Output(3, fmt.Sprintln(fmt.Sprintln(v...)))
 	} else {
-		//l.l.Output(3, "\t"+level.String()+"\t"+fmt.Sprintln(fmt.Sprintln(v...)))
-		l.l.Output(3, fmt.Sprintln(fmt.Sprintln(v...)))
+		l.l.Output(3, "\t"+level.String()+"\t"+fmt.Sprintln(fmt.Sprintln(v...)))
+
 	}
 	return true
 }
@@ -92,8 +92,7 @@ func (l *Logger) doLogf(level Level, format string, v ...interface{}) bool {
 	if level == 1 {
 		l.l.Output(3, fmt.Sprintln(fmt.Sprintf(format, v...)))
 	} else {
-		//l.l.Output(3, 	"\t"+level.String()+"\t"+fmt.Sprintln(fmt.Sprintf(format, v...)))
-		l.l.Output(3, fmt.Sprintln(fmt.Sprintf(format, v...)))
+		l.l.Output(3, "\t"+level.String()+"\t"+fmt.Sprintln(fmt.Sprintf(format, v...)))
 
 	}
 	return true
@@ -113,12 +112,12 @@ func Warn(v ...interface{}) {
 
 func Error(v ...interface{}) {
 	formatLogger.doLog(LevelError, v...)
-	os.Exit(2)
+	os.Exit(1)
 }
 
 func Errorf(format string, v ...interface{}) {
 	formatLogger.doLogf(LevelError, format, v...)
-	os.Exit(2)
+	os.Exit(1)
 }
 
 func Warnf(format string, v ...interface{}) {

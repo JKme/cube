@@ -39,32 +39,22 @@ func SetTaskHash(hash string) {
 }
 
 // ResultMap 当Mysql或者redis空密码的时候，任何密码都正确，会导致密码刷屏
-var ResultMap = struct {
-	sync.RWMutex
-	m map[string]string
-}{m: make(map[string]string)}
 
 func SetResultMap(r CrackResult) {
-	ResultMap.Lock()
-	ResultMap.m[fmt.Sprintf("\nCRACK_PLUG: %s\nCRACK_PORT: %s\nCRACK_ADDR: %s\nCRACK_USER: %s\nCRACK_PASS: %s", r.Crack.Name, r.Crack.Port, r.Crack.Ip, r.Crack.Auth.User, r.Crack.Auth.Password)] = r.Result
-	ResultMap.Unlock()
-}
-
-func ReadResultMap() {
-	ResultMap.RLock()
-	n := ResultMap.m
-	ResultMap.RUnlock()
-	for k, _ := range n {
-		//gologger.Infof("%s %v", k, v)
-		gologger.Infof("%s", k)
+	c := fmt.Sprintf("\nCRACK_PLUG: %s\nCRACK_PORT: %s\nCRACK_ADDR: %s\nCRACK_USER: %s\nCRACK_PASS: %s", r.Crack.Name, r.Crack.Port, r.Crack.Ip, r.Crack.Auth.User, r.Crack.Auth.Password)
+	data := report.CsvCell{
+		Ip:     r.Crack.Ip,
+		Module: "Crack_" + r.Crack.Name,
+		Cell:   c,
 	}
+	report.CsvCells.Append(data)
 }
 
 func GetFinishTime(t1 time.Time) {
 
 	fmt.Println(strings.Repeat(">", 50))
 	End := time.Now().Format("2006-01-02 15:04:05")
-	fmt.Printf("Finished: %s  Cost: %s", End, fmt.Sprintf("%.4ss", time.Since(t1)))
+	fmt.Printf("Finished: %s  Cost: %s", End, time.Since(t1))
 
 }
 
@@ -108,15 +98,6 @@ func buildTasks(AliveIPS []IpAddr, auths []Auth) (cracks []Crack) {
 	return cracks
 }
 
-func resultToCsvObj(crackResult CrackResult) report.CSV {
-	CSVObj := report.CSV{
-		Ip:     crackResult.Crack.Ip,
-		Module: "CRACK_" + crackResult.Crack.Name,
-		Cell:   crackResult.Result,
-	}
-	return CSVObj
-}
-
 func saveCrackResult(crackResult CrackResult) {
 
 	if len(crackResult.Result) > 0 {
@@ -127,7 +108,19 @@ func saveCrackResult(crackResult CrackResult) {
 		//s1 := fmt.Sprintf("[+]: %s://%s:%s %s", taskResult.CrackTask.CrackPlugin, taskResult.CrackTask.Ip, taskResult.CrackTask.Port, taskResult.Result)
 		//fmt.Println(s1)
 		SetResultMap(crackResult)
+
+		//csvCell := report.CsvCell{
+		//	Ip:     crackResult.Crack.Ip,
+		//	Module: "CRACK_" + crackResult.Crack.Name,
+		//	Cell:   crackResult.Result,
+		//}
+		//var wg sync.WaitGroup
+		//wg.Add(1)
+		//c := make(chan struct{})
+		//s := report.NewScheduleJob(1, func() { c <- struct{}{} })
+
 	}
+
 }
 
 func runSingleTask(ctx context.Context, crackTasksChan chan Crack, wg *sync.WaitGroup, delay float64) {
@@ -213,6 +206,9 @@ func StartCrack(opt *CrackOption, globalopt *core.GlobalOption) {
 	}
 	//wg.Wait()
 	WaitThreadTimeout(&wg, config.ThreadTimeout)
-	ReadResultMap()
+	for k := range report.CsvCells.Iter() {
+		gologger.Infof("%s", k.Value.Cell)
+	}
+
 	GetFinishTime(t1)
 }

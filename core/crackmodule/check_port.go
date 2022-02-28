@@ -60,7 +60,7 @@ func CheckPort(ctx context.Context, threadNum int, delay float64, ips []string, 
 					if !ok {
 						return
 					}
-					if GetTCP(addr.PluginName) {
+					if GetTCP(addr.PluginName) || GetMutexStatus(addr.PluginName) {
 						//TCP的时候检查端口，UDP跳过
 						SaveAddr(check(addr))
 					}

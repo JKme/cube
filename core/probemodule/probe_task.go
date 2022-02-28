@@ -6,6 +6,7 @@ import (
 	"cube/core"
 	"cube/core/crackmodule"
 	"cube/gologger"
+	"cube/report"
 	"fmt"
 	"sync"
 	"time"
@@ -20,11 +21,17 @@ func buildTasks(aliveIPS []IpAddr, scanPlugins []string) (probes []Probe) {
 	return probes
 }
 
-func saveReport(probeResult ProbeResult) {
+func SetResult(probeResult ProbeResult) {
 	if len(probeResult.Result) > 0 {
-		s := fmt.Sprintf("[*]: %s\n[*]: %s:%s\n", probeResult.Probe.Name, probeResult.Probe.Ip, probeResult.Probe.Port)
-		s1 := fmt.Sprintf("%s\n", probeResult.Result)
-		gologger.Infof(s + s1)
+		c := fmt.Sprintf("[*]: %s\n[*]: %s:%s\n%s\n", probeResult.Probe.Name, probeResult.Probe.Ip, probeResult.Probe.Port, probeResult.Result)
+
+		data := report.CsvCell{
+			Ip:     probeResult.Probe.Ip,
+			Module: "Probe_" + probeResult.Probe.Name,
+			Cell:   c,
+		}
+		report.ConcurrentSlices.Append(data)
+		report.CsvShells = append(report.CsvShells, data)
 	}
 }
 
@@ -40,7 +47,7 @@ func runSingleTask(ctx context.Context, taskChan chan Probe, wg *sync.WaitGroup,
 			ic := probeTask.NewIProbe()
 			gologger.Debugf("probing: IP:%s  Port:%s", probeTask.Ip, probeTask.Port)
 			r := ic.ProbeExec()
-			saveReport(r)
+			SetResult(r)
 
 			select {
 			case <-ctx.Done():
@@ -98,5 +105,18 @@ func StartProbe(opt *ProbeOption, globalopt *core.GlobalOption) {
 	}
 	//wg.Wait()
 	crackmodule.WaitThreadTimeout(&wg, config.ThreadTimeout)
+
+	for k := range report.ConcurrentSlices.Iter() {
+		gologger.Infof("%s", k.Value.Cell)
+
+	}
+
+	plugMap := report.SortPlug()
+	ipMap := report.SortIP()
+
+	plugsElement := report.GetKeys(plugMap)
+	plugsElement = append([]string{"IP"}, plugsElement...)
+
 	crackmodule.GetFinishTime(t1)
+	report.ExportTitle(plugsElement, report.GetKeys(ipMap), report.CsvShells)
 }

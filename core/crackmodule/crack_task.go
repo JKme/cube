@@ -47,7 +47,7 @@ func SetResultMap(r CrackResult) {
 		Module: "Crack_" + r.Crack.Name,
 		Cell:   c,
 	}
-	report.CsvCells.Append(data)
+	report.ConcurrentSlices.Append(data)
 }
 
 func GetFinishTime(t1 time.Time) {
@@ -108,16 +108,6 @@ func saveCrackResult(crackResult CrackResult) {
 		//s1 := fmt.Sprintf("[+]: %s://%s:%s %s", taskResult.CrackTask.CrackPlugin, taskResult.CrackTask.Ip, taskResult.CrackTask.Port, taskResult.Result)
 		//fmt.Println(s1)
 		SetResultMap(crackResult)
-
-		//csvCell := report.CsvCell{
-		//	Ip:     crackResult.Crack.Ip,
-		//	Module: "CRACK_" + crackResult.Crack.Name,
-		//	Cell:   crackResult.Result,
-		//}
-		//var wg sync.WaitGroup
-		//wg.Add(1)
-		//c := make(chan struct{})
-		//s := report.NewScheduleJob(1, func() { c <- struct{}{} })
 
 	}
 
@@ -205,10 +195,18 @@ func StartCrack(opt *CrackOption, globalopt *core.GlobalOption) {
 		taskChan <- task
 	}
 	//wg.Wait()
+
 	WaitThreadTimeout(&wg, config.ThreadTimeout)
-	for k := range report.CsvCells.Iter() {
+	for k := range report.ConcurrentSlices.Iter() {
 		gologger.Infof("%s", k.Value.Cell)
+
 	}
 
 	GetFinishTime(t1)
+	srMap := make(map[string]int)
+	for k := range report.ConcurrentSlices.Iter() {
+		sr := k.Value.Module
+		srMap[sr] += 1
+		fmt.Println(srMap)
+	}
 }

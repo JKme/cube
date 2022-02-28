@@ -19,7 +19,8 @@ type ConcurrentSliceItem struct {
 	Value CsvCell
 }
 
-var CsvCells ConcurrentSlice
+var ConcurrentSlices ConcurrentSlice
+var CsvShells []CsvCell
 
 func (cs *ConcurrentSlice) Append(item CsvCell) {
 	cs.Lock()

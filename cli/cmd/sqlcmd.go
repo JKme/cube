@@ -27,12 +27,16 @@ func parseSqlcmdOptions() (*core.GlobalOption, *sqlcmdmodule.SqlcmdOption, error
 
 	sqlcmdOption := sqlcmdmodule.NewSqlcmdOption()
 
-	sqlcmdOption.Service, err = sqlCli.Flags().GetString("service")
+	sqlcmdOption.Ip, err = sqlCli.Flags().GetString("service")
+	if err != nil {
+		return nil, nil, fmt.Errorf("invalid value for plugin: %v", err)
+	}
+	sqlcmdOption.Port, err = sqlCli.Flags().GetString("port")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for plugin: %v", err)
 	}
 
-	sqlcmdOption.User, err = sqlCli.Flags().GetString("user")
+	sqlcmdOption.User, err = sqlCli.Flags().GetString("login")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for plugin: %v", err)
 	}
@@ -40,6 +44,11 @@ func parseSqlcmdOptions() (*core.GlobalOption, *sqlcmdmodule.SqlcmdOption, error
 	sqlcmdOption.Password, err = sqlCli.Flags().GetString("password")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for Password: %v", err)
+	}
+
+	sqlcmdOption.PluginName, err = sqlCli.Flags().GetString("plugin")
+	if err != nil {
+		return nil, nil, fmt.Errorf("invalid value for plugin: %v", err)
 	}
 
 	sqlcmdOption.Query, err = sqlCli.Flags().GetString("query")

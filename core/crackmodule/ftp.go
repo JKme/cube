@@ -2,43 +2,53 @@ package crackmodule
 
 import (
 	"cube/config"
+	"fmt"
+	"github.com/jlaffaye/ftp"
 )
 
 type FtpCrack struct {
 	*Crack
 }
 
-func (ftpCrack FtpCrack) CrackName() string {
+func (f FtpCrack) CrackName() string {
 	return "ftp"
 }
 
-func (ftpCrack *FtpCrack) CrackPort() string {
+func (f FtpCrack) CrackPort() string {
 	return "21"
 }
 
-func (ftpCrack FtpCrack) CrackAuthUser() []string {
+func (f FtpCrack) CrackAuthUser() []string {
 	return []string{"anonymous", "ftp", "admin", "www", "web", "root", "db", "wwwroot", "data"}
 }
 
-func (ftpCrack FtpCrack) CrackAuthPass() []string {
+func (f FtpCrack) CrackAuthPass() []string {
 	return config.PASSWORDS
 }
 
-func (ftpCrack FtpCrack) IsLoad() bool {
+func (f FtpCrack) IsLoad() bool {
 	return true
 }
 
-func (ftpCrack FtpCrack) IsMutex() bool {
+func (f FtpCrack) IsMutex() bool {
 	return false
 }
 
-func (ftpCrack FtpCrack) IsTcp() bool {
+func (f FtpCrack) IsTcp() bool {
 	return true
 }
 
-func (ftpCrack FtpCrack) Exec() (result CrackResult) {
-	result = CrackResult{Crack: *ftpCrack.Crack, Result: "", Err: nil}
+func (f FtpCrack) Exec() (result CrackResult) {
+	result = CrackResult{Crack: *f.Crack, Result: "", Err: nil}
 
+	conn, err := ftp.DialTimeout(fmt.Sprintf("%v:%v", f.Ip, f.Port), config.TcpConnTimeout)
+	if err == nil {
+		err = conn.Login(f.Auth.User, f.Auth.Password)
+		if err == nil {
+			defer conn.Logout()
+			result.Result = fmt.Sprintf("User: %s\tPassword: %s \t", f.Auth.User, f.Auth.Password)
+		}
+	}
 	return result
 }
 

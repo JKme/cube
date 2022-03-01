@@ -22,16 +22,8 @@ var SuccessHash = struct {
 
 var UserDict = map[string][]string{
 	"ftp":        {"anonymous", "ftp", "admin", "www", "web", "root", "db", "wwwroot", "data"},
-	"mysql":      {"root", "mysql"},
-	"mssql":      {"sa", "sql"},
-	"smb":        {"administrator", "admin", "guest"},
-	"postgres":   {"postgres", "admin"},
 	"ssh":        {"root", "admin"},
-	"mongodb":    {"root", "admin"},
 	"phpmyadmin": {"root"},
-	"httpbasic":  {"root", "admin", "tomcat", "test", "guest"}, //activemq、tomcat、nexus
-	"elastic":    {""},
-	"jenkins":    {"jenkins", "admin"},
 	"zabbix":     {"admin", "guest"},
 }
 

@@ -2,7 +2,6 @@ package report
 
 import (
 	"fmt"
-	"github.com/tealeg/xlsx"
 	"github.com/xuri/excelize/v2"
 	"sort"
 	"sync"
@@ -96,30 +95,6 @@ func WriteXlsx() {
 
 func TestWriteXlsx(t *testing.T) {
 	WriteXlsx()
-}
-
-func tea() {
-	var file *xlsx.File
-	var sheet *xlsx.Sheet
-	var row *xlsx.Row
-	var cell *xlsx.Cell
-	file = xlsx.NewFile()
-	sheet, _ = file.AddSheet("Sheet1")
-	data := map[string]string{"127": "ssh", "192": "smb", "1279": "ftp"}
-	for domain, ips := range data {
-		row = sheet.AddRow()
-		cell = row.AddCell()
-		cell.Value = domain
-		cell = row.AddCell()
-		cell.Value = ips
-	}
-	file.Save("Test2" + ".xlsx")
-
-}
-
-func TestTea(t *testing.T) {
-	tea()
-
 }
 
 func TestSortMap(t *testing.T) {

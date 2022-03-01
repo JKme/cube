@@ -5,62 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/xuri/excelize/v2"
-	"sort"
 	"strconv"
 	"strings"
 )
-
-type KV struct {
-	Key   string
-	Value int
-}
-
-func SortSlice(ss []KV) {
-	sort.Slice(ss, func(i, j int) bool {
-		return ss[i].Value > ss[j].Value
-	})
-}
-
-func SortPlug(css []CsvCell) []KV {
-	var srMap = make(map[string]int)
-	for _, v := range css {
-		sr := v.Module
-		srMap[sr] += 1
-	}
-	var ss []KV
-	for k, v := range srMap {
-		ss = append(ss, KV{
-			Key:   k,
-			Value: v,
-		})
-	}
-	SortSlice(ss)
-	return ss
-}
-
-func SortIP(css []CsvCell) []KV {
-	var srMap = make(map[string]int)
-	for _, v := range css {
-		sr := v.Ip
-		srMap[sr] += 1
-	}
-	var ss []KV
-	for k, v := range srMap {
-		ss = append(ss, KV{
-			Key:   k,
-			Value: v,
-		})
-	}
-	SortSlice(ss)
-	return ss
-}
-
-func GetKeys(kvs []KV) (l []string) {
-	for _, data := range kvs {
-		l = append(l, data.Key)
-	}
-	return l
-}
 
 func convertXY(x, y int) string {
 	return fmt.Sprintf(string(rune(x)) + strconv.Itoa(y))
@@ -170,22 +117,22 @@ func WriteExportExcel(ccs []CsvCell, fp string) {
 		gologger.Error(err)
 	}
 
-	excel.SetColWidth("Sheet1", "A", "A", 15)
+	_ = excel.SetColWidth("Sheet1", "A", "A", 15)
 	y := 2
 	for _, ip := range ips {
 		x := 65
-		excel.SetCellStyle("Sheet1", fmt.Sprintf("A%d", y), fmt.Sprintf("A%d", y), styleIP)
-		excel.SetCellValue("Sheet1", fmt.Sprintf("A%d", y), ip)
+		_ = excel.SetCellStyle("Sheet1", fmt.Sprintf("A%d", y), fmt.Sprintf("A%d", y), styleIP)
+		_ = excel.SetCellValue("Sheet1", fmt.Sprintf("A%d", y), ip)
 		x += 1
 		for _, plug := range heads[1:] {
 			data := GetCsvShellValue(ip, plug, ccs)
 			if len(data) > 0 {
-				excel.SetColWidth("Sheet1", string(rune(x)), string(rune(x)), 30)
-				excel.SetCellStyle("Sheet1", convertXY(x, y), convertXY(x, y), style)
-				excel.SetCellValue("Sheet1", convertXY(x, y), strings.Trim(data, " "))
+				_ = excel.SetColWidth("Sheet1", string(rune(x)), string(rune(x)), 30)
+				_ = excel.SetCellStyle("Sheet1", convertXY(x, y), convertXY(x, y), style)
+				_ = excel.SetCellValue("Sheet1", convertXY(x, y), strings.Trim(data, " "))
 				x += 1
 			} else {
-				excel.SetCellStyle("Sheet1", convertXY(x, y), convertXY(x, y), style)
+				_ = excel.SetCellStyle("Sheet1", convertXY(x, y), convertXY(x, y), style)
 				x += 1
 			}
 		}
@@ -193,7 +140,7 @@ func WriteExportExcel(ccs []CsvCell, fp string) {
 	}
 
 	if err := excel.SaveAs(fp); err != nil {
-		gologger.Error("write to %s error: ", fp, err)
+		gologger.Errorf("write to %s error: %s", fp, err)
 	}
 }
 

@@ -163,7 +163,7 @@ func TestXls2(t *testing.T) {
 
 func TestExportTitle(t *testing.T) {
 	heads := []string{"Probe_smb", "Probe_oxid"}
-	ips := []string{"127.0.0.1", "10.10.10.1", "10.10.10.2"}
+	//ips := []string{"127.0.0.1", "10.10.10.1", "10.10.10.2"}
 	var cvs []CsvCell
 	heads = append([]string{"IP"}, heads...)
 
@@ -188,11 +188,19 @@ func TestExportTitle(t *testing.T) {
 		Cell:   "oxid3333",
 	}
 
+	CsvCell4 := CsvCell{
+		Ip:     "10.10.10.2",
+		Module: "Probe_oxid",
+		Cell:   "oxid3333",
+	}
+
 	cvs = append(cvs, CsvCell0)
 	cvs = append(cvs, CsvCell1)
 	cvs = append(cvs, CsvCell2)
 	cvs = append(cvs, CsvCell3)
-	ExportTitle(heads, ips, cvs)
-	//fmt.Println(ips)
-	//fmt.Println(GetCsvShellValue("127.0.0.1", "Probe_oxid"))
+	cvs = append(cvs, CsvCell4)
+	//ExportTitle(heads, ips, cvs)
+
+	r := RemoveDuplicateCSS(cvs)
+	fmt.Println(r)
 }

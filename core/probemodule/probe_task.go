@@ -8,6 +8,8 @@ import (
 	"cube/gologger"
 	"cube/report"
 	"fmt"
+	"github.com/pkg/errors"
+	"os"
 	"sync"
 	"time"
 )
@@ -66,11 +68,13 @@ func StartProbe(opt *ProbeOption, globalopt *core.GlobalOption) {
 		threadNum    int
 		delay        float64
 		aliveIPS     []IpAddr
+		fp           string
 	)
 	ctx := context.Background()
 	t1 := time.Now()
 	delay = globalopt.Delay
 	threadNum = globalopt.Threads
+	fp = globalopt.Output
 
 	if delay > 0 {
 		//添加使用--delay选项的时候，强制单线程。现在还停留在想象中的攻击
@@ -108,15 +112,30 @@ func StartProbe(opt *ProbeOption, globalopt *core.GlobalOption) {
 
 	for k := range report.ConcurrentSlices.Iter() {
 		gologger.Infof("%s", k.Value.Cell)
-
 	}
 
-	plugMap := report.SortPlug()
-	ipMap := report.SortIP()
-
-	plugsElement := report.GetKeys(plugMap)
-	plugsElement = append([]string{"IP"}, plugsElement...)
-
 	crackmodule.GetFinishTime(t1)
-	report.ExportTitle(plugsElement, report.GetKeys(ipMap), report.CsvShells)
+
+	if _, err := os.Stat(fp); err == nil {
+		// path/to/whatever exists
+		cs := report.ReadExportExcel(fp)
+		gologger.Infof("Appending result to %s success", fp)
+		for _, v := range cs {
+			report.CsvShells = append(report.CsvShells, v)
+			//gologger.Debugf("Appending %s", v.Ip)
+		}
+		css2 := report.RemoveDuplicateCSS(report.CsvShells)
+		report.WriteExportExcel(css2, fp)
+	} else if errors.Is(err, os.ErrNotExist) {
+		// path/to/whatever does *not* exist
+		report.WriteExportExcel(report.CsvShells, fp)
+		gologger.Infof("Write result to %s success", fp)
+
+	} else {
+		// Schrodinger: file may or may not exist. See err for details.
+
+		// Therefore, do *NOT* use !os.IsNotExist(err) to test for file existence
+		gologger.Errorf("can't find file %s, err: %s", fp, err)
+	}
+
 }

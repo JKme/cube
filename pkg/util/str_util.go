@@ -3,9 +3,7 @@ package util
 import (
 	"bufio"
 	"bytes"
-	"cube/config"
 	"cube/gologger"
-	"cube/pkg/model"
 	"fmt"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"golang.org/x/text/transform"
@@ -14,7 +12,6 @@ import (
 	"os"
 	"reflect"
 	"regexp"
-	"strconv"
 	"strings"
 	"sync"
 	"unicode"
@@ -63,31 +60,31 @@ func ValidIp(ip string) bool {
 	return false
 }
 
-func Split(r rune) bool {
-	return strings.ContainsRune("://:", r)
-}
+//func Split(r rune) bool {
+//	return strings.ContainsRune("://:", r)
+//}
 
-func ParseService(str string) (service model.Service, err error) {
-	a := strings.FieldsFunc(str, Split)
-	l := len(a)
-	if l < 2 || l > 3 {
-		return service, fmt.Errorf("invalid target: %s (eg: cube sqlcmd -x mssql1://172.16.157.163:1434 -usa -p123456aa -e \"whoami\")", str)
-	}
-
-	service.Schema = a[0]
-	service.Ip = a[1]
-	if !ValidIp(service.Ip) {
-		return service, fmt.Errorf("invalid ip: %s", service.Ip)
-	}
-
-	if len(a) == 2 {
-		service.Port = config.CommonPortMap[service.Schema]
-	} else {
-		service.Port, _ = strconv.Atoi(a[2])
-	}
-
-	return service, nil
-}
+//func ParseService(str string) (service model.Service, err error) {
+//	a := strings.FieldsFunc(str, Split)
+//	l := len(a)
+//	if l < 2 || l > 3 {
+//		return service, fmt.Errorf("invalid target: %s (eg: cube sqlcmd -x mssql1://172.16.157.163:1434 -usa -p123456aa -e \"whoami\")", str)
+//	}
+//
+//	service.Schema = a[0]
+//	service.Ip = a[1]
+//	if !ValidIp(service.Ip) {
+//		return service, fmt.Errorf("invalid ip: %s", service.Ip)
+//	}
+//
+//	if len(a) == 2 {
+//		service.Port = config.CommonPortMap[service.Schema]
+//	} else {
+//		service.Port, _ = strconv.Atoi(a[2])
+//	}
+//
+//	return service, nil
+//}
 
 func FileReader(filename string) []string {
 	file, err := os.Open(filename)

@@ -81,8 +81,11 @@ func (o Oxid) ProbeExec() ProbeResult {
 		r = r[index+3:]
 	}
 	//var hostname string
+	//re := regexp.MustCompile("[[:^ascii:]]")
+
 	var netAddr []string
 	if len(results) > 0 {
+		//hostname := re.ReplaceAllLiteralString(results[0], "")
 		hostname := results[0]
 		for _, v := range results[1:] {
 			netAddr = append(netAddr, v)

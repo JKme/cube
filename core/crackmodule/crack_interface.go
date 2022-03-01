@@ -25,14 +25,14 @@ type CrackResult struct {
 var CrackKeys []string
 
 type ICrack interface {
-	SetName() string       //插件名称
-	SetPort() string       //设置端口
-	SetAuthUser() []string //设置默认爆破的用户名
-	SetAuthPass() []string //设置默认爆破的密码
-	IsLoad() bool          //-x X选项的时候，是否加载
-	IsMutex() bool         //只能单独使用的插件，比如phpmyadmin
-	IsTcp() bool           //TCP需要先进行端口开放探测，UDP跳过
-	Exec() CrackResult     //运行task，返回string
+	CrackName() string       //插件名称
+	CrackPort() string       //设置端口
+	CrackAuthUser() []string //设置默认爆破的用户名
+	CrackAuthPass() []string //设置默认爆破的密码
+	IsLoad() bool            //-x X选项的时候，是否加载
+	IsMutex() bool           //只能单独使用的插件，比如phpmyadmin
+	IsTcp() bool             //TCP需要先进行端口开放探测，UDP跳过
+	Exec() CrackResult       //运行task，返回string
 }
 
 func AddCrackKeys(s string) {
@@ -59,7 +59,7 @@ func NewCrack(s string) Crack {
 func GetPort(s string) string {
 	c := NewCrack(s)
 	ic := c.NewICrack()
-	return ic.SetPort()
+	return ic.CrackPort()
 }
 
 func GetLoadStatus(s string) bool {
@@ -83,13 +83,13 @@ func GetTCP(s string) bool {
 func getPluginAuthUser(s string) []string {
 	c := NewCrack(s)
 	ic := c.NewICrack()
-	return ic.SetAuthUser()
+	return ic.CrackAuthUser()
 }
 
 func getPluginAuthPass(s string) []string {
 	c := NewCrack(s)
 	ic := c.NewICrack()
-	return ic.SetAuthPass()
+	return ic.CrackAuthPass()
 }
 
 func getPluginAuthCred(s string) bool {
@@ -105,7 +105,7 @@ func GetPluginAuthMap(s string) map[string][]Auth {
 	authMaps := make(map[string][]Auth, 0)
 	credStatus := getPluginAuthCred(s)
 	if !credStatus {
-		gologger.Errorf("SetAuthUser() or SetAuthPass() is Empty for %s", s)
+		gologger.Errorf("CrackAuthUser() or CrackAuthPass() is Empty for %s", s)
 	}
 	for _, user := range getPluginAuthUser(s) {
 		for _, pass := range getPluginAuthPass(s) {

@@ -13,14 +13,3 @@ type Service struct {
 	Ip     string
 	Port   int
 }
-
-type SqlcmdOptions struct {
-	Service  string
-	User     string
-	Password string
-	Query    string
-}
-
-func NewSqlcmdOptions() *SqlcmdOptions {
-	return &SqlcmdOptions{}
-}

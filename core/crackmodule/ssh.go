@@ -10,19 +10,19 @@ type SshCrack struct {
 	*Crack
 }
 
-func (sshCrack SshCrack) SetName() string {
+func (sshCrack SshCrack) CrackName() string {
 	return "ssh"
 }
 
-func (sshCrack SshCrack) SetPort() string {
+func (sshCrack SshCrack) CrackPort() string {
 	return "22"
 }
 
-func (sshCrack SshCrack) SetAuthUser() []string {
+func (sshCrack SshCrack) CrackAuthUser() []string {
 	return []string{"root", "admin"}
 }
 
-func (sshCrack SshCrack) SetAuthPass() []string {
+func (sshCrack SshCrack) CrackAuthPass() []string {
 	return config.PASSWORDS
 }
 

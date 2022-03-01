@@ -54,7 +54,7 @@ func GetFinishTime(t1 time.Time) {
 
 	fmt.Println(strings.Repeat(">", 50))
 	End := time.Now().Format("2006-01-02 15:04:05")
-	fmt.Printf("Finished: %s  Cost: %s", End, time.Since(t1))
+	fmt.Printf("Finished: %s  Cost: %s\n", End, time.Since(t1))
 
 }
 
@@ -68,6 +68,7 @@ func WaitThreadTimeout(wg *sync.WaitGroup, timeout time.Duration) bool {
 	case <-c:
 		return false // completed normally
 	case <-time.After(timeout):
+		gologger.Debug("threading timeout, target service is not available")
 		return true // timed out
 	}
 }

@@ -8,19 +8,19 @@ type FtpCrack struct {
 	*Crack
 }
 
-func (ftpCrack FtpCrack) SetName() string {
+func (ftpCrack FtpCrack) CrackName() string {
 	return "ftp"
 }
 
-func (ftpCrack *FtpCrack) SetPort() string {
+func (ftpCrack *FtpCrack) CrackPort() string {
 	return "21"
 }
 
-func (ftpCrack FtpCrack) SetAuthUser() []string {
+func (ftpCrack FtpCrack) CrackAuthUser() []string {
 	return []string{"anonymous", "ftp", "admin", "www", "web", "root", "db", "wwwroot", "data"}
 }
 
-func (ftpCrack FtpCrack) SetAuthPass() []string {
+func (ftpCrack FtpCrack) CrackAuthPass() []string {
 	return config.PASSWORDS
 }
 

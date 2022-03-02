@@ -28,7 +28,7 @@ func (s Smb) ProbeLoad() bool {
 	return true
 }
 
-func (s Smb) ProbeTcp() bool {
+func (s Smb) ProbeSkipPortCheck() bool {
 	return true
 }
 

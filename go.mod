@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/JKme/go-ntlmssp v1.2.6
+	github.com/JKme/gomanuf v1.0.1 // indirect
 	github.com/denisenkom/go-mssqldb v0.12.0
 	github.com/jlaffaye/ftp v0.0.0-20220301014342-212daf295f0e
 	github.com/lib/pq v1.10.4

@@ -15,11 +15,10 @@ type ProbeResult struct {
 var ProbeKeys []string
 
 type IProbe interface {
-	ProbeName() string      //插件名称
-	ProbePort() string      //默认端口
-	ProbeLoad() bool        //是否默认加载
-	ProbeTcp() bool         //是否TCP协议
-	ProbeExec() ProbeResult //执行插件
+	ProbeName() string        //插件名称
+	ProbePort() string        //默认端口
+	ProbeSkipPortCheck() bool //是否TCP协议
+	ProbeExec() ProbeResult   //执行插件
 }
 
 func AddProbeKeys(s string) {
@@ -55,14 +54,14 @@ func GetPort(s string) string {
 	return ic.ProbePort()
 }
 
-func GetLoadStatus(s string) bool {
-	c := NewProbe(s)
-	ic := c.NewIProbe()
-	return ic.ProbeLoad()
-}
+//func GetLoadStatus(s string) bool {
+//	c := NewProbe(s)
+//	ic := c.NewIProbe()
+//	return ic.ProbeLoad()
+//}
 
 func GetTCP(s string) bool {
 	c := NewProbe(s)
 	ic := c.NewIProbe()
-	return ic.ProbeTcp()
+	return ic.ProbeSkipPortCheck()
 }

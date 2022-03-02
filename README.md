@@ -1,10 +1,5 @@
 
-PROBE模块：
-K8S的 ETCD扫描
-fcgi的9000端口
 
-crack:
-oracle的爆破模块
 
 SQLCMD模块
 * [数据库利用工具](http://ryze-t.com/posts/2022/02/16/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E5%88%A9%E7%94%A8%E5%B7%A5%E5%85%B7-Sylas.html]
@@ -29,3 +24,9 @@ redis和Mysql之类的Extra信息，可以增加一个result的字段 已完成
   -m cat <dst file>
   -m upload <src path> <dst path>
   -m exec <cmd string>
+PROBE模块：
+K8S的 ETCD扫描
+fcgi的9000端口
+
+crack:
+oracle的爆破模块

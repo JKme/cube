@@ -19,6 +19,7 @@ type Crack struct {
 type CrackResult struct {
 	Crack  Crack
 	Result string
+	Extra  string
 	Err    error
 }
 
@@ -29,9 +30,8 @@ type ICrack interface {
 	CrackPort() string       //设置端口
 	CrackAuthUser() []string //设置默认爆破的用户名
 	CrackAuthPass() []string //设置默认爆破的密码
-	IsLoad() bool            //-x X选项的时候，是否加载
 	IsMutex() bool           //只能单独使用的插件，比如phpmyadmin
-	IsTcp() bool             //TCP需要先进行端口开放探测，UDP跳过
+	SkipPortCheck() bool     //TCP需要先进行端口开放探测，UDP跳过
 	Exec() CrackResult       //运行task，返回string
 }
 
@@ -44,6 +44,26 @@ func (c *Crack) NewICrack() ICrack {
 	case "ssh":
 		return &SshCrack{c}
 	case "ftp":
+		return &FtpCrack{c}
+	case "redis":
+		return &Redis{c}
+	case "elastic":
+		return &Elastic{c}
+	case "httpbasic":
+		return &FtpCrack{c}
+	case "jenkins":
+		return &FtpCrack{c}
+	case "mongo":
+		return &FtpCrack{c}
+	case "mssql":
+		return &FtpCrack{c}
+	case "mysql":
+		return &FtpCrack{c}
+	case "postgres":
+		return &FtpCrack{c}
+	case "smb":
+		return &FtpCrack{c}
+	case "zabbix":
 		return &FtpCrack{c}
 	default:
 		return nil
@@ -62,12 +82,6 @@ func GetPort(s string) string {
 	return ic.CrackPort()
 }
 
-func GetLoadStatus(s string) bool {
-	c := NewCrack(s)
-	ic := c.NewICrack()
-	return ic.IsLoad()
-}
-
 func GetMutexStatus(s string) bool {
 	c := NewCrack(s)
 	ic := c.NewICrack()
@@ -77,7 +91,7 @@ func GetMutexStatus(s string) bool {
 func GetTCP(s string) bool {
 	c := NewCrack(s)
 	ic := c.NewICrack()
-	return ic.IsTcp()
+	return ic.SkipPortCheck()
 }
 
 func getPluginAuthUser(s string) []string {

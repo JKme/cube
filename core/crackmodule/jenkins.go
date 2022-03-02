@@ -32,15 +32,11 @@ func (j Jenkins) CrackAuthPass() []string {
 	return config.PASSWORDS
 }
 
-func (j Jenkins) IsLoad() bool {
-	return false
-}
-
 func (j Jenkins) IsMutex() bool {
 	return true
 }
 
-func (j Jenkins) IsTcp() bool {
+func (j Jenkins) SkipPortCheck() bool {
 	return true
 }
 

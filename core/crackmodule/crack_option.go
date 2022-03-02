@@ -2,8 +2,9 @@ package crackmodule
 
 import (
 	"bufio"
+	"cube/config"
 	"cube/gologger"
-	"cube/pkg/util"
+	"cube/pkg"
 	"github.com/malfunkt/iprange"
 	"os"
 	"strconv"
@@ -29,35 +30,27 @@ func (cp *CrackOption) ParsePluginName() []string {
 	var pluginNameList []string
 
 	pns := strings.Split(cp.PluginName, ",")
-	if len(pns) > 2 && util.Contains("X", pns) {
+	if len(pns) > 2 && pkg.Contains("X", pns) {
 		//指定-X只能单独加载
 		pluginNameList = nil
 	}
-	if len(pns) > 2 && util.Contains("Y", pns) {
+	if len(pns) > 2 && pkg.Contains("Y", pns) {
 		pluginNameList = nil
 	}
 	switch {
 	case len(pns) == 1:
 		if pns[0] == "X" {
-			for _, k := range CrackKeys {
-				if !GetMutexStatus(k) && GetLoadStatus(k) {
-					pluginNameList = append(pluginNameList, k)
-				}
-			}
+			pluginNameList = config.CrackX
 		}
 		if pns[0] == "Y" {
-			for _, k := range CrackKeys {
-				if !GetMutexStatus(k) {
-					pluginNameList = append(pluginNameList, k)
-				}
-			}
+			pluginNameList = CrackKeys
 		}
-		if util.Contains(pns[0], CrackKeys) {
+		if pkg.Contains(pns[0], CrackKeys) {
 			pluginNameList = pns
 		}
 	default:
 		for _, k := range pns {
-			if util.Contains(k, CrackKeys) {
+			if pkg.Contains(k, CrackKeys) {
 				pluginNameList = append(pluginNameList, k)
 			}
 		}
@@ -99,7 +92,7 @@ func (cp *CrackOption) ParseIP() []string {
 		ips, _ = ReadIPFile(fp)
 		hosts = append(hosts, ips...)
 	}
-	hosts = util.RemoveDuplicate(hosts)
+	hosts = pkg.RemoveDuplicate(hosts)
 	return hosts
 }
 
@@ -120,7 +113,7 @@ func opt2slice(str, file string) []string {
 
 		return r
 	}
-	r := util.FileReader(file)
+	r := pkg.FileReader(file)
 	return r
 }
 

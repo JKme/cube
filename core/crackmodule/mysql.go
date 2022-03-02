@@ -27,15 +27,11 @@ func (m Mysql) CrackAuthPass() []string {
 	return config.PASSWORDS
 }
 
-func (m Mysql) IsLoad() bool {
-	return true
-}
-
 func (m Mysql) IsMutex() bool {
 	return false
 }
 
-func (m Mysql) IsTcp() bool {
+func (m Mysql) SkipPortCheck() bool {
 	return true
 }
 
@@ -56,7 +52,7 @@ func (m Mysql) Exec() CrackResult {
 					if err != nil {
 						fmt.Println(err)
 					}
-					s = s + fmt.Sprintf("OS=%s Version=%s Arch=%s File_Priv=%s\t", strings.Split(cols[1], "-")[0], cols[0], cols[2], cols[3])
+					result.Extra = fmt.Sprintf("OS=%s Version=%s Arch=%s File_Priv=%s\t", strings.Split(cols[1], "-")[0], cols[0], cols[2], cols[3])
 
 				}
 				result.Result = fmt.Sprintf("User: %s \tPassword: %s \t %s", m.Auth.User, m.Auth.Password, s)

@@ -27,15 +27,11 @@ func (p Postgres) CrackAuthPass() []string {
 	return config.PASSWORDS
 }
 
-func (p Postgres) IsLoad() bool {
-	return true
-}
-
 func (p Postgres) IsMutex() bool {
 	return false
 }
 
-func (p Postgres) IsTcp() bool {
+func (p Postgres) SkipPortCheck() bool {
 	return true
 }
 

@@ -28,15 +28,11 @@ func (h HttpBasic) CrackAuthPass() []string {
 	return config.PASSWORDS
 }
 
-func (h HttpBasic) IsLoad() bool {
-	return false
-}
-
 func (h HttpBasic) IsMutex() bool {
 	return true
 }
 
-func (h HttpBasic) IsTcp() bool {
+func (h HttpBasic) SkipPortCheck() bool {
 	return true
 }
 

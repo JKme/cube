@@ -1,18 +1,28 @@
 package crackmodule
 
 import (
+	"bytes"
 	"context"
 	"crypto/md5"
 	"cube/config"
 	"cube/core"
 	"cube/gologger"
+	"cube/pkg"
 	"cube/report"
 	"fmt"
+	"github.com/olekukonko/tablewriter"
+	"github.com/pkg/errors"
 	"io"
+	"os"
 	"strings"
 	"sync"
 	"time"
 )
+
+var SuccessHash = struct {
+	sync.RWMutex
+	S map[string]bool
+}{S: make(map[string]bool)}
 
 func MD5(s string) (m string) {
 	h := md5.New()
@@ -26,28 +36,46 @@ func MakeTaskHash(k string) string {
 }
 
 func CheckTaskHash(hash string) bool {
-	config.SuccessHash.Lock()
-	_, ok := config.SuccessHash.S[hash]
-	config.SuccessHash.Unlock()
+	SuccessHash.Lock()
+	_, ok := SuccessHash.S[hash]
+	SuccessHash.Unlock()
 	return ok
 }
 
 func SetTaskHash(hash string) {
-	config.SuccessHash.Lock()
-	config.SuccessHash.S[hash] = true
-	config.SuccessHash.Unlock()
+	SuccessHash.Lock()
+	SuccessHash.S[hash] = true
+	SuccessHash.Unlock()
+}
+
+func CrackHelpTable() string {
+	buf := bytes.NewBufferString("")
+	flag := "N"
+	table := tablewriter.NewWriter(buf)
+	table.SetHeader([]string{"Func", "Port", "Load By ALL"})
+	for _, k := range CrackKeys {
+		if pkg.Contains(k, config.CrackX) {
+			flag = "Y"
+		}
+		table.Append([]string{k, GetPort(k), flag})
+		table.SetRowLine(true)
+	}
+	table.Render()
+	return buf.String()
 }
 
 // ResultMap 当Mysql或者redis空密码的时候，任何密码都正确，会导致密码刷屏
 
 func SetResultMap(r CrackResult) {
-	c := fmt.Sprintf("\nCRACK_PLUG: %s\nCRACK_PORT: %s\nCRACK_ADDR: %s\nCRACK_USER: %s\nCRACK_PASS: %s", r.Crack.Name, r.Crack.Port, r.Crack.Ip, r.Crack.Auth.User, r.Crack.Auth.Password)
+	c := fmt.Sprintf("\nCRACK_PLUG: %s\nCRACK_PORT: %s\nCRACK_ADDR: %s\nCRACK_USER: %s\nCRACK_PASS: %s\nCRACKEXTRA: %s", r.Crack.Name, r.Crack.Port, r.Crack.Ip, r.Crack.Auth.User, r.Crack.Auth.Password, r.Extra)
+
 	data := report.CsvCell{
 		Ip:     r.Crack.Ip,
 		Module: "Crack_" + r.Crack.Name,
 		Cell:   c,
 	}
 	report.ConcurrentSlices.Append(data)
+	report.CsvShells = append(report.CsvShells, data)
 }
 
 func GetFinishTime(t1 time.Time) {
@@ -109,7 +137,6 @@ func saveCrackResult(crackResult CrackResult) {
 		//s1 := fmt.Sprintf("[+]: %s://%s:%s %s", taskResult.CrackTask.CrackPlugin, taskResult.CrackTask.Ip, taskResult.CrackTask.Port, taskResult.Result)
 		//fmt.Println(s1)
 		SetResultMap(crackResult)
-
 	}
 
 }
@@ -152,12 +179,14 @@ func StartCrack(opt *CrackOption, globalopt *core.GlobalOption) {
 		threadNum    int
 		delay        float64
 		aliveIPS     []IpAddr
+		fp           string
 	)
 
 	ctx := context.Background()
 	t1 := time.Now()
 	delay = globalopt.Delay
 	threadNum = globalopt.Threads
+	fp = globalopt.Output
 
 	if delay > 0 {
 		//添加使用--delay选项的时候，强制单线程。现在还停留在想象中的攻击
@@ -198,16 +227,33 @@ func StartCrack(opt *CrackOption, globalopt *core.GlobalOption) {
 	//wg.Wait()
 
 	WaitThreadTimeout(&wg, config.ThreadTimeout)
-	for k := range report.ConcurrentSlices.Iter() {
-		gologger.Infof("%s", k.Value.Cell)
+	ccs := report.RemoveDuplicateCSS(report.CsvShells)
+	r := report.RemoveDuplicateResult(ccs)
+	for _, v := range r {
+		gologger.Infof("%s", v.Cell)
+	}
 
+	if _, err := os.Stat(fp); err == nil {
+		// path/to/whatever exists
+		cs := report.ReadExportExcel(fp)
+		gologger.Infof("Appending result to %s success", fp)
+		for _, v := range cs {
+			report.CsvShells = append(report.CsvShells, v)
+			//gologger.Debugf("Appending %s", v.Ip)
+		}
+		css2 := report.RemoveDuplicateCSS(report.CsvShells)
+		report.WriteExportExcel(css2, fp)
+	} else if errors.Is(err, os.ErrNotExist) {
+		// path/to/whatever does *not* exist
+		report.WriteExportExcel(report.CsvShells, fp)
+		gologger.Infof("Write result to %s success", fp)
+
+	} else {
+		// Schrodinger: file may or may not exist. See err for details.
+
+		// Therefore, do *NOT* use !os.IsNotExist(err) to test for file existence
+		gologger.Errorf("can't find file %s, err: %s", fp, err)
 	}
 
 	GetFinishTime(t1)
-	srMap := make(map[string]int)
-	for k := range report.ConcurrentSlices.Iter() {
-		sr := k.Value.Module
-		srMap[sr] += 1
-		fmt.Println(srMap)
-	}
 }

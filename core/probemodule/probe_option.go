@@ -3,7 +3,7 @@ package probemodule
 import (
 	"cube/core/crackmodule"
 	"cube/gologger"
-	"cube/pkg/util"
+	"cube/pkg"
 	"strconv"
 	"strings"
 )
@@ -23,7 +23,7 @@ func (po *ProbeOption) ParsePluginName() []string {
 	var pluginNameList []string
 
 	pns := strings.Split(po.PluginName, ",")
-	if len(pns) > 2 && util.Contains("X", pns) {
+	if len(pns) > 2 && pkg.Contains("X", pns) {
 		//指定-X只能单独加载
 		pluginNameList = nil
 	}
@@ -36,12 +36,12 @@ func (po *ProbeOption) ParsePluginName() []string {
 				}
 			}
 		}
-		if util.Contains(pns[0], ProbeKeys) {
+		if pkg.Contains(pns[0], ProbeKeys) {
 			pluginNameList = pns
 		}
 	} else {
 		for _, k := range pns {
-			if util.Contains(k, ProbeKeys) {
+			if pkg.Contains(k, ProbeKeys) {
 				pluginNameList = append(pluginNameList, k)
 			}
 		}
@@ -63,7 +63,7 @@ func (po *ProbeOption) ParseIP() []string {
 		ips, _ = crackmodule.ReadIPFile(fp)
 		hosts = append(hosts, ips...)
 	}
-	hosts = util.RemoveDuplicate(hosts)
+	hosts = pkg.RemoveDuplicate(hosts)
 	return hosts
 }
 

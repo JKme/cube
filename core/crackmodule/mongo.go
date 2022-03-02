@@ -26,15 +26,11 @@ func (m Mongo) CrackAuthPass() []string {
 	return config.PASSWORDS
 }
 
-func (m Mongo) IsLoad() bool {
-	return true
-}
-
 func (m Mongo) IsMutex() bool {
 	return false
 }
 
-func (m Mongo) IsTcp() bool {
+func (m Mongo) SkipPortCheck() bool {
 	return true
 }
 

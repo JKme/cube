@@ -27,15 +27,11 @@ func (m Mssql) CrackAuthPass() []string {
 	return config.PASSWORDS
 }
 
-func (m Mssql) IsLoad() bool {
-	return true
-}
-
 func (m Mssql) IsMutex() bool {
 	return false
 }
 
-func (m Mssql) IsTcp() bool {
+func (m Mssql) SkipPortCheck() bool {
 	return true
 }
 

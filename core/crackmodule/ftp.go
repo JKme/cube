@@ -26,15 +26,11 @@ func (f FtpCrack) CrackAuthPass() []string {
 	return config.PASSWORDS
 }
 
-func (f FtpCrack) IsLoad() bool {
-	return true
-}
-
 func (f FtpCrack) IsMutex() bool {
 	return false
 }
 
-func (f FtpCrack) IsTcp() bool {
+func (f FtpCrack) SkipPortCheck() bool {
 	return true
 }
 

@@ -3,7 +3,7 @@ package probemodule
 import (
 	"bytes"
 	"cube/config"
-	"cube/pkg/util"
+	"cube/pkg"
 	"fmt"
 	"net"
 	"strings"
@@ -76,7 +76,7 @@ func (o Oxid) ProbeExec() ProbeResult {
 			break
 		}
 		index = bytes.Index(r, []byte("\x00\x00\x00"))
-		hosts := util.Bytes2StringUTF16(r[:index+3])
+		hosts := pkg.Bytes2StringUTF16(r[:index+3])
 		results = append(results, hosts)
 		r = r[index+3:]
 	}

@@ -5,9 +5,7 @@ import (
 	"cube/core/crackmodule"
 	"cube/gologger"
 	"fmt"
-	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 var crackCli *cobra.Command
@@ -104,18 +102,4 @@ cube crack -u root -pass-file pass.txt -i http://127.0.0.1:8080 -x phpmyadmin
 	}
 
 	rootCmd.AddCommand(crackCli)
-}
-
-func CrackHelpTable() {
-	flag := "N"
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Func", "Port", "Load By ALL"})
-	for _, k := range crackmodule.CrackKeys {
-		if crackmodule.GetLoadStatus(k) {
-			flag = "Y"
-		}
-		table.Append([]string{k, crackmodule.GetPort(k), flag})
-		table.SetRowLine(true)
-	}
-	table.Render()
 }

@@ -32,15 +32,11 @@ func (z Zabbix) CrackAuthPass() []string {
 	return config.PASSWORDS
 }
 
-func (z Zabbix) IsLoad() bool {
-	return false
-}
-
 func (z Zabbix) IsMutex() bool {
 	return true
 }
 
-func (z Zabbix) IsTcp() bool {
+func (z Zabbix) SkipPortCheck() bool {
 	return true
 }
 

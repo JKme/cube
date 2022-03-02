@@ -28,15 +28,11 @@ func (s Smb) CrackAuthPass() []string {
 	return config.PASSWORDS
 }
 
-func (s Smb) IsLoad() bool {
-	return true
-}
-
 func (s Smb) IsMutex() bool {
 	return false
 }
 
-func (s Smb) IsTcp() bool {
+func (s Smb) SkipPortCheck() bool {
 	return true
 }
 

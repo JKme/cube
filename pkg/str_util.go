@@ -1,4 +1,4 @@
-package util
+package pkg
 
 import (
 	"bufio"
@@ -28,6 +28,85 @@ func Contains(str string, slice []string) bool {
 		}
 	}
 	return false
+}
+
+func FileReader(filename string) []string {
+	file, err := os.Open(filename)
+	if err != nil {
+		gologger.Errorf("Open file %s error, %v\n", filename, err)
+	}
+	defer file.Close()
+	var content []string
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
+	for scanner.Scan() {
+		text := strings.TrimSpace(scanner.Text())
+		if text != "" {
+			content = append(content, scanner.Text())
+		}
+	}
+	return content
+}
+
+func ReadBytes(conn net.Conn) (result []byte, err error) {
+	buf := make([]byte, 4096)
+	for {
+		count, err := conn.Read(buf)
+		if err != nil {
+			break
+		}
+		result = append(result, buf[0:count]...)
+		if count < 4096 {
+			break
+		}
+	}
+	return result, err
+}
+
+func TrimName(name string) string {
+	return strings.TrimSpace(strings.Replace(name, "\x00", "", -1))
+}
+func Bytes2Uint(bs []byte, endian byte) uint64 {
+	var u uint64
+	if endian == '>' {
+		for i := 0; i < len(bs); i++ {
+			u += uint64(bs[i]) << (8 * (len(bs) - i - 1))
+		}
+	} else {
+		for i := 0; i < len(bs); i++ {
+			u += uint64(bs[len(bs)-i-1]) << (8 * (len(bs) - i - 1))
+		}
+	}
+	return u
+}
+
+func RemoveDuplicate(old []string) []string {
+	result := make([]string, 0, len(old))
+	temp := map[string]struct{}{}
+	for _, item := range old {
+		if _, ok := temp[item]; !ok {
+			temp[item] = struct{}{}
+			result = append(result, item)
+		}
+	}
+	return result
+}
+
+func Bytes2StringUTF16(bs []byte) string {
+	ptr := (*reflect.SliceHeader)(unsafe.Pointer(&bs))
+	(*ptr).Len = ptr.Len / 2
+
+	s := (*[]uint16)(unsafe.Pointer(&bs))
+	return string(utf16.Decode(*s))
+}
+
+func GbkToUtf8(s []byte) ([]byte, error) {
+	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewDecoder())
+	d, e := ioutil.ReadAll(reader)
+	if e != nil {
+		return nil, e
+	}
+	return d, nil
 }
 
 func IsUpper(s string) bool {
@@ -60,48 +139,8 @@ func ValidIp(ip string) bool {
 	return false
 }
 
-//func Split(r rune) bool {
-//	return strings.ContainsRune("://:", r)
-//}
-
-//func ParseService(str string) (service model.Service, err error) {
-//	a := strings.FieldsFunc(str, Split)
-//	l := len(a)
-//	if l < 2 || l > 3 {
-//		return service, fmt.Errorf("invalid target: %s (eg: cube sqlcmd -x mssql1://172.16.157.163:1434 -usa -p123456aa -e \"whoami\")", str)
-//	}
-//
-//	service.Schema = a[0]
-//	service.Ip = a[1]
-//	if !ValidIp(service.Ip) {
-//		return service, fmt.Errorf("invalid ip: %s", service.Ip)
-//	}
-//
-//	if len(a) == 2 {
-//		service.Port = config.CommonPortMap[service.Schema]
-//	} else {
-//		service.Port, _ = strconv.Atoi(a[2])
-//	}
-//
-//	return service, nil
-//}
-
-func FileReader(filename string) []string {
-	file, err := os.Open(filename)
-	if err != nil {
-		gologger.Errorf("Open file %s error, %v\n", filename, err)
-	}
-	defer file.Close()
-	var content []string
-	scanner := bufio.NewScanner(file)
-	scanner.Split(bufio.ScanLines)
-	for scanner.Scan() {
-		text := strings.TrimSpace(scanner.Text())
-		if text != "" {
-			content = append(content, scanner.Text())
-		}
-	}
-	return content
+func Split(r rune) bool {
+	return strings.ContainsRune("://:", r)
 }
 
 func SameStringSlice(x, y []string) bool {
@@ -168,67 +207,6 @@ func WriteToFile(f *os.File, output string) error {
 		return fmt.Errorf("[!] Unable to write to file %w", err)
 	}
 	return nil
-}
-
-func ReadBytes(conn net.Conn) (result []byte, err error) {
-	buf := make([]byte, 4096)
-	for {
-		count, err := conn.Read(buf)
-		if err != nil {
-			break
-		}
-		result = append(result, buf[0:count]...)
-		if count < 4096 {
-			break
-		}
-	}
-	return result, err
-}
-
-func TrimName(name string) string {
-	return strings.TrimSpace(strings.Replace(name, "\x00", "", -1))
-}
-func Bytes2Uint(bs []byte, endian byte) uint64 {
-	var u uint64
-	if endian == '>' {
-		for i := 0; i < len(bs); i++ {
-			u += uint64(bs[i]) << (8 * (len(bs) - i - 1))
-		}
-	} else {
-		for i := 0; i < len(bs); i++ {
-			u += uint64(bs[len(bs)-i-1]) << (8 * (len(bs) - i - 1))
-		}
-	}
-	return u
-}
-
-func RemoveDuplicate(old []string) []string {
-	result := make([]string, 0, len(old))
-	temp := map[string]struct{}{}
-	for _, item := range old {
-		if _, ok := temp[item]; !ok {
-			temp[item] = struct{}{}
-			result = append(result, item)
-		}
-	}
-	return result
-}
-
-func Bytes2StringUTF16(bs []byte) string {
-	ptr := (*reflect.SliceHeader)(unsafe.Pointer(&bs))
-	(*ptr).Len = ptr.Len / 2
-
-	s := (*[]uint16)(unsafe.Pointer(&bs))
-	return string(utf16.Decode(*s))
-}
-
-func GbkToUtf8(s []byte) ([]byte, error) {
-	reader := transform.NewReader(bytes.NewReader(s), simplifiedchinese.GBK.NewDecoder())
-	d, e := ioutil.ReadAll(reader)
-	if e != nil {
-		return nil, e
-	}
-	return d, nil
 }
 
 func ByteToString(buf []byte) (string, error) {

@@ -114,8 +114,6 @@ func StartProbe(opt *ProbeOption, globalopt *core.GlobalOption) {
 		gologger.Infof("%s", k.Value.Cell)
 	}
 
-	crackmodule.GetFinishTime(t1)
-
 	if _, err := os.Stat(fp); err == nil {
 		// path/to/whatever exists
 		cs := report.ReadExportExcel(fp)
@@ -138,4 +136,5 @@ func StartProbe(opt *ProbeOption, globalopt *core.GlobalOption) {
 		gologger.Errorf("can't find file %s, err: %s", fp, err)
 	}
 
+	crackmodule.GetFinishTime(t1)
 }

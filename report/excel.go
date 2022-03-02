@@ -42,6 +42,23 @@ func RemoveDuplicateCSS(css []CsvCell) []CsvCell {
 	return result
 }
 
+func RemoveDuplicateResult(old []CsvCell) []CsvCell {
+	var result []CsvCell
+	for i := range old {
+		flag := true
+		for j := range result {
+			if old[i].Ip == result[j].Ip && old[i].Module == result[j].Module {
+				flag = false
+				break
+			}
+		}
+		if flag {
+			result = append(result, old[i])
+		}
+	}
+	return result
+}
+
 func WriteExportExcel(ccs []CsvCell, fp string) {
 	plugMap := SortPlug(ccs)
 	ipMap := SortIP(ccs)

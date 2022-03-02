@@ -27,15 +27,11 @@ func (e Elastic) CrackAuthPass() []string {
 	return []string{""}
 }
 
-func (e Elastic) IsLoad() bool {
-	return true
-}
-
 func (e Elastic) IsMutex() bool {
 	return false
 }
 
-func (e Elastic) IsTcp() bool {
+func (e Elastic) SkipPortCheck() bool {
 	return true
 }
 

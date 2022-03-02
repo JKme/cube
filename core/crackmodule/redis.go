@@ -28,15 +28,11 @@ func (r Redis) CrackAuthPass() []string {
 	return config.PASSWORDS
 }
 
-func (r Redis) IsLoad() bool {
-	return true
-}
-
 func (r Redis) IsMutex() bool {
 	return false
 }
 
-func (r Redis) IsTcp() bool {
+func (r Redis) SkipPortCheck() bool {
 	return true
 }
 
@@ -54,6 +50,7 @@ func (r Redis) Exec() CrackResult {
 
 	if len(config) > 0 {
 		result.Result = fmt.Sprintf("Password: %s \t Version=%s  OS=%s", r.Auth.Password, config[0], config[1])
+		result.Extra = fmt.Sprintf("Version=%s  OS=%s", config[0], config[1])
 	} else {
 		_, err = conn.Write([]byte(fmt.Sprintf("AUTH %s\r\n", r.Auth.Password)))
 		if err != nil {
@@ -64,6 +61,8 @@ func (r Redis) Exec() CrackResult {
 		response := string(buf[0:count])
 		if strings.Contains(response, "+OK") {
 			config, _ := getConfig(conn)
+			result.Extra = fmt.Sprintf("Version=%s  OS=%s", config[0], config[1])
+
 			result.Result = fmt.Sprintf("Password: %s \t Version=%s  OS=%s", r.Auth.Password, config[0], config[1])
 		}
 	}

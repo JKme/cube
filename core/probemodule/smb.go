@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"cube/config"
 	"cube/gologger"
-	"cube/pkg/util"
+	"cube/pkg"
 	"encoding/hex"
 	"fmt"
 	"github.com/JKme/go-ntlmssp"
@@ -47,7 +47,7 @@ func (s Smb) ProbeExec() ProbeResult {
 		result.Err = err
 		return result
 	}
-	r1, _ := util.ReadBytes(conn)
+	r1, _ := pkg.ReadBytes(conn)
 
 	//ff534d42 SMBv1的标示
 	//fe534d42 SMBv2的标示
@@ -60,15 +60,15 @@ func (s Smb) ProbeExec() ProbeResult {
 			return result
 		}
 
-		ret, err := util.ReadBytes(conn)
+		ret, err := pkg.ReadBytes(conn)
 
 		if err != nil || len(ret) < 45 {
 			result.Err = err
 			return result
 		}
 
-		blobLength := uint16(util.Bytes2Uint(ret[43:45], '<'))
-		blobCount := uint16(util.Bytes2Uint(ret[45:47], '<'))
+		blobLength := uint16(pkg.Bytes2Uint(ret[43:45], '<'))
+		blobCount := uint16(pkg.Bytes2Uint(ret[45:47], '<'))
 
 		gssNative := ret[47:]
 		offNtlm := bytes.Index(gssNative, []byte("NTLMSSP"))
@@ -87,8 +87,8 @@ func (s Smb) ProbeExec() ProbeResult {
 		tinfo := type2.String(bs)
 		//fmt.Println(tinfo)
 
-		NativeOS := util.TrimName(ss[0])
-		NativeLM := util.TrimName(ss[1])
+		NativeOS := pkg.TrimName(ss[0])
+		NativeLM := pkg.TrimName(ss[1])
 		//fmt.Println(NativeOS, NativeLM)
 		tinfo += fmt.Sprintf("NativeOS: %s\nNativeLM: %s\n", NativeOS, NativeLM)
 		result.Result = tinfo
@@ -104,7 +104,7 @@ func (s Smb) ProbeExec() ProbeResult {
 			result.Err = err
 			return result
 		}
-		r2, _ := util.ReadBytes(conn2)
+		r2, _ := pkg.ReadBytes(conn2)
 
 		var NtlmsspNegotiateV2Data []byte
 		if hex.EncodeToString(r2[70:71]) == "03" {
@@ -120,10 +120,10 @@ func (s Smb) ProbeExec() ProbeResult {
 			result.Err = err
 			return result
 		}
-		util.ReadBytes(conn2)
+		pkg.ReadBytes(conn2)
 
 		_, err = conn2.Write(NtlmsspNegotiateV2Data)
-		ret, _ := util.ReadBytes(conn2)
+		ret, _ := pkg.ReadBytes(conn2)
 		ntlmOff := bytes.Index(ret, []byte("NTLMSSP"))
 		type2 := ntlmssp.ChallengeMsg{}
 		tInfo := type2.String(ret[ntlmOff:])

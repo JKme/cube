@@ -10,21 +10,19 @@ import (
 func TestCrackPluginInterface(t *testing.T) {
 	c := Crack{
 		Ip:   "127.0.0.1",
-		Port: "22",
+		Port: "6379",
 		Auth: Auth{
-			User:     "root",
+			User:     "",
 			Password: "root",
 		},
-		Name: "ssh2",
+		Name: "redis",
 	}
 
-	fmt.Println(CrackKeys)
 	task := c.NewICrack()
 	if task == nil {
 		gologger.Error("未找到插件")
 	}
-
-	gologger.Infof("INFO\n")
+	task.Exec()
 
 }
 

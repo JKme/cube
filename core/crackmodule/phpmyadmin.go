@@ -32,15 +32,11 @@ func (p Phpmyadmin) CrackAuthPass() []string {
 	return config.PASSWORDS
 }
 
-func (p Phpmyadmin) IsLoad() bool {
-	return false
-}
-
 func (p Phpmyadmin) IsMutex() bool {
 	return true
 }
 
-func (p Phpmyadmin) IsTcp() bool {
+func (p Phpmyadmin) SkipPortCheck() bool {
 	return true
 }
 

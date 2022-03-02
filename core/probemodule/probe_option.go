@@ -1,6 +1,7 @@
 package probemodule
 
 import (
+	"cube/config"
 	"cube/core/crackmodule"
 	"cube/gologger"
 	"cube/pkg"
@@ -30,11 +31,7 @@ func (po *ProbeOption) ParsePluginName() []string {
 
 	if len(pns) == 1 {
 		if pns[0] == "X" {
-			for _, k := range ProbeKeys {
-				if GetLoadStatus(k) {
-					pluginNameList = append(pluginNameList, k)
-				}
-			}
+			pluginNameList = config.ProbeX
 		}
 		if pkg.Contains(pns[0], ProbeKeys) {
 			pluginNameList = pns

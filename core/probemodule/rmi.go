@@ -20,8 +20,8 @@ func (r Rmi) ProbePort() string {
 	return "1099"
 }
 
-func (r Rmi) ProbeSkipPortCheck() bool {
-	return false
+func (r Rmi) PortCheck() bool {
+	return true
 }
 
 func (r Rmi) ProbeExec() ProbeResult {
@@ -40,4 +40,8 @@ func (r Rmi) ProbeExec() ProbeResult {
 	}
 
 	return result
+}
+
+func init() {
+	AddProbeKeys("rmi")
 }

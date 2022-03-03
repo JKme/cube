@@ -19,8 +19,8 @@ func (s SmbGhost) ProbePort() string {
 	return "445"
 }
 
-func (s SmbGhost) ProbeSkipPortCheck() bool {
-	return false
+func (s SmbGhost) PortCheck() bool {
+	return true
 }
 
 func (s SmbGhost) ProbeExec() ProbeResult {
@@ -133,3 +133,7 @@ const (
 		"\x00\x00" +
 		"\x00\x00\x00\x00"
 )
+
+func init() {
+	AddProbeKeys("smbghost")
+}

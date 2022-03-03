@@ -19,8 +19,8 @@ func (z Zookeeper) ProbePort() string {
 	return "2181"
 }
 
-func (z Zookeeper) ProbeSkipPortCheck() bool {
-	return false
+func (z Zookeeper) PortCheck() bool {
+	return true
 }
 
 func (z Zookeeper) ProbeExec() ProbeResult {
@@ -42,4 +42,8 @@ func (z Zookeeper) ProbeExec() ProbeResult {
 		result.Result = "Zookeeper Unauthorized"
 	}
 	return result
+}
+
+func init() {
+	AddProbeKeys("zookeeper")
 }

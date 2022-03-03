@@ -27,10 +27,10 @@ func (m Mongo) CrackAuthPass() []string {
 }
 
 func (m Mongo) IsMutex() bool {
-	return false
+	return true
 }
 
-func (m Mongo) SkipPortCheck() bool {
+func (m Mongo) CrackPortCheck() bool {
 	return true
 }
 

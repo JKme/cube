@@ -22,8 +22,8 @@ func (m Ms17010) ProbePort() string {
 	return "445"
 }
 
-func (m Ms17010) ProbeSkipPortCheck() bool {
-	return false
+func (m Ms17010) PortCheck() bool {
+	return true
 }
 
 var (
@@ -161,4 +161,8 @@ func (m Ms17010) ProbeExec() ProbeResult {
 		result.Result = r
 	}
 	return result
+}
+
+func init() {
+	AddProbeKeys("ms17010")
 }

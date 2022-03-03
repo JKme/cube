@@ -75,7 +75,7 @@ func parseCrackOptions() (*core.GlobalOption, *crackmodule.CrackOption, error) {
 func init() {
 	crackCli = &cobra.Command{
 		Use:   "crack",
-		Long:  "Hello", //TODO
+		Long:  crackmodule.CrackHelpTable(),
 		Short: "crack service password",
 		Run:   runCrack,
 		Example: `cube crack -u root -p root -i 192.168.1.1 -x ssh

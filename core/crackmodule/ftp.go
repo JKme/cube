@@ -30,7 +30,7 @@ func (f FtpCrack) IsMutex() bool {
 	return false
 }
 
-func (f FtpCrack) SkipPortCheck() bool {
+func (f FtpCrack) CrackPortCheck() bool {
 	return true
 }
 

@@ -28,15 +28,21 @@ func (po *ProbeOption) ParsePluginName() []string {
 		//指定-X只能单独加载
 		pluginNameList = nil
 	}
-
-	if len(pns) == 1 {
+	if len(pns) > 2 && pkg.Contains("Y", pns) {
+		pluginNameList = nil
+	}
+	switch {
+	case len(pns) == 1:
 		if pns[0] == "X" {
 			pluginNameList = config.ProbeX
+		}
+		if pns[0] == "Y" {
+			pluginNameList = ProbeKeys
 		}
 		if pkg.Contains(pns[0], ProbeKeys) {
 			pluginNameList = pns
 		}
-	} else {
+	default:
 		for _, k := range pns {
 			if pkg.Contains(k, ProbeKeys) {
 				pluginNameList = append(pluginNameList, k)
@@ -65,9 +71,13 @@ func (po *ProbeOption) ParseIP() []string {
 }
 
 func (po *ProbeOption) ParsePort() bool {
-	b, err := strconv.ParseBool(po.Port)
+	b, err := strconv.Atoi(po.Port)
 	if err != nil {
 		gologger.Errorf("error while parse port option: %v", po.Port)
 	}
-	return b
+	if b < 0 || b > 65535 {
+		gologger.Errorf("incorrect port: %v", po.Port)
+		return false
+	}
+	return true
 }

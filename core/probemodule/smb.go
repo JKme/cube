@@ -24,11 +24,7 @@ func (s Smb) ProbePort() string {
 	return "445"
 }
 
-func (s Smb) ProbeLoad() bool {
-	return true
-}
-
-func (s Smb) ProbeSkipPortCheck() bool {
+func (s Smb) PortCheck() bool {
 	return true
 }
 

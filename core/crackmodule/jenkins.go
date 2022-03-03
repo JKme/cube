@@ -36,7 +36,7 @@ func (j Jenkins) IsMutex() bool {
 	return true
 }
 
-func (j Jenkins) SkipPortCheck() bool {
+func (j Jenkins) CrackPortCheck() bool {
 	return true
 }
 

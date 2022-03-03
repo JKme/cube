@@ -19,8 +19,8 @@ func (d Dubbo) ProbePort() string {
 	return "20880"
 }
 
-func (d Dubbo) ProbeSkipPortCheck() bool {
-	return false
+func (d Dubbo) PortCheck() bool {
+	return true
 }
 
 func (d Dubbo) ProbeExec() ProbeResult {
@@ -39,4 +39,7 @@ func (d Dubbo) ProbeExec() ProbeResult {
 	}
 
 	return result
+}
+func init() {
+	AddProbeKeys("dubbo")
 }

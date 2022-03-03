@@ -32,7 +32,7 @@ func (s Smb) IsMutex() bool {
 	return false
 }
 
-func (s Smb) SkipPortCheck() bool {
+func (s Smb) CrackPortCheck() bool {
 	return true
 }
 

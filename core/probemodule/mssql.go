@@ -21,8 +21,8 @@ func (m Mssql) ProbePort() string {
 	return "1433"
 }
 
-func (m Mssql) ProbeSkipPortCheck() bool {
-	return false
+func (m Mssql) PortCheck() bool {
+	return true
 }
 
 func (m Mssql) ProbeExec() ProbeResult {
@@ -46,6 +46,9 @@ func (m Mssql) ProbeExec() ProbeResult {
 	tinfo := type2.String(ret[off_ntlm:])
 	result.Result = tinfo
 	return result
+}
+func init() {
+	AddProbeKeys("mssql")
 }
 
 var prelogin = []byte{

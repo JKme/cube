@@ -36,7 +36,7 @@ func (z Zabbix) IsMutex() bool {
 	return true
 }
 
-func (z Zabbix) SkipPortCheck() bool {
+func (z Zabbix) CrackPortCheck() bool {
 	return true
 }
 

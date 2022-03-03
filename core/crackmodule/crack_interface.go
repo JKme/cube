@@ -31,7 +31,7 @@ type ICrack interface {
 	CrackAuthUser() []string //设置默认爆破的用户名
 	CrackAuthPass() []string //设置默认爆破的密码
 	IsMutex() bool           //只能单独使用的插件，比如phpmyadmin
-	SkipPortCheck() bool     //TCP需要先进行端口开放探测，UDP跳过
+	CrackPortCheck() bool    //TCP需要先进行端口开放探测，UDP跳过
 	Exec() CrackResult       //运行task，返回string
 }
 
@@ -65,6 +65,10 @@ func (c *Crack) NewICrack() ICrack {
 		return &FtpCrack{c}
 	case "zabbix":
 		return &FtpCrack{c}
+	case "phpmyadmin":
+		return &Phpmyadmin{c}
+	case "oracle":
+		return &Oracle{c}
 	default:
 		return nil
 	}
@@ -76,7 +80,7 @@ func NewCrack(s string) Crack {
 	}
 }
 
-func GetPort(s string) string {
+func GetCrackPort(s string) string {
 	c := NewCrack(s)
 	ic := c.NewICrack()
 	return ic.CrackPort()
@@ -88,10 +92,10 @@ func GetMutexStatus(s string) bool {
 	return ic.IsMutex()
 }
 
-func GetTCP(s string) bool {
+func NeedPortCheck(s string) bool {
 	c := NewCrack(s)
 	ic := c.NewICrack()
-	return ic.SkipPortCheck()
+	return ic.CrackPortCheck()
 }
 
 func getPluginAuthUser(s string) []string {

@@ -50,14 +50,16 @@ func SetTaskHash(hash string) {
 
 func CrackHelpTable() string {
 	buf := bytes.NewBufferString("")
-	flag := "N"
+	var flag = ""
 	table := tablewriter.NewWriter(buf)
-	table.SetHeader([]string{"Func", "Port", "Load By ALL"})
+	table.SetHeader([]string{"Func", "Port", "Load By X"})
 	for _, k := range CrackKeys {
 		if pkg.Contains(k, config.CrackX) {
 			flag = "Y"
+		} else {
+			flag = "N"
 		}
-		table.Append([]string{k, GetPort(k), flag})
+		table.Append([]string{k, GetCrackPort(k), flag})
 		table.SetRowLine(true)
 	}
 	table.Render()
@@ -195,6 +197,7 @@ func StartCrack(opt *CrackOption, globalopt *core.GlobalOption) {
 	}
 
 	crackPlugins = opt.ParsePluginName()
+	gologger.Debugf("load plug: %s", crackPlugins)
 	crackIPS = opt.ParseIP()
 
 	if opt.Port != "" {
@@ -233,27 +236,29 @@ func StartCrack(opt *CrackOption, globalopt *core.GlobalOption) {
 		gologger.Infof("%s", v.Cell)
 	}
 
-	if _, err := os.Stat(fp); err == nil {
-		// path/to/whatever exists
-		cs := report.ReadExportExcel(fp)
-		gologger.Infof("Appending result to %s success", fp)
-		for _, v := range cs {
-			report.CsvShells = append(report.CsvShells, v)
-			//gologger.Debugf("Appending %s", v.Ip)
+	if len(fp) > 0 {
+		if _, err := os.Stat(fp); err == nil {
+			// path/to/whatever exists
+			cs := report.ReadExportExcel(fp)
+			gologger.Infof("Appending result to %s success", fp)
+			for _, v := range cs {
+				report.CsvShells = append(report.CsvShells, v)
+				//gologger.Debugf("Appending %s", v.Ip)
+			}
+			css2 := report.RemoveDuplicateCSS(report.CsvShells)
+			report.WriteExportExcel(css2, fp)
+		} else if errors.Is(err, os.ErrNotExist) {
+			// path/to/whatever does *not* exist
+			report.WriteExportExcel(report.CsvShells, fp)
+			gologger.Infof("Write result to %s success", fp)
+
+		} else {
+			// Schrodinger: file may or may not exist. See err for details.
+
+			// Therefore, do *NOT* use !os.IsNotExist(err) to test for file existence
+			gologger.Errorf("can't find file %s, err: %s", fp, err)
 		}
-		css2 := report.RemoveDuplicateCSS(report.CsvShells)
-		report.WriteExportExcel(css2, fp)
-	} else if errors.Is(err, os.ErrNotExist) {
-		// path/to/whatever does *not* exist
-		report.WriteExportExcel(report.CsvShells, fp)
-		gologger.Infof("Write result to %s success", fp)
 
-	} else {
-		// Schrodinger: file may or may not exist. See err for details.
-
-		// Therefore, do *NOT* use !os.IsNotExist(err) to test for file existence
-		gologger.Errorf("can't find file %s, err: %s", fp, err)
+		GetFinishTime(t1)
 	}
-
-	GetFinishTime(t1)
 }

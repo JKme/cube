@@ -31,7 +31,7 @@ func (m Mysql) IsMutex() bool {
 	return false
 }
 
-func (m Mysql) SkipPortCheck() bool {
+func (m Mysql) CrackPortCheck() bool {
 	return true
 }
 

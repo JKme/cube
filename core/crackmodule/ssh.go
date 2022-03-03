@@ -26,7 +26,7 @@ func (sshCrack SshCrack) CrackAuthPass() []string {
 	return config.PASSWORDS
 }
 
-func (sshCrack SshCrack) SkipPortCheck() bool {
+func (sshCrack SshCrack) CrackPortCheck() bool {
 	return true
 }
 

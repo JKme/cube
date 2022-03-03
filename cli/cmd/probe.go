@@ -47,7 +47,7 @@ func parseProbeOptions() (*core.GlobalOption, *probemodule.ProbeOption, error) {
 func init() {
 	probeCli = &cobra.Command{
 		Use:   "probe",
-		Long:  "long Desc", //TODO
+		Long:  probemodule.ProbeHelpTable(),
 		Short: "probe pentest env",
 		Run:   runProbe,
 		Example: `cube probe -s 192.168.1.1 -x oxid

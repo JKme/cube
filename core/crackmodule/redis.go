@@ -32,7 +32,7 @@ func (r Redis) IsMutex() bool {
 	return false
 }
 
-func (r Redis) SkipPortCheck() bool {
+func (r Redis) CrackPortCheck() bool {
 	return true
 }
 

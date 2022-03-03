@@ -32,3 +32,7 @@ func TestParsePluginOpt(t *testing.T) {
 	b, _ := strconv.ParseBool("222")
 	fmt.Println(b)
 }
+
+func TestCrackHelpTable(t *testing.T) {
+	fmt.Println(strconv.Atoi("123"))
+}

@@ -25,7 +25,7 @@ func (o Oxid) ProbeLoad() bool {
 	return true
 }
 
-func (o Oxid) ProbeSkipPortCheck() bool {
+func (o Oxid) PortCheck() bool {
 	return true
 }
 

@@ -15,10 +15,10 @@ type ProbeResult struct {
 var ProbeKeys []string
 
 type IProbe interface {
-	ProbeName() string        //插件名称
-	ProbePort() string        //默认端口
-	ProbeSkipPortCheck() bool //是否TCP协议
-	ProbeExec() ProbeResult   //执行插件
+	ProbeName() string      //插件名称
+	ProbePort() string      //默认端口
+	PortCheck() bool        //是否需要端口检查
+	ProbeExec() ProbeResult //执行插件
 }
 
 func AddProbeKeys(s string) {
@@ -31,6 +31,32 @@ func (p *Probe) NewIProbe() IProbe {
 		return &Oxid{p}
 	case "smb":
 		return &Smb{p}
+	case "docker":
+		return &Docker{p}
+	case "dubbo":
+		return &Dubbo{p}
+	case "netbios":
+		return &Netbios{p}
+	case "ms17010":
+		return &Ms17010{p}
+	case "mssql":
+		return &Mssql{p}
+	case "ping":
+		return &Ping{p}
+	case "rmi":
+		return &Rmi{p}
+	case "smbghost":
+		return &SmbGhost{p}
+	case "winrm":
+		return &Winrm{p}
+	case "wmi":
+		return &Wmi{p}
+	case "zookeeper":
+		return &Zookeeper{p}
+	case "etcd":
+		return &Etcd{p}
+	case "k8s":
+		return &K8s{p}
 	default:
 		return nil
 	}
@@ -48,7 +74,7 @@ func GetName(s string) string {
 	return ic.ProbeName()
 }
 
-func GetPort(s string) string {
+func GetProbePort(s string) string {
 	c := NewProbe(s)
 	ic := c.NewIProbe()
 	return ic.ProbePort()
@@ -60,8 +86,8 @@ func GetPort(s string) string {
 //	return ic.ProbeLoad()
 //}
 
-func GetTCP(s string) bool {
+func IsPortCheck(s string) bool {
 	c := NewProbe(s)
 	ic := c.NewIProbe()
-	return ic.ProbeSkipPortCheck()
+	return ic.PortCheck()
 }

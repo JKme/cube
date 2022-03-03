@@ -19,8 +19,8 @@ func (w Winrm) ProbePort() string {
 	return "5985"
 }
 
-func (w Winrm) ProbeSkipPortCheck() bool {
-	return false
+func (w Winrm) PortCheck() bool {
+	return true
 }
 
 func (w Winrm) ProbeExec() ProbeResult {
@@ -46,4 +46,8 @@ func (w Winrm) ProbeExec() ProbeResult {
 	result.Result = tinfo
 
 	return result
+}
+
+func init() {
+	AddProbeKeys("winrm")
 }

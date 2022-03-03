@@ -15,18 +15,28 @@ https://stackoverflow.com/questions/59831642/how-to-get-a-list-of-a-structs-meth
 redis密码一样的时候去重 已完成
 redis和Mysql之类的Extra信息，可以增加一个result的字段 已完成
 
-* Probe充分测试
-* 增加Probe的Y选项
-* 完善Help信息
-* 增加打印version信息
+
 * 完成SQLCMD模块
   -m ls  <dst path>
   -m cat <dst file>
   -m upload <src path> <dst path>
   -m exec <cmd string>
-PROBE模块：
-K8S的 ETCD扫描
-fcgi的9000端口
 
-crack:
-oracle的爆破模块
+
+Sqlcmd 传入多个参数：
+http://liuqh.icu/2021/11/07/go/package/28-cobra/
+
+设计一下sqlcmd的使用
+cube sqlcmd -s 127.0.0.1 -l root -p root -x mssql exec "whoami"
+cube sqlcmd -s 127.0.0.1 -l root -p root -x mssql upload  <src> <dst>
+cube sqlcmd -s 127.0.0.1 -l root -p root -x mssql ls  <src>
+cube sqlcmd -s 127.0.0.1 -l root -p root -x mssql cat  <src> 
+
+* Probe充分测试
+* 完善Help信息， Probe和Crack的
+* 增加打印version信息
+* 添加代码注释
+* 完成sqlcmd
+* 
+* 线程异常超时退出
+  https://www.cnblogs.com/bigdataZJ/p/golang-timeout.html

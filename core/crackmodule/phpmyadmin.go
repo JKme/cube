@@ -36,8 +36,8 @@ func (p Phpmyadmin) IsMutex() bool {
 	return true
 }
 
-func (p Phpmyadmin) SkipPortCheck() bool {
-	return true
+func (p Phpmyadmin) CrackPortCheck() bool {
+	return false
 }
 
 func (p Phpmyadmin) Exec() CrackResult {

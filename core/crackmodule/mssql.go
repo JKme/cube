@@ -31,7 +31,7 @@ func (m Mssql) IsMutex() bool {
 	return false
 }
 
-func (m Mssql) SkipPortCheck() bool {
+func (m Mssql) CrackPortCheck() bool {
 	return true
 }
 

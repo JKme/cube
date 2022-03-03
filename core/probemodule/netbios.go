@@ -26,8 +26,8 @@ func (n Netbios) ProbePort() string {
 	return "137"
 }
 
-func (n Netbios) ProbeSkipPortCheck() bool {
-	return true
+func (n Netbios) PortCheck() bool {
+	return false
 }
 
 func (n Netbios) ProbeExec() ProbeResult {
@@ -369,4 +369,8 @@ func netbiosEncode(name string) (output []byte) {
 		output = append(output, byte(out))
 	}
 	return
+}
+
+func init() {
+	AddProbeKeys("netbios")
 }

@@ -1,18 +1,39 @@
 package probemodule
 
 import (
+	"bytes"
 	"context"
 	"cube/config"
 	"cube/core"
 	"cube/core/crackmodule"
 	"cube/gologger"
+	"cube/pkg"
 	"cube/report"
 	"fmt"
+	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
 	"os"
 	"sync"
 	"time"
 )
+
+func ProbeHelpTable() string {
+	buf := bytes.NewBufferString("")
+	var flag = ""
+	table := tablewriter.NewWriter(buf)
+	table.SetHeader([]string{"Func", "Port", "Load By X"})
+	for _, k := range ProbeKeys {
+		if pkg.Contains(k, config.ProbeX) {
+			flag = "Y"
+		} else {
+			flag = "N"
+		}
+		table.Append([]string{k, GetProbePort(k), flag})
+		table.SetRowLine(true)
+	}
+	table.Render()
+	return buf.String()
+}
 
 func buildTasks(aliveIPS []IpAddr, scanPlugins []string) (probes []Probe) {
 	probes = make([]Probe, 0)
@@ -83,6 +104,7 @@ func StartProbe(opt *ProbeOption, globalopt *core.GlobalOption) {
 	}
 
 	probePlugins = opt.ParsePluginName()
+	gologger.Debugf("load plug: %s", probePlugins)
 	probeIPS = opt.ParseIP()
 	if opt.Port != "" {
 		validPort := opt.ParsePort()
@@ -114,27 +136,29 @@ func StartProbe(opt *ProbeOption, globalopt *core.GlobalOption) {
 		gologger.Infof("%s", k.Value.Cell)
 	}
 
-	if _, err := os.Stat(fp); err == nil {
-		// path/to/whatever exists
-		cs := report.ReadExportExcel(fp)
-		gologger.Infof("Appending result to %s success", fp)
-		for _, v := range cs {
-			report.CsvShells = append(report.CsvShells, v)
-			//gologger.Debugf("Appending %s", v.Ip)
+	if len(fp) > 0 {
+		if _, err := os.Stat(fp); err == nil {
+			// path/to/whatever exists
+			cs := report.ReadExportExcel(fp)
+			gologger.Infof("Appending result to %s success", fp)
+			for _, v := range cs {
+				report.CsvShells = append(report.CsvShells, v)
+				//gologger.Debugf("Appending %s", v.Ip)
+			}
+			css2 := report.RemoveDuplicateCSS(report.CsvShells)
+			report.WriteExportExcel(css2, fp)
+		} else if errors.Is(err, os.ErrNotExist) {
+			// path/to/whatever does *not* exist
+			report.WriteExportExcel(report.CsvShells, fp)
+			gologger.Infof("Write result to %s success", fp)
+
+		} else {
+			// Schrodinger: file may or may not exist. See err for details.
+
+			// Therefore, do *NOT* use !os.IsNotExist(err) to test for file existence
+			gologger.Errorf("can't find file %s, err: %s", fp, err)
 		}
-		css2 := report.RemoveDuplicateCSS(report.CsvShells)
-		report.WriteExportExcel(css2, fp)
-	} else if errors.Is(err, os.ErrNotExist) {
-		// path/to/whatever does *not* exist
-		report.WriteExportExcel(report.CsvShells, fp)
-		gologger.Infof("Write result to %s success", fp)
 
-	} else {
-		// Schrodinger: file may or may not exist. See err for details.
-
-		// Therefore, do *NOT* use !os.IsNotExist(err) to test for file existence
-		gologger.Errorf("can't find file %s, err: %s", fp, err)
+		crackmodule.GetFinishTime(t1)
 	}
-
-	crackmodule.GetFinishTime(t1)
 }

@@ -23,8 +23,8 @@ func (p Ping) ProbePort() string {
 	return ""
 }
 
-func (p Ping) ProbeSkipPortCheck() bool {
-	return true
+func (p Ping) PortCheck() bool {
+	return false
 }
 
 func (p Ping) ProbeExec() ProbeResult {
@@ -234,4 +234,8 @@ func execCommandPing(ip string) bool {
 			return false
 		}
 	}
+}
+
+func init() {
+	AddProbeKeys("ping")
 }

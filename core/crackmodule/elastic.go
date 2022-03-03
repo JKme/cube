@@ -31,7 +31,7 @@ func (e Elastic) IsMutex() bool {
 	return false
 }
 
-func (e Elastic) SkipPortCheck() bool {
+func (e Elastic) CrackPortCheck() bool {
 	return true
 }
 

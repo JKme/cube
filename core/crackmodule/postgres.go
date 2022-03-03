@@ -31,7 +31,7 @@ func (p Postgres) IsMutex() bool {
 	return false
 }
 
-func (p Postgres) SkipPortCheck() bool {
+func (p Postgres) CrackPortCheck() bool {
 	return true
 }
 

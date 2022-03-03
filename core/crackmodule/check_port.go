@@ -20,11 +20,11 @@ type IpAddr struct {
 var (
 	mutex     sync.Mutex
 	AliveAddr []IpAddr
-	ipList    []IpAddr
 )
 
 func CheckPort(ctx context.Context, threadNum int, delay float64, ips []string, pluginNames []string, port string) []IpAddr {
 	//指定插件端口的时候，只允许加载一个插件
+	var ipList []IpAddr
 	if len(port) > 0 {
 		for _, ip := range ips {
 			ipList = append(ipList, IpAddr{
@@ -38,7 +38,7 @@ func CheckPort(ctx context.Context, threadNum int, delay float64, ips []string, 
 			for _, ip := range ips {
 				ipList = append(ipList, IpAddr{
 					Ip:         ip,
-					Port:       GetPort(plugin),
+					Port:       GetCrackPort(plugin),
 					PluginName: plugin,
 				})
 			}
@@ -60,9 +60,11 @@ func CheckPort(ctx context.Context, threadNum int, delay float64, ips []string, 
 					if !ok {
 						return
 					}
-					if GetTCP(addr.PluginName) || GetMutexStatus(addr.PluginName) {
-						//TCP的时候检查端口，UDP跳过
+					if NeedPortCheck(addr.PluginName) || GetMutexStatus(addr.PluginName) {
+						//TCP的时候是需要先端口检查,UDP跳过
 						SaveAddr(check(addr))
+					} else {
+						SaveAddr(true, addr)
 					}
 					wg.Done()
 					select {

@@ -32,8 +32,8 @@ func (h HttpBasic) IsMutex() bool {
 	return true
 }
 
-func (h HttpBasic) SkipPortCheck() bool {
-	return true
+func (h HttpBasic) CrackPortCheck() bool {
+	return false
 }
 
 func (h HttpBasic) Exec() CrackResult {

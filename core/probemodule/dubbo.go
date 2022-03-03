@@ -34,7 +34,7 @@ func (d Dubbo) ProbeExec() ProbeResult {
 	}
 	r1, _ := pkg.ReadBytes(conn)
 	//fmt.Printf("Receive: %s\n", string(r1[:5]))
-	if string(r1[:5]) == "dubbo" {
+	if len(r1) > 5 && string(r1[:5]) == "dubbo" {
 		result.Result = "Dubbo Service"
 	}
 

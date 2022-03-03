@@ -40,3 +40,6 @@ cube sqlcmd -s 127.0.0.1 -l root -p root -x mssql cat  <src>
 * 
 * 线程异常超时退出
   https://www.cnblogs.com/bigdataZJ/p/golang-timeout.html
+  
+httpbasic的时候还检查了端口是否开放
+phpmyadmin需要测试一下

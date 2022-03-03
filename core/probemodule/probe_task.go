@@ -68,7 +68,7 @@ func runSingleTask(ctx context.Context, taskChan chan Probe, wg *sync.WaitGroup,
 				return
 			}
 			ic := probeTask.NewIProbe()
-			gologger.Debugf("probing: IP:%s  Port:%s", probeTask.Ip, probeTask.Port)
+			gologger.Debugf("probing %s: IP:%s  Port:%s", probeTask.Name, probeTask.Ip, probeTask.Port)
 			r := ic.ProbeExec()
 			SetResult(r)
 

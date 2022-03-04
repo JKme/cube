@@ -198,16 +198,28 @@ func StartCrack(opt *CrackOption, globalopt *core.GlobalOption) {
 
 	crackPlugins = opt.ParsePluginName()
 	gologger.Debugf("load plug: %s", crackPlugins)
-	crackIPS = opt.ParseIP()
-
-	if opt.Port != "" {
-		validPort := opt.ParsePort()
-		if len(crackPlugins) > 1 && validPort {
-			//指定端口的时候仅限定一个插件使用
-			gologger.Errorf("plugin is limited to single one when --port is set\n")
+	if len(crackPlugins) == 1 && GetMutexStatus(crackPlugins[0]) {
+		// phpmyadmin、httpbasic之类的跳过IP检查
+		crackIPS = []string{opt.Ip}
+		aliveIPS = append(aliveIPS, IpAddr{
+			Ip:         crackIPS[0],
+			Port:       "",
+			PluginName: crackPlugins[0],
+		})
+	} else {
+		crackIPS = opt.ParseIP()
+		if opt.Port != "" {
+			validPort := opt.ParsePort()
+			if len(crackPlugins) > 1 && validPort {
+				//指定端口的时候仅限定一个插件使用
+				gologger.Errorf("plugin is limited to single one when --port is set\n")
+			}
 		}
+		aliveIPS = CheckPort(ctx, threadNum, delay, crackIPS, crackPlugins, opt.Port)
 	}
-	aliveIPS = CheckPort(ctx, threadNum, delay, crackIPS, crackPlugins, opt.Port)
+	if len(crackIPS) == 0 {
+		gologger.Errorf("target service is missing, please set -s/-S")
+	}
 
 	if len(opt.User+opt.UserFile+opt.Pass+opt.PassFile) > 0 {
 		crackAuths = opt.ParseAuth()

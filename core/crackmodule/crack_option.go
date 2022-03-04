@@ -82,7 +82,6 @@ func (cp *CrackOption) ParseIP() []string {
 	var hosts []string
 	ip := cp.Ip
 	fp := cp.IpFile
-
 	if ip != "" {
 		hosts = ExpandIp(ip)
 	}

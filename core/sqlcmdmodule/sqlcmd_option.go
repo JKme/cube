@@ -1,12 +1,12 @@
 package sqlcmdmodule
 
 type Sqlcmd struct {
-	Ip         string
-	Port       string
-	User       string
-	Password   string
-	Query      string
-	PluginName string
+	Ip       string
+	Port     string
+	User     string
+	Password string
+	Query    string
+	Name     string
 }
 
 type SqlcmdResult struct {
@@ -16,12 +16,12 @@ type SqlcmdResult struct {
 }
 
 type SqlcmdOption struct {
-	Ip         string
-	Port       string
-	User       string
-	Password   string
-	Query      string
-	PluginName string
+	Ip       string
+	Port     string
+	User     string
+	Password string
+	Query    string
+	Name     string
 }
 
 func NewSqlcmdOption() *SqlcmdOption {

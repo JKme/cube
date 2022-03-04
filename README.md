@@ -12,8 +12,7 @@ https://github.com/sairson/Yasso/blob/6a99f1143d78e4c8224e49d00c0cfae39353f893/c
 https://stackoverflow.com/questions/59831642/how-to-get-a-list-of-a-structs-methods-in-go
 //检查某个方法是否实现了接口：https://go.dev/play/p/tNNDukK4wRi
 
-redis密码一样的时候去重 已完成
-redis和Mysql之类的Extra信息，可以增加一个result的字段 已完成
+
 
 
 * 完成SQLCMD模块
@@ -34,12 +33,6 @@ cube sqlcmd -s 127.0.0.1 -l root -p root -x mssql cat  <src>
 
 * Probe充分测试
 * 完善Help信息， Probe和Crack的
-* 增加打印version信息
 * 添加代码注释
 * 完成sqlcmd
-* 
-* 线程异常超时退出
-  https://www.cnblogs.com/bigdataZJ/p/golang-timeout.html
-  
-httpbasic的时候还检查了端口是否开放
-phpmyadmin需要测试一下
+

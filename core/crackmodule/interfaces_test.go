@@ -26,6 +26,22 @@ func TestCrackPluginInterface(t *testing.T) {
 
 }
 
+func TestMysql_Exec(t *testing.T) {
+	c := Crack{
+		Ip:   "127.0.0.1",
+		Port: "3306",
+		Auth: Auth{
+			User:     "root",
+			Password: "root",
+		},
+		Name: "mysql",
+	}
+
+	task := c.NewICrack()
+	task.Exec()
+
+}
+
 func TestParsePluginOpt(t *testing.T) {
 	//l := ParsePluginOpt("smb")
 	//fmt.Println(l)

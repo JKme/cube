@@ -50,21 +50,21 @@ func (c *Crack) NewICrack() ICrack {
 	case "elastic":
 		return &Elastic{c}
 	case "httpbasic":
-		return &FtpCrack{c}
+		return &HttpBasic{c}
 	case "jenkins":
-		return &FtpCrack{c}
+		return &Jenkins{c}
 	case "mongo":
-		return &FtpCrack{c}
+		return &Mongo{c}
 	case "mssql":
-		return &FtpCrack{c}
+		return &Mssql{c}
 	case "mysql":
-		return &FtpCrack{c}
+		return &Mysql{c}
 	case "postgres":
-		return &FtpCrack{c}
+		return &Postgres{c}
 	case "smb":
-		return &FtpCrack{c}
+		return &Smb{c}
 	case "zabbix":
-		return &FtpCrack{c}
+		return &Zabbix{c}
 	case "phpmyadmin":
 		return &Phpmyadmin{c}
 	case "oracle":

@@ -25,6 +25,7 @@ var (
 func CheckPort(ctx context.Context, threadNum int, delay float64, ips []string, pluginNames []string, port string) []IpAddr {
 	//指定插件端口的时候，只允许加载一个插件
 	var ipList []IpAddr
+
 	if len(port) > 0 {
 		for _, ip := range ips {
 			ipList = append(ipList, IpAddr{

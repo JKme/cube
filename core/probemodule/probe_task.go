@@ -106,6 +106,10 @@ func StartProbe(opt *ProbeOption, globalopt *core.GlobalOption) {
 	probePlugins = opt.ParsePluginName()
 	gologger.Debugf("load plug: %s", probePlugins)
 	probeIPS = opt.ParseIP()
+	if len(probeIPS) == 0 {
+		gologger.Errorf("target service is missing, please set -s/-S")
+	}
+
 	if opt.Port != "" {
 		validPort := opt.ParsePort()
 		if len(probePlugins) > 1 && validPort {
@@ -158,7 +162,6 @@ func StartProbe(opt *ProbeOption, globalopt *core.GlobalOption) {
 			// Therefore, do *NOT* use !os.IsNotExist(err) to test for file existence
 			gologger.Errorf("can't find file %s, err: %s", fp, err)
 		}
-
-		crackmodule.GetFinishTime(t1)
 	}
+	crackmodule.GetFinishTime(t1)
 }

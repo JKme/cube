@@ -100,6 +100,5 @@ cube crack -u root -pass-file pass.txt -i http://127.0.0.1:8080 -x phpmyadmin
 	if err := crackCli.MarkFlagRequired("plugin"); err != nil {
 		gologger.Errorf("error on marking flag as required: %v", err)
 	}
-
 	rootCmd.AddCommand(crackCli)
 }

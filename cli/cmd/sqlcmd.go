@@ -46,7 +46,7 @@ func parseSqlcmdOptions() (*core.GlobalOption, *sqlcmdmodule.SqlcmdOption, error
 		return nil, nil, fmt.Errorf("invalid value for Password: %v", err)
 	}
 
-	sqlcmdOption.PluginName, err = sqlCli.Flags().GetString("plugin")
+	sqlcmdOption.Name, err = sqlCli.Flags().GetString("plugin")
 	if err != nil {
 		return nil, nil, fmt.Errorf("invalid value for plugin: %v", err)
 	}

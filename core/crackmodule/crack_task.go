@@ -159,7 +159,7 @@ func runSingleTask(ctx context.Context, crackTasksChan chan Crack, wg *sync.Wait
 				continue
 			}
 			ic := crackTask.NewICrack()
-			gologger.Debugf("cracking: IP:%s  Port:%s  Login:%s  Pass:%s", crackTask.Ip, crackTask.Port, crackTask.Auth.User, crackTask.Auth.Password)
+			gologger.Debugf("cracking %s: IP:%s  Port:%s  Login:%s  Pass:%s", crackTask.Name, crackTask.Ip, crackTask.Port, crackTask.Auth.User, crackTask.Auth.Password)
 			r := ic.Exec()
 			saveCrackResult(r)
 			wg.Done()
@@ -197,6 +197,9 @@ func StartCrack(opt *CrackOption, globalopt *core.GlobalOption) {
 	}
 
 	crackPlugins = opt.ParsePluginName()
+	if len(crackPlugins) == 0 {
+		gologger.Errorf("plug doesn't exist: %s", opt.PluginName)
+	}
 	gologger.Debugf("load plug: %s", crackPlugins)
 	if len(crackPlugins) == 1 && GetMutexStatus(crackPlugins[0]) {
 		// phpmyadmin、httpbasic之类的跳过IP检查
@@ -270,7 +273,6 @@ func StartCrack(opt *CrackOption, globalopt *core.GlobalOption) {
 			// Therefore, do *NOT* use !os.IsNotExist(err) to test for file existence
 			gologger.Errorf("can't find file %s, err: %s", fp, err)
 		}
-
-		GetFinishTime(t1)
 	}
+	GetFinishTime(t1)
 }

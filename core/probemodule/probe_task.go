@@ -104,6 +104,9 @@ func StartProbe(opt *ProbeOption, globalopt *core.GlobalOption) {
 	}
 
 	probePlugins = opt.ParsePluginName()
+	if len(probePlugins) == 0 {
+		gologger.Errorf("plug doesn't exist: %s", opt.PluginName)
+	}
 	gologger.Debugf("load plug: %s", probePlugins)
 	probeIPS = opt.ParseIP()
 	if len(probeIPS) == 0 {

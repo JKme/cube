@@ -42,9 +42,13 @@ func (cp *CrackOption) ParsePluginName() []string {
 		if pns[0] == "X" {
 			pluginNameList = config.CrackX
 		}
-		if pns[0] == "Y" {
-			pluginNameList = CrackKeys
-		}
+		//if pns[0] == "Y" {
+		//	for _, k := range CrackKeys {
+		//		if !GetMutexStatus(k) {
+		//			pluginNameList = append(pluginNameList, k)
+		//		}
+		//	}
+		//}
 		if pkg.Contains(pns[0], CrackKeys) {
 			pluginNameList = pns
 		}
@@ -96,11 +100,15 @@ func (cp *CrackOption) ParseIP() []string {
 }
 
 func (cp *CrackOption) ParsePort() bool {
-	b, err := strconv.ParseBool(cp.Port)
+	b, err := strconv.Atoi(cp.Port)
 	if err != nil {
 		gologger.Errorf("error while parse port option: %v", cp.Port)
 	}
-	return b
+	if b < 0 || b > 65535 {
+		gologger.Errorf("incorrect port: %v", cp.Port)
+		return false
+	}
+	return true
 }
 
 func opt2slice(str, file string) []string {

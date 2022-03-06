@@ -78,14 +78,13 @@ func init() {
 		Long:  crackmodule.CrackHelpTable(),
 		Short: "crack service password",
 		Run:   runCrack,
-		Example: `cube crack -u root -p root -i 192.168.1.1 -x ssh
-cube crack -u root -p root -i 192.168.1.1 -x ssh -port 2222
-cube crack -u root,ubuntu -p 123,000111,root -x ssh -i 192.168.1.1
-cube crack -u root -p root -i 192.168.1.1/24 -x ssh
-cube crack -u root -pass-file pass.txt -i 192.168.1.1/24 -x ssh
-cube crack -u root -pass-file pass.txt -i 192.168.1.1/24 -x ssh,mysql
-cube crack -u root -pass-file pass.txt -i http://127.0.0.1:8080 -x httpbasic
-cube crack -u root -pass-file pass.txt -i http://127.0.0.1:8080 -x phpmyadmin
+		Example: `cube crack -s 192.168.1.1 -x ssh
+cube crack -l root -p root -s 192.168.1.1 -x ssh --port 2222
+cube crack -l root,ubuntu -p 123,000111,root -x ssh -s 192.168.1.1
+cube crack -l root -p root -s 192.168.1.1/24 -x ssh
+cube crack -l root -P pass.txt -s 192.168.1.1/24 -x ssh
+cube crack -L user.txt -P pass.txt -s 192.168.1.1/24 -x ssh,mysql
+cube crack -L user.txt -P pass.txt -s http://127.0.0.1:8080 -x phpmyadmin
 		`,
 	}
 
@@ -96,7 +95,7 @@ cube crack -u root -pass-file pass.txt -i http://127.0.0.1:8080 -x phpmyadmin
 	crackCli.Flags().StringP("pass", "p", "", "login password")
 	crackCli.Flags().StringP("pass-file", "P", "", "login password file")
 	crackCli.Flags().StringP("port", "", "", "if the service is on a different default port, define it here")
-	crackCli.Flags().StringP("plugin", "x", "", fmt.Sprintf("avaliable plugin: %s", 111))
+	crackCli.Flags().StringP("plugin", "x", "", "crack plugin")
 	if err := crackCli.MarkFlagRequired("plugin"); err != nil {
 		gologger.Errorf("error on marking flag as required: %v", err)
 	}

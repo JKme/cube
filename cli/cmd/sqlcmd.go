@@ -3,6 +3,7 @@ package cmd
 import (
 	"cube/core"
 	"cube/core/sqlcmdmodule"
+	"cube/gologger"
 	"fmt"
 	"github.com/spf13/cobra"
 )
@@ -76,6 +77,19 @@ cube sqlcmd -x mssql://192.168.0.0:2200 -uroot -proot -e "clear"
 	sqlCli.Flags().StringP("query", "e", "", "string to query or exec")
 	sqlCli.Flags().StringP("plugin", "x", "", fmt.Sprintf("avaliable plugin: %s", 111))
 	sqlCli.Flags().StringP("port", "", "", "if the service is on a different default port, define it here")
+
+	if err := sqlCli.MarkFlagRequired("plugin"); err != nil {
+		gologger.Errorf("error on marking flag as required: %v", err)
+	}
+	if err := sqlCli.MarkFlagRequired("service"); err != nil {
+		gologger.Errorf("error on marking flag as required: %v", err)
+	}
+	if err := sqlCli.MarkFlagRequired("login"); err != nil {
+		gologger.Errorf("error on marking flag as required: %v", err)
+	}
+	if err := sqlCli.MarkFlagRequired("password"); err != nil {
+		gologger.Errorf("error on marking flag as required: %v", err)
+	}
 
 	rootCmd.AddCommand(sqlCli)
 }

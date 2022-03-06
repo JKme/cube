@@ -61,7 +61,7 @@ cube probe -s 192.168.1.1/24 -x X
 	probeCli.Flags().StringP("service", "s", "", "service ip(in the nmap format: 10.0.0.1, 10.0.0.5-10, 192.168.1.*, 192.168.10.0/24)")
 	probeCli.Flags().StringP("service-file", "S", "", "File to probe for(e.g. ip.txt)")
 
-	if err := crackCli.MarkFlagRequired("plugin"); err != nil {
+	if err := probeCli.MarkFlagRequired("plugin"); err != nil {
 		gologger.Errorf("error on marking flag as required: %v", err)
 	}
 

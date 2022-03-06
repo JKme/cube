@@ -32,8 +32,10 @@ func (c CmdSsh) SqlcmdExec() SqlcmdResult {
 		//HostKeyCallback: hostKeyCallBackFunc(h.Host),
 	}
 	conn, err := ssh.Dial("tcp", fmt.Sprintf("%s:%s", c.Ip, c.Port), config)
-
-	if err == nil {
+	if err != nil {
+		result.Err = err
+		return result
+	} else {
 		defer conn.Close()
 		session, err := conn.NewSession()
 		r, err := session.Output(c.Query)

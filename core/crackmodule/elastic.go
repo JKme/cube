@@ -16,7 +16,7 @@ func (e Elastic) CrackName() string {
 }
 
 func (e Elastic) CrackPort() string {
-	return ""
+	return "9200"
 }
 
 func (e Elastic) CrackAuthUser() []string {

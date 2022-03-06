@@ -64,6 +64,7 @@ func CheckPort(ctx context.Context, threadNum int, delay float64, ips []string, 
 						//TCP的时候是需要先端口检查,UDP跳过
 						SaveAddr(check(addr))
 					} else {
+						gologger.Debugf("skip port check for %s", addr.PluginName)
 						SaveAddr(true, addr)
 					}
 					wg.Done()
@@ -87,7 +88,7 @@ func CheckPort(ctx context.Context, threadNum int, delay float64, ips []string, 
 
 func check(addr IpAddr) (bool, IpAddr) {
 	alive := false
-	gologger.Debugf("tcp port conn check: %s:%s", addr.Ip, addr.Port)
+	gologger.Debugf("tcp port conn check: %s://%s:%s", addr.PluginName, addr.Ip, addr.Port)
 	_, err := net.DialTimeout("tcp", fmt.Sprintf("%v:%v", addr.Ip, addr.Port), config.TcpConnTimeout)
 	if err == nil {
 		gologger.Infof("Open %s:%s", addr.Ip, addr.Port)

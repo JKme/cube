@@ -9,7 +9,7 @@ const (
 	ThreadTimeout  = 7 * time.Second
 )
 
-var CrackX = []string{"elastic", "ftp", "mongo", "mssql", "mysql", "postgres", "smb", "ssh", "redis"}
+var CrackX = []string{"elastic", "ftp", "mongo", "mssql", "mysql", "postgres", "smb", "ssh", "redis", "oracle"}
 
 var ProbeX = []string{"docker", "rmi", "oxid", "netbios", "smb", "zookeeper"}
 

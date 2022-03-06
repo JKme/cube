@@ -31,5 +31,7 @@ func StartSqlcmd(opt *SqlcmdOption, globalopt *core.GlobalOption) {
 		s := fmt.Sprintf("[->>>>>]: %s\n[->>>>>]: %s:%s\n", fn.Sqlcmd.Name, fn.Sqlcmd.Ip, fn.Sqlcmd.Port)
 		s1 := fmt.Sprintf("[output]:\n%s", fn.Result)
 		gologger.Info(s + s1)
+	} else {
+		gologger.Info(fn.Err)
 	}
 }

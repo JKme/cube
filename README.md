@@ -72,7 +72,7 @@ cube probe -x oxid,ms17010 -s 192.168.2.1/24
 
 ## 0x4. 快速开发
 #### Crack模块
-新增一个自定义爆破插件：
+新增一个自定义爆破插件，插件名`cloud`，默认端口`80`，默认词典使用内置词典：
 ![crack.gif](./image/crack.gif)
 
 ```shell
@@ -85,6 +85,7 @@ cube probe -x oxid,ms17010 -s 192.168.2.1/24
 	Exec() CrackResult       //运行插件
 ```
 
+ * 如果需要`-x X`加载`cloud`, 修改`config/config.go`，把`cloud`加入到`CrackX`列表里面
 
 #### Probe模块
 新增Probe插件和crack类似，需要实现以下接口:

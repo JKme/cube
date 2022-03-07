@@ -34,8 +34,8 @@ func (f FtpCrack) CrackPortCheck() bool {
 	return true
 }
 
-func (f FtpCrack) Exec() (result CrackResult) {
-	result = CrackResult{Crack: *f.Crack, Result: "", Err: nil}
+func (f FtpCrack) Exec() CrackResult {
+	result := CrackResult{Crack: *f.Crack, Result: "", Err: nil}
 
 	conn, err := ftp.DialTimeout(fmt.Sprintf("%v:%v", f.Ip, f.Port), config.TcpConnTimeout)
 	if err == nil {

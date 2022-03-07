@@ -1,8 +1,10 @@
+## 声明
+>特别声明：此工具仅限于安全研究，禁止使用该项目进行违法操作，否则自行承担相关责任
+
 ## 特点
 - 方便二次开发，快速增加插件
 - 支持输出结果到excel文档
-- 精简运行参数
-
+- 精简运行参数，方便记忆
 
 ## 我什么都不想记
 如果没有耐心看下面的命令选项，运行如下命令，然后打开pwn.xlsx
@@ -18,7 +20,7 @@ cube probe -x Y -s 192.168.2.1/24 -o /tmp/pwn.xlsx
 - `--delay`: 设定此选项的时候，`crack`和`probe`模块强制设为单线程，并在设定的值之内随机休眠
 
 
-## 0x1. 密码爆破
+## 0x1. crack模块
 #### 使用内置词典
 ```shell
 cube crack -s 192.168.1.1 -x ssh
@@ -43,7 +45,7 @@ cube crack -s 192.168.1.1 -x ssh,mysql
 cube crack -x X -s 192.168.1.1
 ```
 
-## 0x2. 内网信息探测
+## 0x2. probe模块
 #### 加载全部默认插件
 ```shell
 # -x Y的时候加载全部probe插件， -x -X只会加载部分默认插件
@@ -61,7 +63,8 @@ cube probe -x oxid,ms17010 -s 192.168.2.1/24
 
 ## 0x4. 快速开发
 #### Crack模块
-如果需要新增爆破插件，比如新增一个爆破插件`cisco`，请在`core/crackmodule`下新建文件`cisco.go`:
+新增一个自定义爆破插件：
+![crack.gif](./image/crack.gif)
 
 ```shell
 	CrackName() string       //插件名称
@@ -75,12 +78,37 @@ cube probe -x oxid,ms17010 -s 192.168.2.1/24
 
 
 #### Probe模块
+新增Probe插件和crack类似，需要实现以下接口:
+
 ```shell
 	ProbeName() string      //插件名称
 	ProbePort() string      //插件默认端口
 	PortCheck() bool        //是否需要端口检查
 	ProbeExec() ProbeResult //执行插件
 ```
+
+## 0x5 Sqlcmd模块
+用于mysql的UDF提权(暂时支持windows x64)，mssql命令执行：
+```shell
+#开启UDF执行命令
+cube sqlcmd -x mysql -l root -p root -e "whoami"
+
+#清除xp_cmdshell
+cube sqlcmd -x mysql -l root -p root -e "clear"
+
+#指定mssql端口
+cube sqlcmd -x mssql -l sa -p sa -e "whoami" --port 4134
+```
+
+
+
+### 参考
+* [X-Crack](https://github.com/netxfly/x-crack)
+* [LadonGo](https://github.com/k8gege/LadonGo)
+* [fscan](https://github.com/shadow1ng/fscan)
+* [gobuster](https://github.com/OJ/gobuster)
+* [sqltool](https://github.com/mabangde/pentesttools/blob/master/golang/sqltool.go)
+
 
 ## TODO
 * [数据库利用工具](http://ryze-t.com/posts/2022/02/16/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E5%88%A9%E7%94%A8%E5%B7%A5%E5%85%B7-Sylas.html)
@@ -98,6 +126,3 @@ cube sqlcmd -s 127.0.0.1 -l root -p root -x mssql ls  <src>
 cube sqlcmd -s 127.0.0.1 -l root -p root -x mssql cat  <src> 
 ```
 * [检查某个方法是否实现了接口](https://go.dev/play/p/tNNDukK4wRi)
-
-
-

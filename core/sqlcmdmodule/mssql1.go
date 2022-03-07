@@ -19,6 +19,10 @@ func (m Mssql1) SqlcmdPort() string {
 	return "1433"
 }
 
+func (m Mssql1) SqlcmdDesc() string {
+	return "exec cmd via xp_cmdshell"
+}
+
 func (m Mssql1) SqlcmdExec() SqlcmdResult {
 	result := SqlcmdResult{Sqlcmd: *m.Sqlcmd, Result: "", Err: nil}
 

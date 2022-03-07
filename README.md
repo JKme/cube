@@ -12,7 +12,13 @@ cube probe -x Y -s 192.168.2.1/24 -o /tmp/pwn.xlsx
 ```
 ![report.png](./image/report.png)
 
-## 密码爆破
+## 全局参数
+- `-v`: 输出内容更详细，一般用于调试
+- `-n`: 设定`crack`和`probe`模块的运行线程数量，默认30线程
+- `--delay`: 设定此选项的时候，`crack`和`probe`模块强制设为单线程，并在设定的值之内随机休眠
+
+
+## 0x1. 密码爆破
 #### 使用内置词典
 ```shell
 cube crack -s 192.168.1.1 -x ssh
@@ -37,7 +43,7 @@ cube crack -s 192.168.1.1 -x ssh,mysql
 cube crack -x X -s 192.168.1.1
 ```
 
-## 内网信息探测
+## 0x2. 内网信息探测
 #### 加载全部默认插件
 ```shell
 # -x Y的时候加载全部probe插件， -x -X只会加载部分默认插件
@@ -49,44 +55,49 @@ cube probe -x Y -s 192.168.2.1/24
 cube probe -x oxid,ms17010 -s 192.168.2.1/24
 ```
 
-## 输出到文档
-在使用`crack`和`probe`的任何时候都可以加上`-o pwn.xlsx`，用于把结果写入到excel，当excel已经存在
-的时候，cube会把当前扫描的结果自动追加到文档里。
+## 0x3. 结果输出
+在使用`crack`和`probe`模块的任何插件都可以加上`-o result.xlsx`，用于把结果写入到excel，当excel已经存在
+的时候，cube会把当前扫描的结果自动追加到文档，建议扫描结束之后的文档固定首行首列，查看更方便。
 
-## 全局参数
-- `-v`: 输出内容更详细，一般用于调试
-- `-n`: 设定`crack`和`probe`的运行线程，默认30线程
-- `--delay`: 设定此选项的时候，`crack`和`probe`强制设为单线程，并在设定的值之内随机休眠
-- `--timeout`: 线程运行的超时时间
+## 0x4. 快速开发
+#### Crack模块
+如果需要新增爆破插件，比如新增一个爆破插件`cisco`，请在`core/crackmodule`下新建文件`cisco.go`:
 
+```shell
+	CrackName() string       //插件名称
+	CrackPort() string       //插件默认端口
+	CrackAuthUser() []string //插件默认爆破的用户名
+	CrackAuthPass() []string //插件默认爆破的密码，可以使用config.PASSWORD
+	IsMutex() bool           //只能单独使用的插件，比如phpmyadmin
+	CrackPortCheck() bool    //插件是否需要端口检查，一般TCP需要，phpmyadmin类单独使用的不用
+	Exec() CrackResult       //运行插件
+```
+
+
+#### Probe模块
+```shell
+	ProbeName() string      //插件名称
+	ProbePort() string      //插件默认端口
+	PortCheck() bool        //是否需要端口检查
+	ProbeExec() ProbeResult //执行插件
+```
 
 ## TODO
-* [数据库利用工具](http://ryze-t.com/posts/2022/02/16/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E5%88%A9%E7%94%A8%E5%B7%A5%E5%85%B7-Sylas.html]
+* [数据库利用工具](http://ryze-t.com/posts/2022/02/16/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E5%88%A9%E7%94%A8%E5%B7%A5%E5%85%B7-Sylas.html)
 * [MDUT](https://github.com/SafeGroceryStore/MDUT)
-
-
-https://github.com/sairson/Yasso/blob/6a99f1143d78e4c8224e49d00c0cfae39353f893/cmd/tools.go#L100
-
-//https://stackoverflow.com/questions/27803654/explanation-of-checking-if-value-implements-interface
-https://stackoverflow.com/questions/59831642/how-to-get-a-list-of-a-structs-methods-in-go
-//检查某个方法是否实现了接口：https://go.dev/play/p/tNNDukK4wRi
-
-
-
-
 * 完成SQLCMD模块
   -m ls  <dst path>
   -m cat <dst file>
   -m upload <src path> <dst path>
   -m exec <cmd string>
 
-
-Sqlcmd 传入多个参数：
-http://liuqh.icu/2021/11/07/go/package/28-cobra/
-
-设计一下sqlcmd的使用
+```shell
 cube sqlcmd -s 127.0.0.1 -l root -p root -x mssql exec "whoami"
 cube sqlcmd -s 127.0.0.1 -l root -p root -x mssql upload  <src> <dst>
 cube sqlcmd -s 127.0.0.1 -l root -p root -x mssql ls  <src>
 cube sqlcmd -s 127.0.0.1 -l root -p root -x mssql cat  <src> 
+```
+* [检查某个方法是否实现了接口](https://go.dev/play/p/tNNDukK4wRi)
+
+
 

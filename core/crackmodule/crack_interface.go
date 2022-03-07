@@ -27,12 +27,12 @@ var CrackKeys []string
 
 type ICrack interface {
 	CrackName() string       //插件名称
-	CrackPort() string       //设置端口
-	CrackAuthUser() []string //设置默认爆破的用户名
-	CrackAuthPass() []string //设置默认爆破的密码
+	CrackPort() string       //插件默认端口
+	CrackAuthUser() []string //插件默认爆破的用户名
+	CrackAuthPass() []string //插件默认爆破的密码，可以使用config.PASSWORD
 	IsMutex() bool           //只能单独使用的插件，比如phpmyadmin
-	CrackPortCheck() bool    //TCP需要先进行端口开放探测，UDP跳过
-	Exec() CrackResult       //运行task，返回string
+	CrackPortCheck() bool    //插件是否需要端口检查，一般TCP需要，phpmyadmin类单独使用的不用
+	Exec() CrackResult       //运行插件
 }
 
 func AddCrackKeys(s string) {

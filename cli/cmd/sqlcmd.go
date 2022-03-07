@@ -65,9 +65,9 @@ func init() {
 		Short: "exec sql or cmd",
 		Long:  "Hello",
 		Run:   runSqlcmd,
-		Example: `cube sqlcmd -x ssh://192.168.0.0:2200 -uroot -proot -e "whoami"
-cube sqlcmd -x mssql://192.168.0.0:2200 -uroot -proot -e "whoami"
-cube sqlcmd -x mssql://192.168.0.0:2200 -uroot -proot -e "clear"
+		Example: `cube sqlcmd -x mysql -l root -p root -e "whoami"
+cube sqlcmd -x mysql -l root -p root -e "clear"
+cube sqlcmd -x mssql -l sa -p sa -e "whoami" --port 4134
 		`,
 	}
 

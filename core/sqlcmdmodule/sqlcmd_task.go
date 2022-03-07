@@ -4,9 +4,13 @@ import (
 	"cube/core"
 	"cube/gologger"
 	"fmt"
+	"strconv"
 )
 
 func StartSqlcmd(opt *SqlcmdOption, globalopt *core.GlobalOption) {
+	if len(globalopt.Output+strconv.Itoa(globalopt.Threads)) > 0 {
+		gologger.Error("-o or -n is not available for sqlcmd")
+	}
 	ip := opt.Ip
 	var port string
 	if len(opt.Port) == 0 {

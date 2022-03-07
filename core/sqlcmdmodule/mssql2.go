@@ -19,6 +19,10 @@ func (m Mssql2) SqlcmdPort() string {
 	return "1433"
 }
 
+func (m Mssql2) SqlcmdDesc() string {
+	return "exec cmd via sp_oacreate wscript.shell"
+}
+
 func (m Mssql2) SqlcmdExec() SqlcmdResult {
 	result := SqlcmdResult{Sqlcmd: *m.Sqlcmd, Result: "", Err: nil}
 	dataSourceName := fmt.Sprintf("server=%v;port=%v;user id=%v;password=%v;database=%v", m.Ip,

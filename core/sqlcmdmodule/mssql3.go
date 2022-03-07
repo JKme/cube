@@ -18,6 +18,10 @@ func (m Mssql3) SqlcmdPort() string {
 	return "1433"
 }
 
+func (m Mssql3) SqlcmdDesc() string {
+	return "exec cmd via ClR"
+}
+
 func (m Mssql3) SqlcmdExec() SqlcmdResult {
 	result := SqlcmdResult{Sqlcmd: *m.Sqlcmd, Result: "", Err: nil}
 

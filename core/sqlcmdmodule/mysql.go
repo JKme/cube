@@ -21,6 +21,10 @@ func (m Mysql) SqlcmdPort() string {
 	return "3306"
 }
 
+func (m Mysql) SqlcmdDesc() string {
+	return "exec cmd via sys_eval"
+}
+
 func (m Mysql) SqlcmdExec() SqlcmdResult {
 	result := SqlcmdResult{Sqlcmd: *m.Sqlcmd, Result: "", Err: nil}
 	dataSourceName := fmt.Sprintf("%v:%v@tcp(%v:%v)/mysql?charset=utf8&timeout=%v&multiStatements=true", m.User, m.Password, m.Ip, m.Port, config.TcpConnTimeout)

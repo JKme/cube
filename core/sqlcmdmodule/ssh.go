@@ -19,6 +19,10 @@ func (c CmdSsh) SqlcmdPort() string {
 	return "22"
 }
 
+func (c CmdSsh) SqlcmdDesc() string {
+	return "exec cmd via ssh"
+}
+
 func (c CmdSsh) SqlcmdExec() SqlcmdResult {
 	result := SqlcmdResult{Sqlcmd: *c.Sqlcmd, Result: "", Err: nil}
 

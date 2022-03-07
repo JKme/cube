@@ -31,7 +31,7 @@ func parseGlobalOptions() (*core.GlobalOption, error) {
 	}
 	globalopts.Threads = threads
 
-	globalopts.Timeout, _ = rootCmd.Flags().GetInt("timeout")
+	//globalopts.Timeout, _ = rootCmd.Flags().GetInt("timeout")
 	globalopts.Delay, _ = rootCmd.Flags().GetFloat64("delay")
 	globalopts.Output, _ = rootCmd.Flags().GetString("output")
 
@@ -51,7 +51,7 @@ func parseGlobalOptions() (*core.GlobalOption, error) {
 
 func init() {
 	rootCmd.PersistentFlags().IntP("threads", "n", 30, "Number of concurrent requests")
-	rootCmd.PersistentFlags().IntP("timeout", "", 5, "Seconds to wait before timeout connection")
+	//rootCmd.PersistentFlags().IntP("timeout", "", 5, "Seconds to wait before timeout connection")
 	rootCmd.PersistentFlags().Float64P("delay", "d", 0, "Delay in random seconds between each TCP/UDP request")
 	rootCmd.PersistentFlags().StringP("output", "o", "", "Output file to write results to (eg. pwn.xlsx)")
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Verbose (Default error)")

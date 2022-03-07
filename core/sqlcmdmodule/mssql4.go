@@ -19,6 +19,10 @@ func (m Mssql4) SqlcmdPort() string {
 	return "1433"
 }
 
+func (m Mssql4) SqlcmdDesc() string {
+	return "exec cmd via sp_oacreate com object"
+}
+
 func (m Mssql4) SqlcmdExec() SqlcmdResult {
 	result := SqlcmdResult{Sqlcmd: *m.Sqlcmd, Result: "", Err: nil}
 

@@ -69,7 +69,12 @@ func CrackHelpTable() string {
 // ResultMap 当Mysql或者redis空密码的时候，任何密码都正确，会导致密码刷屏
 
 func SetResultMap(r CrackResult) {
-	c := fmt.Sprintf("\nCRACK_PLUG: %s\nCRACK_PORT: %s\nCRACK_ADDR: %s\nCRACK_USER: %s\nCRACK_PASS: %s\nCRACKEXTRA: %s", r.Crack.Name, r.Crack.Port, r.Crack.Ip, r.Crack.Auth.User, r.Crack.Auth.Password, r.Extra)
+	var c string
+	if len(r.Extra) > 0 {
+		c = fmt.Sprintf("\nCRACK_PLUG: %s\nCRACK_PORT: %s\nCRACK_ADDR: %s\nCRACK_USER: %s\nCRACK_PASS: %s\nCRACKEXTRA: %s", r.Crack.Name, r.Crack.Port, r.Crack.Ip, r.Crack.Auth.User, r.Crack.Auth.Password, r.Extra)
+	} else {
+		c = fmt.Sprintf("\nCRACK_PLUG: %s\nCRACK_PORT: %s\nCRACK_ADDR: %s\nCRACK_USER: %s\nCRACK_PASS: %s", r.Crack.Name, r.Crack.Port, r.Crack.Ip, r.Crack.Auth.User, r.Crack.Auth.Password)
+	}
 
 	data := report.CsvCell{
 		Ip:     r.Crack.Ip,

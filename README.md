@@ -40,10 +40,19 @@ cube crack -l root -p root -s 192.168.1.1 -x ssh --port 2222
 # 爆破mysql和ssh(注意ssh和mysql之间的逗号不存在空格)
 cube crack -s 192.168.1.1 -x ssh,mysql
 ```
+#### 爆破phpmyadmin
+```shell
+cube crack -s http://192.168.2.1 -x phpmyadmin
+```
+
 #### 加载全部爆破插件
 ```shell
 cube crack -x X -s 192.168.1.1
 ```
+
+* phpmyadmin这类http的爆破插件只能单独使用，不可同时加载其它插件，类似的还有jenkins等
+* `-x X`是加载全部可用的爆破插件，先检查端口，端口开放之后爆破
+* 未指定用户密码的时候，会加载内置词典
 
 ## 0x2. probe模块
 #### 加载全部默认插件

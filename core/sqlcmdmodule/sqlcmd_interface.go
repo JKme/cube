@@ -1,5 +1,10 @@
 package sqlcmdmodule
 
+import (
+	"bytes"
+	"github.com/olekukonko/tablewriter"
+)
+
 type ISqlcmd interface {
 	SqlcmdName() string //设定名称
 	SqlcmdPort() string
@@ -42,4 +47,18 @@ func GetSqlcmdDesc(s string) string {
 	c := NewSqlcmd(s)
 	ic := c.NewISqlcmd()
 	return ic.SqlcmdDesc()
+}
+
+var SqlcmdKeys = []string{"ssh", "mysql", "mssql1", "mssql2", "mssql3", "mssql4"}
+
+func SqlcmdHelpTable() string {
+	buf := bytes.NewBufferString("")
+	table := tablewriter.NewWriter(buf)
+	table.SetHeader([]string{"Func", "Port", "Desc"})
+	for _, k := range SqlcmdKeys {
+		table.Append([]string{k, GetSqlcmdPort(k), GetSqlcmdDesc(k)})
+		table.SetRowLine(true)
+	}
+	table.Render()
+	return buf.String()
 }

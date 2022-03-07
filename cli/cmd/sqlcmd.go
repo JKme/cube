@@ -63,7 +63,7 @@ func init() {
 	sqlCli = &cobra.Command{
 		Use:   "sqlcmd",
 		Short: "exec sql or cmd",
-		Long:  "Hello",
+		Long:  sqlcmdmodule.SqlcmdHelpTable(),
 		Run:   runSqlcmd,
 		Example: `cube sqlcmd -x mysql -l root -p root -e "whoami"
 cube sqlcmd -x mysql -l root -p root -e "clear"

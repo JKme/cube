@@ -22,7 +22,7 @@ func (m Mysql) SqlcmdPort() string {
 }
 
 func (m Mysql) SqlcmdDesc() string {
-	return "exec cmd via sys_eval"
+	return "exec cmd via sys_eval, only support windows x64"
 }
 
 func (m Mysql) SqlcmdExec() SqlcmdResult {

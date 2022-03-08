@@ -11,13 +11,13 @@ import (
 var sqlCli *cobra.Command
 
 func runSqlcmd(cmd *cobra.Command, args []string) {
-	globalopts, opt, _ := parseSqlcmdOptions()
+	_, opt, _ := parseSqlcmdOptions()
 	//_, key := Plugins.ProbeFuncMap[opt.ScanPlugin]
 	//if !key {
 	//	log.Fatalf("Available Plugins: %s", strings.Join(Plugins.ProbeKeys, ","))
 	//	os.Exit(2)
 	//}
-	sqlcmdmodule.StartSqlcmd(opt, globalopts)
+	sqlcmdmodule.StartSqlcmd(opt)
 }
 
 func parseSqlcmdOptions() (*core.GlobalOption, *sqlcmdmodule.SqlcmdOption, error) {

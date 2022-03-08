@@ -37,7 +37,7 @@ func (r Redis) CrackPortCheck() bool {
 }
 
 func (r Redis) Exec() CrackResult {
-	result := CrackResult{Crack: *r.Crack, Result: "", Err: nil}
+	result := CrackResult{Crack: *r.Crack, Result: false, Err: nil}
 
 	conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%s", r.Ip, r.Port), config.TcpConnTimeout)
 	if err != nil {
@@ -49,7 +49,7 @@ func (r Redis) Exec() CrackResult {
 	}
 
 	if len(config) > 0 {
-		result.Result = fmt.Sprintf("Password: %s \t Version=%s  OS=%s", r.Auth.Password, config[0], config[1])
+		result.Result = true
 		result.Extra = fmt.Sprintf("Version=%s  OS=%s", config[0], config[1])
 	} else {
 		_, err = conn.Write([]byte(fmt.Sprintf("AUTH %s\r\n", r.Auth.Password)))
@@ -63,7 +63,7 @@ func (r Redis) Exec() CrackResult {
 			config, _ := getConfig(conn)
 			result.Extra = fmt.Sprintf("Version=%s  OS=%s", config[0], config[1])
 
-			result.Result = fmt.Sprintf("Password: %s \t Version=%s  OS=%s", r.Auth.Password, config[0], config[1])
+			result.Result = true
 		}
 	}
 	return result

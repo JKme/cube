@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"cube/config"
 	"cube/gologger"
-	"fmt"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -41,7 +40,7 @@ func (z Zabbix) CrackPortCheck() bool {
 }
 
 func (z Zabbix) Exec() CrackResult {
-	result := CrackResult{Crack: *z.Crack, Result: "", Err: nil}
+	result := CrackResult{Crack: *z.Crack, Result: false, Err: nil}
 
 	clt := http.Client{}
 	if !strings.HasPrefix(z.Ip, "http://") {
@@ -95,7 +94,7 @@ func (z Zabbix) Exec() CrackResult {
 	resp2, _ := crackClt.Do(req2)
 	defer resp2.Body.Close()
 	if resp2.StatusCode == 302 {
-		result.Result = fmt.Sprintf("User: %s \tPassword: %s", z.Auth.User, z.Auth.Password)
+		result.Result = true
 	}
 
 	return result

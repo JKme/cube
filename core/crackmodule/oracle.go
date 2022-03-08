@@ -38,7 +38,7 @@ func (o Oracle) CrackPortCheck() bool {
 }
 
 func (o Oracle) Exec() CrackResult {
-	result := CrackResult{Crack: *o.Crack, Result: "", Err: nil}
+	result := CrackResult{Crack: *o.Crack, Result: false, Err: nil}
 
 	Host, Port, Username, Password := o.Ip, o.Port, o.Auth.User, o.Auth.Password
 	dataSourceName := fmt.Sprintf("oracle://%s:%s@%s:%s/orcl", Username, Password, Host, Port)
@@ -50,7 +50,7 @@ func (o Oracle) Exec() CrackResult {
 		defer db.Close()
 		err = db.Ping()
 		if err == nil {
-			result.Result = fmt.Sprintf("[+] oracle:%v:%v:%v %v", Host, Port, Username, Password)
+			result.Result = true
 		}
 	}
 	return result

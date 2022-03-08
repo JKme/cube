@@ -36,7 +36,7 @@ func (e Elastic) CrackPortCheck() bool {
 }
 
 func (e Elastic) Exec() CrackResult {
-	result := CrackResult{Crack: *e.Crack, Result: "", Err: nil}
+	result := CrackResult{Crack: *e.Crack, Result: false, Err: nil}
 
 	url := fmt.Sprintf("http://%s:%v/_cat", e.Ip, e.Port)
 	res, err := http.NewRequest("GET", url, nil)
@@ -55,7 +55,7 @@ func (e Elastic) Exec() CrackResult {
 		body, _ := ioutil.ReadAll(resp.Body)
 		if strings.Contains(string(body), "/_cat/master") {
 			//result.Result = fmt.Sprintf("User: %s\tPassword: %s \t", task.Auth.User, task.Auth.Password)
-			result.Result = fmt.Sprintf("Elasticsearch unauthorized")
+			result.Result = true
 
 		}
 	}

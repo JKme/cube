@@ -18,7 +18,7 @@ type Crack struct {
 
 type CrackResult struct {
 	Crack  Crack
-	Result string
+	Result bool
 	Extra  string
 	Err    error
 }

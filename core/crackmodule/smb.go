@@ -2,7 +2,6 @@ package crackmodule
 
 import (
 	"cube/config"
-	"fmt"
 	"github.com/stacktitan/smb/smb"
 	"strconv"
 	"strings"
@@ -37,7 +36,7 @@ func (s Smb) CrackPortCheck() bool {
 }
 
 func (s Smb) Exec() CrackResult {
-	result := CrackResult{Crack: *s.Crack, Result: "", Err: nil}
+	result := CrackResult{Crack: *s.Crack, Result: false, Err: nil}
 
 	Port, _ := strconv.Atoi(s.Port)
 	User := s.Auth.User
@@ -58,7 +57,7 @@ func (s Smb) Exec() CrackResult {
 	if err == nil {
 		session.Close()
 		if session.IsAuthenticated {
-			result.Result = fmt.Sprintf("User: %s\tPassword: %s \t", s.Auth.User, s.Auth.Password)
+			result.Result = true
 		}
 	}
 	return result

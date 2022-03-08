@@ -37,7 +37,7 @@ func (m Mysql) CrackPortCheck() bool {
 }
 
 func (m Mysql) Exec() CrackResult {
-	result := CrackResult{Crack: *m.Crack, Result: "", Err: nil}
+	result := CrackResult{Crack: *m.Crack, Result: false, Err: nil}
 
 	dataSourceName := fmt.Sprintf("%v:%v@tcp(%v:%v)/mysql?charset=utf8&timeout=%v", m.Auth.User, m.Auth.Password, m.Ip, m.Port, config.TcpConnTimeout)
 	db, err := sql.Open("mysql", dataSourceName)
@@ -46,7 +46,6 @@ func (m Mysql) Exec() CrackResult {
 		if err == nil {
 			rows, err := db.Query("select @@version, @@version_compile_os, @@version_compile_machine, @@secure_file_priv;")
 			if err == nil {
-				var s string
 				cols, _ := rows.Columns()
 				for rows.Next() {
 					err := rows.Scan(&cols[0], &cols[1], &cols[2], &cols[3])
@@ -56,7 +55,7 @@ func (m Mysql) Exec() CrackResult {
 					result.Extra = fmt.Sprintf("OS=%s Version=%s Arch=%s File_Priv=%s\t", strings.Split(cols[1], "-")[0], cols[0], cols[2], cols[3])
 
 				}
-				result.Result = fmt.Sprintf("User: %s \tPassword: %s \t %s", m.Auth.User, m.Auth.Password, s)
+				result.Result = true
 			}
 		}
 		db.Close()

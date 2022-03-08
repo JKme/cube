@@ -3,7 +3,6 @@ package crackmodule
 import (
 	"cube/config"
 	"cube/gologger"
-	"fmt"
 	"net/http"
 	"strings"
 )
@@ -37,7 +36,7 @@ func (h HttpBasic) CrackPortCheck() bool {
 }
 
 func (h HttpBasic) Exec() CrackResult {
-	result := CrackResult{Crack: *h.Crack, Result: "", Err: nil}
+	result := CrackResult{Crack: *h.Crack, Result: false, Err: nil}
 
 	clt := http.Client{}
 	if !strings.HasPrefix(h.Ip, "http://") {
@@ -53,7 +52,7 @@ func (h HttpBasic) Exec() CrackResult {
 	}
 	defer res.Body.Close()
 	if res.StatusCode != 401 {
-		result.Result = fmt.Sprintf("Password: %s", h.Auth.Password)
+		result.Result = true
 	}
 	return result
 }

@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"cube/config"
 	"cube/gologger"
-	"fmt"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -41,7 +40,7 @@ func (j Jenkins) CrackPortCheck() bool {
 }
 
 func (j Jenkins) Exec() CrackResult {
-	result := CrackResult{Crack: *j.Crack, Result: "", Err: nil}
+	result := CrackResult{Crack: *j.Crack, Result: false, Err: nil}
 
 	clt := http.Client{}
 	if !strings.HasPrefix(j.Ip, "http://") {
@@ -104,7 +103,7 @@ func (j Jenkins) Exec() CrackResult {
 	//fmt.Println(string(data2))
 	//fmt.Print(r2.Header["Set-Cookie"])
 	if strings.Contains(string(data2), "Dashboard") {
-		result.Result = fmt.Sprintf("User: %s \t Password: %s", j.Auth.User, j.Auth.Password)
+		result.Result = true
 	}
 	return result
 }

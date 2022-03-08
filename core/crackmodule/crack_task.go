@@ -136,7 +136,7 @@ func buildTasks(AliveIPS []IpAddr, auths []Auth) (cracks []Crack) {
 
 func saveCrackResult(crackResult CrackResult) {
 
-	if len(crackResult.Result) > 0 {
+	if crackResult.Result {
 		gologger.Debugf("Successful: IP:%s  Port:%s  Login:%s  Pass:%s", crackResult.Crack.Ip, crackResult.Crack.Port, crackResult.Crack.Auth.User, crackResult.Crack.Auth.Password)
 		k := fmt.Sprintf("%v-%v-%v", crackResult.Crack.Ip, crackResult.Crack.Port, crackResult.Crack.Name)
 		h := MakeTaskHash(k)

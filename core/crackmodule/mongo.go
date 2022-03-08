@@ -35,7 +35,7 @@ func (m Mongo) CrackPortCheck() bool {
 }
 
 func (m Mongo) Exec() CrackResult {
-	result := CrackResult{Crack: *m.Crack, Result: "", Err: nil}
+	result := CrackResult{Crack: *m.Crack, Result: false, Err: nil}
 	url := fmt.Sprintf("mongodb://%v:%v@%v:%v/%v", m.Auth.User, m.Auth.Password, m.Ip, m.Port, "test")
 	session, err := mgo.DialWithTimeout(url, config.TcpConnTimeout)
 
@@ -43,7 +43,7 @@ func (m Mongo) Exec() CrackResult {
 		defer session.Close()
 		err = session.Ping()
 		if err == nil {
-			result.Result = fmt.Sprintf("User: %s\tPassword: %s \t", m.Auth.User, m.Auth.Password)
+			result.Result = true
 		}
 	}
 	return result

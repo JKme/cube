@@ -35,7 +35,7 @@ func (sshCrack SshCrack) IsMutex() bool {
 }
 
 func (sshCrack SshCrack) Exec() (crackResult CrackResult) {
-	crackResult = CrackResult{Crack: *sshCrack.Crack, Result: "", Err: nil}
+	crackResult = CrackResult{Crack: *sshCrack.Crack, Result: false, Err: nil}
 	config := &ssh.ClientConfig{
 		User: sshCrack.Auth.User,
 		Auth: []ssh.AuthMethod{
@@ -54,7 +54,7 @@ func (sshCrack SshCrack) Exec() (crackResult CrackResult) {
 	errRet := session.Run("echo Hello")
 	if err == nil && errRet == nil {
 		defer session.Close()
-		crackResult.Result = fmt.Sprintf("User: %s \t Password: %s", sshCrack.Auth.User, sshCrack.Auth.Password)
+		crackResult.Result = true
 
 	}
 	return crackResult

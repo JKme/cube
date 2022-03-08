@@ -36,7 +36,7 @@ func (m Mssql) CrackPortCheck() bool {
 }
 
 func (m Mssql) Exec() CrackResult {
-	result := CrackResult{Crack: *m.Crack, Result: "", Err: nil}
+	result := CrackResult{Crack: *m.Crack, Result: false, Err: nil}
 
 	dataSourceName := fmt.Sprintf("server=%v;port=%v;user id=%v;password=%v;database=%v", m.Ip,
 		m.Port, m.Auth.User, m.Auth.Password, "tempdb")
@@ -45,7 +45,7 @@ func (m Mssql) Exec() CrackResult {
 		defer db.Close()
 		err = db.Ping()
 		if err == nil {
-			result.Result = fmt.Sprintf("User: %s\tPassword: %s \t", m.Auth.User, m.Auth.Password)
+			result.Result = true
 		}
 	}
 	return result

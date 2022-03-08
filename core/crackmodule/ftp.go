@@ -35,14 +35,14 @@ func (f FtpCrack) CrackPortCheck() bool {
 }
 
 func (f FtpCrack) Exec() CrackResult {
-	result := CrackResult{Crack: *f.Crack, Result: "", Err: nil}
+	result := CrackResult{Crack: *f.Crack, Result: false, Err: nil}
 
 	conn, err := ftp.DialTimeout(fmt.Sprintf("%v:%v", f.Ip, f.Port), config.TcpConnTimeout)
 	if err == nil {
 		err = conn.Login(f.Auth.User, f.Auth.Password)
 		if err == nil {
 			defer conn.Logout()
-			result.Result = fmt.Sprintf("User: %s\tPassword: %s \t", f.Auth.User, f.Auth.Password)
+			result.Result = true
 		}
 	}
 	return result

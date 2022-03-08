@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"cube/config"
 	"cube/gologger"
-	"fmt"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -41,7 +40,7 @@ func (p Phpmyadmin) CrackPortCheck() bool {
 }
 
 func (p Phpmyadmin) Exec() CrackResult {
-	result := CrackResult{Crack: *p.Crack, Result: "", Err: nil}
+	result := CrackResult{Crack: *p.Crack, Result: false, Err: nil}
 
 	clt := http.Client{}
 	if !strings.HasPrefix(p.Ip, "http://") {
@@ -98,7 +97,7 @@ func (p Phpmyadmin) Exec() CrackResult {
 	//resp2, _ := crackClt.Post(task.Ip, urlValues)
 	defer resp2.Body.Close()
 	if resp2.StatusCode == 302 {
-		result.Result = fmt.Sprintf("User: %s \tPassword: %s", p.Auth.User, p.Auth.Password)
+		result.Result = true
 	}
 
 	return result

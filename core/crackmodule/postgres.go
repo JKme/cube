@@ -36,7 +36,7 @@ func (p Postgres) CrackPortCheck() bool {
 }
 
 func (p Postgres) Exec() CrackResult {
-	result := CrackResult{Crack: *p.Crack, Result: "", Err: nil}
+	result := CrackResult{Crack: *p.Crack, Result: false, Err: nil}
 
 	dataSourceName := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=%v", p.Auth.User,
 		p.Auth.Password, p.Ip, p.Port, "postgres", "disable")
@@ -46,7 +46,7 @@ func (p Postgres) Exec() CrackResult {
 		defer db.Close()
 		err = db.Ping()
 		if err == nil {
-			result.Result = fmt.Sprintf("User: %s\tPassword: %s \t", p.Auth.User, p.Auth.Password)
+			result.Result = true
 		}
 	}
 	return result

@@ -6,8 +6,8 @@
 - 支持输出结果到excel文档
 - 精简运行参数，方便记忆
 
-## 我什么都不想记
-如果没有耐心看下面的命令选项，运行如下命令，然后打开pwn.xlsx
+## 一把梭
+如果没有耐心看下面的命令选项，运行如下命令，然后打开pwn.xlsx，最终结果会以IP纬度聚合展示：
 ```
 cube crack -x X -s 192.168.2.1/24 -o /tmp/pwn.xlsx
 cube probe -x Y -s 192.168.2.1/24 -o /tmp/pwn.xlsx
@@ -17,7 +17,7 @@ cube probe -x Y -s 192.168.2.1/24 -o /tmp/pwn.xlsx
 ## 全局参数
 - `-v`: 输出内容更详细，一般用于调试
 - `-n`: 设定`crack`和`probe`模块的运行线程数量，默认30线程
-- `--delay`: 设定此选项的时候，`crack`和`probe`模块强制设为单线程，并在设定的值之内随机休眠
+- `--delay`: 设定此选项的时候，`crack`和`probe`模块强制设为单线程，并在设定的值之内随机休眠(~~毫无卵用~~)
 
 
 ## 0x1. crack模块
@@ -72,23 +72,24 @@ cube probe -x oxid,ms17010 -s 192.168.2.1/24
 
 ## 0x4. 快速开发
 #### Crack模块
-新增一个自定义爆破插件，插件名`cloud`，默认端口`80`，默认词典使用内置词典：
-![crack.gif](./image/crack.gif)
-
+Crack模块可以抽象为一个爆破的框架，当内网渗透碰到临时需要爆破的需求，可以使用go快速开发爆破插件，`crack`模块下的命令参数同样适用新增的插件，比如`-l/-L -p/-P --port`。 
+比如新增一个自定义爆破插件，插件名是`cloud`，默认端口`8080`，爆破的默认密码使用内置的`config.PASSWORDS`，插件需要实现`crack`模块的以下接口：
 ```shell
 	CrackName() string       //插件名称
 	CrackPort() string       //插件默认端口
 	CrackAuthUser() []string //插件默认爆破的用户名
 	CrackAuthPass() []string //插件默认爆破的密码，可以使用config.PASSWORD
-	IsMutex() bool           //只能单独使用的插件，比如phpmyadmin
-	CrackPortCheck() bool    //插件是否需要端口检查，一般TCP需要，phpmyadmin类单独使用的不用
-	Exec() CrackResult       //运行插件
+	IsMutex() bool           //是否是只能单独使用的插件，比如爆破phpmyadmin类的http插件，当然elastic是个例外
+	CrackPortCheck() bool    //是否需要端口检查，TCP协议设置为true，phpmyadmin单独使用的插件和UDP协议类的跳过端口检测，设置为false
+	Exec() CrackResult       //爆破插件的具体实现
 ```
+![crack.gif](./image/crack.gif)
+
 
  * 如果需要`-x X`加载`cloud`, 修改`config/config.go`，把`cloud`加入到`CrackX`列表里面
 
 #### Probe模块
-新增Probe插件和crack类似，需要实现以下接口:
+同样新增Probe插件和crack类似，也可以看作信息收集的框架，新增的插件需要实现以下接口:
 
 ```shell
 	ProbeName() string      //插件名称
@@ -124,10 +125,12 @@ cube sqlcmd -x mssql -l sa -p sa -e "whoami" --port 4134
 * [数据库利用工具](http://ryze-t.com/posts/2022/02/16/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E5%88%A9%E7%94%A8%E5%B7%A5%E5%85%B7-Sylas.html)
 * [MDUT](https://github.com/SafeGroceryStore/MDUT)
 * 完成SQLCMD模块
+```
   -m ls  <dst path>
   -m cat <dst file>
   -m upload <src path> <dst path>
   -m exec <cmd string>
+```
 
 ```shell
 cube sqlcmd -s 127.0.0.1 -l root -p root -x mssql exec "whoami"

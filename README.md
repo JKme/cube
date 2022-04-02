@@ -40,7 +40,7 @@ cube crack -l root -p root -s 192.168.1.1 -x ssh --port 2222
 # 爆破mysql和ssh(注意ssh和mysql之间的逗号不存在空格)
 cube crack -s 192.168.1.1 -x ssh,mysql
 ```
-#### 爆破phpmyadmin
+#### 爆破phpmyadmin(不可与其它插件组合)
 ```shell
 cube crack -s http://192.168.2.1 -x phpmyadmin
 ```
@@ -50,9 +50,14 @@ cube crack -s http://192.168.2.1 -x phpmyadmin
 cube crack -x X -s 192.168.1.1
 ```
 
-* phpmyadmin这类http的爆破插件只能单独使用，不可同时加载其它插件，类似的还有jenkins等
+* phpmyadmin这类http的爆破插件只能单独使用，不可与其它插件同时加载，类似的插件有: `httpbasic/jenkins/phpmyadmin/zabbix`
 * `-x X`是加载全部可用的爆破插件，先检查端口，端口开放之后爆破
 * 未指定用户密码的时候，会加载内置词典
+* `zabbix`插件没有卵用，爆破5次失败之后会锁定30s
+
+#### 支持的爆破插件
+* 可组合使用: `elastic/ftp/mongo/mssql/mysql/postgres/redis/smb/ssh`
+* 不可组合使用： `httpbasic/jenkins/phpmyadmin/zabbix`
 
 ## 0x2. probe模块
 #### 加载全部默认插件
@@ -66,14 +71,37 @@ cube probe -x Y -s 192.168.2.1/24
 cube probe -x oxid,ms17010 -s 192.168.2.1/24
 ```
 
+#### 支持的探测插件
+|   FUNC    | PORT  | LOAD BY X |
+|-----------|-------|-----------|
+| docker    |  2375 | Y         |
+| dubbo     | 20880 | Y         |
+| etcd      |  2379 | Y         |
+| k8s       | 10255 | Y         |
+| ms17010   |   445 | Y         |
+| mssql     |  1433 | N         |
+| netbios   |   137 | N         |
+| oxid      |   135 | Y         |
+| ping      |       | N         |
+| rmi       |  1099 | Y         |
+| smb       |   445 | Y         |
+| smbghost  |   445 | Y         |
+| winrm     |  5985 | N         |
+| wmi       |   135 | N         |
+| zookeeper |  2181 | Y         |
+
+* `smb/wmi/winrm/mssql`是利用NTLM认证过程获取[Windows版本系统信息](https://jkme.github.io/2021/08/06/windows-ntlm-smb-scan.html)
+* 使用`ping/netbios`的时候，最好单独使用获取更准确的结果，线程数量建议为10
+* `Load By X`: 是指`cube probe -x X -s 192.168.2.1/24`的时候，`-x X`是否需要加载的插件
+
 ## 0x3. 结果输出
 在使用`crack`和`probe`模块的任何插件都可以加上`-o result.xlsx`，用于把结果写入到excel，当excel已经存在
 的时候，cube会把当前扫描的结果自动追加到文档，建议扫描结束之后的文档固定首行首列，查看更方便。
 
 ## 0x4. 快速开发
 #### Crack模块
-Crack模块可以抽象为一个爆破的框架，当内网渗透碰到临时需要爆破的需求，可以使用go快速开发爆破插件，`crack`模块下的命令参数同样适用新增的插件，比如`-l/-L -p/-P --port`。 
-比如新增一个自定义爆破插件，插件名是`cloud`，默认端口`8080`，爆破的默认密码使用内置的`config.PASSWORDS`，插件需要实现`crack`模块的以下接口：
+Crack模块可以抽象为一个爆破的框架，当需要爆破的插件不在Cube可用插件列表里面，可以使用go快速开发爆破插件。
+`crack`模块下的命令参数同样适用新增的插件，比如`-l/-L，-p/-P，--port`。 比如新增一个自定义爆破插件，插件名是`cloud`，默认端口`8080`，爆破的默认密码使用内置的`config.PASSWORDS`，插件需要实现`crack`模块的以下接口：
 ```shell
 	CrackName() string       //插件名称
 	CrackPort() string       //插件默认端口
@@ -119,7 +147,7 @@ cube sqlcmd -x mssql -l sa -p sa -e "whoami" --port 4134
 * [fscan](https://github.com/shadow1ng/fscan)
 * [gobuster](https://github.com/OJ/gobuster)
 * [sqltool](https://github.com/mabangde/pentesttools/blob/master/golang/sqltool.go)
-
+* [F-Scrack](https://github.com/y1ng1996/F-Scrack)
 
 ## TODO
 * [数据库利用工具](http://ryze-t.com/posts/2022/02/16/%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5%E5%88%A9%E7%94%A8%E5%B7%A5%E5%85%B7-Sylas.html)

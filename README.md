@@ -138,6 +138,8 @@ cube sqlcmd -x mysql -l root -p root -e "clear"
 #指定mssql端口
 cube sqlcmd -x mssql -l sa -p sa -e "whoami" --port 4134
 ```
+#### 可用插件
+![report.png](./image/sqlcmd.png)
 
 
 

@@ -39,7 +39,7 @@ func (h HttpBasic) Exec() CrackResult {
 	result := CrackResult{Crack: *h.Crack, Result: false, Err: nil}
 
 	clt := http.Client{}
-	if !strings.HasPrefix(h.Ip, "http://") {
+	if !strings.HasPrefix(h.Ip, "http") {
 		gologger.Errorf("Invalid URL, eg: http://%s", h.Ip)
 	}
 	req, _ := http.NewRequest("POST", h.Ip, nil)

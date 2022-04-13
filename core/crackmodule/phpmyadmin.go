@@ -43,7 +43,7 @@ func (p Phpmyadmin) Exec() CrackResult {
 	result := CrackResult{Crack: *p.Crack, Result: false, Err: nil}
 
 	clt := http.Client{}
-	if !strings.HasPrefix(p.Ip, "http://") {
+	if !strings.HasPrefix(p.Ip, "http") {
 		gologger.Errorf("Invalid URL, eg: http://%s", p.Ip)
 	}
 	req, _ := http.NewRequest("GET", p.Ip, nil)

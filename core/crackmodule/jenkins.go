@@ -43,7 +43,7 @@ func (j Jenkins) Exec() CrackResult {
 	result := CrackResult{Crack: *j.Crack, Result: false, Err: nil}
 
 	clt := http.Client{}
-	if !strings.HasPrefix(j.Ip, "http://") {
+	if !strings.HasPrefix(j.Ip, "http") {
 		gologger.Errorf("Invalid URL, eg: http://%s", j.Ip)
 	}
 	req, _ := http.NewRequest("GET", j.Ip+"/login", nil)

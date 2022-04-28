@@ -89,7 +89,7 @@ cube probe -x oxid,ms17010 -s 192.168.2.1/24
 | winrm     |  5985 | N         |
 | wmi       |   135 | N         |
 | zookeeper |  2181 | Y         |
-| jboss     |  3873 | Y         |
+| [jboss](https://github.com/JKme/cube/wiki#jboss-3873)     |  3873 | Y         |
 
 * `smb/wmi/winrm/mssql`是利用NTLM认证过程获取[Windows版本系统信息](https://jkme.github.io/2021/08/06/windows-ntlm-smb-scan.html)
 * 使用`ping/netbios`的时候，最好单独使用获取更准确的结果，线程数量建议为10

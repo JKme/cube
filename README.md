@@ -1,6 +1,10 @@
 ## 声明
 >特别声明：此工具仅限于安全研究，禁止使用该项目进行违法操作，否则自行承担相关责任
 
+## 问题反馈
+
+![cai.jpeg](./image/cai.jpeg)
+
 ## 特点
 - 方便二次开发，快速增加插件
 - 支持输出结果到excel文档
@@ -72,7 +76,7 @@ cube probe -x oxid,ms17010 -s 192.168.2.1/24
 ```
 
 #### 支持的探测插件
-|   FUNC    | PORT  | LOAD BY X |
+| FUNC      | PORT  | LOAD BY X |
 |-----------|-------|-----------|
 | docker    |  2375 | Y         |
 | dubbo     | 20880 | Y         |
@@ -89,6 +93,7 @@ cube probe -x oxid,ms17010 -s 192.168.2.1/24
 | winrm     |  5985 | N         |
 | wmi       |   135 | N         |
 | zookeeper |  2181 | Y         |
+| jboss     |  3873 | Y         |
 
 * `smb/wmi/winrm/mssql`是利用NTLM认证过程获取[Windows版本系统信息](https://jkme.github.io/2021/08/06/windows-ntlm-smb-scan.html)
 * 使用`ping/netbios`的时候，最好单独使用获取更准确的结果，线程数量建议为10

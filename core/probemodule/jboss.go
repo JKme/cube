@@ -36,9 +36,9 @@ func (J JBoss) ProbeExec() ProbeResult {
 	//	return result
 	//}
 	r1, _ := pkg.ReadBytes(conn)
-	fmt.Printf("Receive: %s\n", hex.EncodeToString(r1[:4]))
+	//fmt.Printf("Receive: %s\n", hex.EncodeToString(r1[:4]))
 	if hex.EncodeToString(r1[:4]) == "aced0005" {
-		result.Result = "JBoss EAP/AS <= 6.X"
+		result.Result = "JBoss EAP/AS <= 6.* RCE"
 	}
 	return result
 }

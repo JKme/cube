@@ -45,12 +45,18 @@ cube crack -s 192.168.1.1 -x ssh,mysql
 cube crack -s http://192.168.2.1 -x phpmyadmin
 ```
 
+#### 爆破tomcat(不可与其它插件组合)
+```shell
+cube crack -x httpbasic -s http://127.0.0.1:7788/manager -v
+```
+
 #### 加载全部爆破插件
 ```shell
 cube crack -x X -s 192.168.1.1
 ```
 
 * phpmyadmin这类http的爆破插件只能单独使用，不可与其它插件同时加载，类似的插件有: `httpbasic/jenkins/phpmyadmin/zabbix`
+* `httpbasic`模块是用来爆破使用basic auth认证的服务，比如tomcat登录，nginx的basic auth
 * `-x X`是加载全部可用的爆破插件，先检查端口，端口开放之后爆破
 * 未指定用户密码的时候，会加载内置词典
 * `zabbix`插件没有卵用，爆破5次失败之后会锁定30s

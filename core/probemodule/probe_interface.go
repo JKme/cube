@@ -59,6 +59,8 @@ func (p *Probe) NewIProbe() IProbe {
 		return &K8s{p}
 	case "jboss":
 		return &JBoss{p}
+	case "prometheus":
+		return &Prometheus{p}
 	default:
 		return nil
 	}

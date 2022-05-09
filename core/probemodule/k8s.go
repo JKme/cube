@@ -2,6 +2,7 @@ package probemodule
 
 import (
 	"bufio"
+	"cube/config"
 	"fmt"
 	"net/http"
 	"strings"
@@ -26,7 +27,7 @@ func (k K8s) PortCheck() bool {
 func (k K8s) ProbeExec() ProbeResult {
 	result := ProbeResult{Probe: *k.Probe, Result: "", Err: nil}
 
-	clt := http.Client{}
+	clt := http.Client{Timeout: config.TcpConnTimeout}
 	host := fmt.Sprintf("http://%s:%s/pods", k.Ip, k.Port)
 	req, _ := http.NewRequest("GET", host, nil)
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1468.0 Safari/537.36")

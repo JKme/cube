@@ -1,6 +1,7 @@
 package probemodule
 
 import (
+	"cube/config"
 	"encoding/base64"
 	"fmt"
 	"github.com/JKme/go-ntlmssp"
@@ -26,7 +27,7 @@ func (w Winrm) PortCheck() bool {
 func (w Winrm) ProbeExec() ProbeResult {
 	result := ProbeResult{Probe: *w.Probe, Result: "", Err: nil}
 	uri := fmt.Sprintf("http://%s:%s/wsman", w.Ip, w.Port)
-	clt := http.Client{}
+	clt := http.Client{Timeout: config.TcpConnTimeout}
 	req, _ := http.NewRequest("POST", uri, nil)
 	req.Header.Add("Content-Length", "0")
 	req.Header.Add("Keep-Alive", "true")

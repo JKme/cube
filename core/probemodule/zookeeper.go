@@ -27,7 +27,7 @@ func (z Zookeeper) ProbeExec() ProbeResult {
 	result := ProbeResult{Probe: *z.Probe, Result: "", Err: nil}
 
 	dl := net.Dialer{Timeout: config.TcpConnTimeout}
-	t := fmt.Sprintf("%s:%d", z.Ip, z.Port)
+	t := fmt.Sprintf("%s:%s", z.Ip, z.Port)
 	conn, err := dl.Dial("tcp", t)
 	if err != nil {
 		result.Err = err

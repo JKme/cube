@@ -55,8 +55,10 @@ func (p *Probe) NewIProbe() IProbe {
 		return &Zookeeper{p}
 	case "etcd":
 		return &Etcd{p}
-	case "k8s":
-		return &K8s{p}
+	case "k8s10250":
+		return &K8s10250{p}
+	case "k8s6443":
+		return &K8s6443{p}
 	case "jboss":
 		return &JBoss{p}
 	case "prometheus":

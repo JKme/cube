@@ -8,27 +8,27 @@ import (
 	"strings"
 )
 
-type K8s struct {
+type Etcd struct {
 	*Probe
 }
 
-func (k K8s) ProbeName() string {
-	return "k8s"
+func (e Etcd) ProbeName() string {
+	return "etcd"
 }
 
-func (k K8s) ProbePort() string {
-	return "10255"
+func (e Etcd) ProbePort() string {
+	return "2379"
 }
 
-func (k K8s) PortCheck() bool {
+func (e Etcd) PortCheck() bool {
 	return true
 }
 
-func (k K8s) ProbeExec() ProbeResult {
-	result := ProbeResult{Probe: *k.Probe, Result: "", Err: nil}
+func (e Etcd) ProbeExec() ProbeResult {
+	result := ProbeResult{Probe: *e.Probe, Result: "", Err: nil}
 
 	clt := http.Client{Timeout: config.TcpConnTimeout}
-	host := fmt.Sprintf("http://%s:%s/pods", k.Ip, k.Port)
+	host := fmt.Sprintf("http://%s:%s/version", e.Ip, e.Port)
 	req, _ := http.NewRequest("GET", host, nil)
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1468.0 Safari/537.36")
 	req.Header.Add("Connection", "close")
@@ -36,18 +36,18 @@ func (k K8s) ProbeExec() ProbeResult {
 	req.Header.Add("Accept-Charset", "utf-8")
 	resp, err := clt.Do(req)
 	if err != nil {
-		panic(err)
+		return result
 	}
 	data := make([]byte, 50)
 	c := bufio.NewReader(resp.Body)
 	c.Read(data)
 	resp.Body.Close()
-	if strings.Contains(string(data), "PodList") {
-		result.Result = fmt.Sprintf("Kubelet Found: %s", string(data))
+	if strings.Contains(string(data), "etcd") {
+		result.Result = fmt.Sprintf("Etcd Found: %s", string(data))
 	}
 	return result
 }
 
 func init() {
-	AddProbeKeys("k8s")
+	AddProbeKeys("etcd")
 }

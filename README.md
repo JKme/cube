@@ -11,6 +11,7 @@
 ```
 cube crack -x X -s 192.168.2.1/24 -o /tmp/pwn.xlsx
 cube probe -x Y -s 192.168.2.1/24 -o /tmp/pwn.xlsx
+cube probe -x K8S -s 192.168.2.1/24 -o /tmp/pwn.xlsx	//如果内网存在k8s，会扫描2379，10250，6443端口
 ```
 ![report.png](./image/report.png)
 
@@ -83,7 +84,8 @@ cube probe -x oxid,ms17010 -s 192.168.2.1/24
 | docker                                                | 2375  | Y         |
 | dubbo                                                 | 20880 | Y         |
 | etcd                                                  | 2379  | Y         |
-| k8s                                                   | 10255 | Y         |
+| k8s10250                                                   | 10250 | N         |
+| k8s6443                                                   | 6443 | N         |
 | ms17010                                               | 445   | Y         |
 | mssql                                                 | 1433  | N         |
 | netbios                                               | 137   | N         |

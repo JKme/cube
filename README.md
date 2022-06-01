@@ -180,7 +180,7 @@ cube sqlcmd -s 127.0.0.1 -l root -p root -x mssql ls  <src>
 cube sqlcmd -s 127.0.0.1 -l root -p root -x mssql cat  <src> 
 ```
 * [检查某个方法是否实现了接口](https://go.dev/play/p/tNNDukK4wRi)
-
+* probe模块下的mssql探测好像存在问题，需要确认
 
 ---
 ### Stargazers over time

@@ -34,6 +34,9 @@ func (po *ProbeOption) ParsePluginName() []string {
 	if len(pns) > 2 && pkg.Contains("K8S", pns) {
 		pluginNameList = nil
 	}
+	if len(pns) > 2 && pkg.Contains("WIN", pns) {
+		pluginNameList = nil
+	}
 	switch {
 	case len(pns) == 1:
 		if pns[0] == "X" {
@@ -43,8 +46,12 @@ func (po *ProbeOption) ParsePluginName() []string {
 			pluginNameList = ProbeKeys
 		}
 		if pns[0] == "K8S" {
-			pluginNameList = config.K8S
+			pluginNameList = config.ProbeK8S
 		}
+		if pns[0] == "WIN" {
+			pluginNameList = config.ProbeWIN
+		}
+
 		if pkg.Contains(pns[0], ProbeKeys) {
 			pluginNameList = pns
 		}

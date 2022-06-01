@@ -41,24 +41,25 @@ func (m Mysql) Exec() CrackResult {
 
 	dataSourceName := fmt.Sprintf("%v:%v@tcp(%v:%v)/mysql?charset=utf8&timeout=%v", m.Auth.User, m.Auth.Password, m.Ip, m.Port, config.TcpConnTimeout)
 	db, err := sql.Open("mysql", dataSourceName)
-	if err == nil {
-		err = db.Ping()
-		if err == nil {
-			rows, err := db.Query("select @@version, @@version_compile_os, @@version_compile_machine, @@secure_file_priv;")
-			if err == nil {
-				cols, _ := rows.Columns()
-				for rows.Next() {
-					err := rows.Scan(&cols[0], &cols[1], &cols[2], &cols[3])
-					if err != nil {
-						fmt.Println(err)
-					}
-					result.Extra = fmt.Sprintf("OS=%s Version=%s Arch=%s File_Priv=%s\t", strings.Split(cols[1], "-")[0], cols[0], cols[2], cols[3])
-
-				}
-				result.Result = true
-			}
+	if err != nil {
+		return result
+	}
+	err = db.Ping()
+	if err != nil {
+		return result
+	}
+	rows, err := db.Query("select @@version, @@version_compile_os, @@version_compile_machine, @@secure_file_priv;")
+	if err != nil {
+		return result
+	}
+	cols, _ := rows.Columns()
+	for rows.Next() {
+		err := rows.Scan(&cols[0], &cols[1], &cols[2], &cols[3])
+		if err != nil {
+			return result
 		}
-		db.Close()
+		result.Extra = fmt.Sprintf("OS=%s Version=%s Arch=%s File_Priv=%s\t", strings.Split(cols[1], "-")[0], cols[0], cols[2], cols[3])
+		result.Result = true
 	}
 	return result
 }

@@ -61,6 +61,7 @@ cube crack -x X -s 192.168.1.1
 * `-x X`是加载全部可用的爆破插件，先检查端口，端口开放之后爆破
 * 未指定用户密码的时候，会加载内置词典
 * `zabbix`插件没有卵用，爆破5次失败之后会锁定30s
+* **默认线程是30，这种情况下爆破会触发x绒的告警，建议设定为10～15**
 
 #### 支持的爆破插件
 * 可组合使用: `elastic/ftp/mongo/mssql/mysql/postgres/redis/smb/ssh`
@@ -75,30 +76,34 @@ cube probe -x Y -s 192.168.2.1/24
 ```
 ### 加载指定插件
 ```shell
+# 加载oxid,ms17010插件
 cube probe -x oxid,ms17010 -s 192.168.2.1/24
+
+# 加载WIN集合插件，WIN集合插件下有 ping,netbios,oxid,smb,winrm,wmi,mssql
+cube probe -x WIN -s 192.168.2.1/24
 ```
 
 #### 支持的探测插件
-| FUNC                                                  | PORT  | LOAD BY X |
-|-------------------------------------------------------|-------|-----------|
-| docker                                                | 2375  | Y         |
-| dubbo                                                 | 20880 | Y         |
-| etcd                                                  | 2379  | Y         |
-| k8s10250                                                   | 10250 | N         |
-| k8s6443                                                   | 6443 | N         |
-| ms17010                                               | 445   | Y         |
-| mssql                                                 | 1433  | N         |
-| netbios                                               | 137   | N         |
-| oxid                                                  | 135   | Y         |
-| ping                                                  |       | N         |
-| rmi                                                   | 1099  | Y         |
-| smb                                                   | 445   | Y         |
-| smbghost                                              | 445   | Y         |
-| winrm                                                 | 5985  | N         |
-| wmi                                                   | 135   | N         |
-| zookeeper                                             | 2181  | Y         |
-| [jboss](https://github.com/JKme/cube/wiki#jboss-3873) | 3873  | Y         |
-| [prometheus](https://github.com/JKme/cube/wiki#prometheus-9090)                                            | 9090  | Y         |
+| FUNC                                                            | PORT  | LOAD BY X |
+|-----------------------------------------------------------------|-------|-----------|
+| docker                                                          | 2375  | Y         |
+| dubbo                                                           | 20880 | Y         |
+| etcd                                                            | 2379  | Y         |
+| k8s10250                                                        | 10250 | N         |
+| k8s6443                                                         | 6443  | N         |
+| ms17010                                                         | 445   | Y         |
+| mssql                                                           | 1433  | N         |
+| netbios                                                         | 137   | N         |
+| oxid                                                            | 135   | Y         |
+| ping                                                            |       | N         |
+| rmi                                                             | 1099  | Y         |
+| smb                                                             | 445   | Y         |
+| smbghost                                                        | 445   | Y         |
+| winrm                                                           | 5985  | N         |
+| wmi                                                             | 135   | N         |
+| zookeeper                                                       | 2181  | Y         |
+| [jboss](https://github.com/JKme/cube/wiki#jboss-3873)           | 3873  | Y         |
+| [prometheus](https://github.com/JKme/cube/wiki#prometheus-9090) | 9090  | Y         |
 
 * `smb/wmi/winrm/mssql`是利用NTLM认证过程获取[Windows版本系统信息](https://jkme.github.io/2021/08/06/windows-ntlm-smb-scan.html)
 * 使用`ping/netbios`的时候，最好单独使用获取更准确的结果，线程数量建议为10

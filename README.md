@@ -22,21 +22,21 @@ cube probe -x K8S -s 192.168.2.1/24 -o /tmp/pwn.xlsx	//如果内网存在k8s，�
 
 
 ## 0x1. crack模块
-#### 使用内置词典
+#### 使用内置词典爆破SSH
 ```shell
 cube crack -s 192.168.1.1 -x ssh
 ```
-#### 指定用户密码
+#### 指定用户密码爆破SSH
 ```shell
 cube crack -l root,ubuntu -p 123,000111,root -x ssh -s 192.168.1.1
 cube crack -L user.txt -P pass.txt -s 192.168.1.1/24 -x ssh
 cube crack -l root -P pass.txt -s 192.168.1.1/24 -x ssh
 ```
-#### 指定端口
+#### 指定端口爆破SSH
 ```shell
 cube crack -l root -p root -s 192.168.1.1 -x ssh --port 2222
 ```
-#### 指定多个插件
+#### 使用内置词典爆破ssh和mysql
 ```shell
 # 爆破mysql和ssh(注意ssh和mysql之间的逗号不存在空格)
 cube crack -s 192.168.1.1 -x ssh,mysql
@@ -51,7 +51,7 @@ cube crack -s http://192.168.2.1 -x phpmyadmin
 cube crack -x httpbasic -s http://127.0.0.1:7788/manager -v
 ```
 
-#### 加载全部爆破插件
+#### 加载全部爆破插件（`httpbasic/jenkins/phpmyadmin/zabbix`除外）
 ```shell
 cube crack -x X -s 192.168.1.1
 ```

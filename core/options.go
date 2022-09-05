@@ -1,12 +1,6 @@
 package core
 
-import (
-	"cube/gologger"
-	"fmt"
-	"math/rand"
-	"strconv"
-	"time"
-)
+import "cube/gologger"
 
 type GlobalOption struct {
 	Threads int
@@ -21,11 +15,13 @@ func NewGlobalOptions() *GlobalOption {
 }
 
 func RandomDelay(float float64) float64 {
-	r := rand.New(rand.NewSource(time.Now().Unix()))
-	r1 := r.Float64() * float
-	r1, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", r1), 64) //保留两位小数点
-	if r1 > 0 {
-		gologger.Debugf("thread is going to sleep %v second", r1)
-	}
-	return r1
+	//r := rand.New(rand.NewSource(time.Now().Unix()))
+	//r1 := r.Float64() * float
+	//r1, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", r1), 64) //保留两位小数点
+	//if r1 > 0 {
+	//	gologger.Debugf("thread is going to sleep %v second", r1)
+	//}
+	//return r1
+	gologger.Debugf("thread is going to sleep %v second", float)
+	return float
 }

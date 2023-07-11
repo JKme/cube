@@ -1,6 +1,7 @@
 package crackmodule
 
 import (
+	"crypto/tls"
 	"cube/config"
 	"cube/gologger"
 	"net/http"
@@ -37,8 +38,11 @@ func (h HttpBasic) CrackPortCheck() bool {
 
 func (h HttpBasic) Exec() CrackResult {
 	result := CrackResult{Crack: *h.Crack, Result: false, Err: nil}
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 
-	clt := http.Client{}
+	clt := http.Client{Transport: tr}
 	if !strings.HasPrefix(h.Ip, "http") {
 		gologger.Errorf("Invalid URL, eg: http://%s", h.Ip)
 	}

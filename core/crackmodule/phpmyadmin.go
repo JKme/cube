@@ -2,6 +2,7 @@ package crackmodule
 
 import (
 	"bufio"
+	"crypto/tls"
 	"cube/config"
 	"cube/gologger"
 	"net/http"
@@ -42,7 +43,10 @@ func (p Phpmyadmin) CrackPortCheck() bool {
 func (p Phpmyadmin) Exec() CrackResult {
 	result := CrackResult{Crack: *p.Crack, Result: false, Err: nil}
 
-	clt := http.Client{}
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	clt := http.Client{Transport: tr}
 	if !strings.HasPrefix(p.Ip, "http") {
 		gologger.Errorf("Invalid URL, eg: http://%s", p.Ip)
 	}
@@ -75,7 +79,8 @@ func (p Phpmyadmin) Exec() CrackResult {
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
 		},
-		Jar: jar}
+		Jar:       jar,
+		Transport: tr}
 
 	//fmt.Println(jar.Cookies(host))
 

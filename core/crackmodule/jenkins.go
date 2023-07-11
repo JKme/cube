@@ -2,6 +2,7 @@ package crackmodule
 
 import (
 	"bufio"
+	"crypto/tls"
 	"cube/config"
 	"cube/gologger"
 	"net/http"
@@ -41,8 +42,11 @@ func (j Jenkins) CrackPortCheck() bool {
 
 func (j Jenkins) Exec() CrackResult {
 	result := CrackResult{Crack: *j.Crack, Result: false, Err: nil}
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 
-	clt := http.Client{}
+	clt := http.Client{Transport: tr}
 	if !strings.HasPrefix(j.Ip, "http") {
 		gologger.Errorf("Invalid URL, eg: http://%s", j.Ip)
 	}
@@ -79,8 +83,10 @@ func (j Jenkins) Exec() CrackResult {
 	jar, _ := cookiejar.New(nil)
 	host, _ := url.Parse(j.Ip)
 	jar.SetCookies(host, resp.Cookies())
+
 	clt2 := http.Client{
-		Jar: jar,
+		Jar:       jar,
+		Transport: tr,
 	}
 	urlValues := url.Values{}
 	urlValues.Add("j_username", j.Auth.User)

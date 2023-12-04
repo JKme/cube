@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"cube/config"
 	"cube/gologger"
+	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -57,7 +58,10 @@ func (j Jenkins) Exec() CrackResult {
 	req.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8")
 	resp, err := clt.Do(req)
 	if err != nil {
-		panic(err)
+		// 处理请求错误
+		log.Printf("Error making request: %v", err)
+		// 应该在这里返回或处理错误
+		return result
 	}
 
 	data := make([]byte, 20250)
@@ -100,8 +104,12 @@ func (j Jenkins) Exec() CrackResult {
 
 	r2, err := clt2.Do(req2)
 	if err != nil {
-		panic(err)
+		// 处理请求错误
+		log.Printf("Error making request: %v", err)
+		// 应该在这里返回或处理错误
+		return result
 	}
+
 	defer r2.Body.Close()
 	data2 := make([]byte, 10480)
 	c2 := bufio.NewReader(r2.Body)

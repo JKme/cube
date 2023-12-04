@@ -56,7 +56,7 @@ jobs:
         env:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.arch }}
-          CGO_ENABLED: 1
+          CGO_ENABLED: 0
       - uses: svenstaro/upx-action@v2
         with:
           args: ${{ matrix.args }}

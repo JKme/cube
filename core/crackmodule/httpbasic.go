@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"cube/config"
 	"cube/gologger"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -51,13 +52,32 @@ func (h HttpBasic) Exec() CrackResult {
 	req.Header.Add("Connection", "close")
 	req.SetBasicAuth(h.Auth.User, h.Auth.Password)
 	res, err := clt.Do(req)
+
 	if err != nil {
-		gologger.Error(err)
+		// 处理请求错误
+		log.Printf("Error making request: %v", err)
+		// 应该在这里返回或处理错误
+		return result
 	}
-	defer res.Body.Close()
-	if res.StatusCode != 401 {
-		result.Result = true
+	if res != nil {
+		defer func() {
+			// 使用 defer 调用匿名函数来处理 Close 的错误
+			if err := res.Body.Close(); err != nil {
+				// 处理关闭 resp.Body 时的错误
+				log.Printf("Error closing response body: %v", err)
+			}
+		}()
+		if res.StatusCode != 401 {
+			result.Result = true
+		}
+	} else {
+		// 如果到这里，说明有严重的错误发生，resp2 应该不为 nil。
+		log.Printf("Response is nil without a preceding error.")
 	}
+
+	//if res.StatusCode != 401 {
+	//	result.Result = true
+	//}
 	return result
 }
 

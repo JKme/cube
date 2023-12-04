@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"cube/config"
 	"cube/gologger"
+	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -92,6 +93,13 @@ func (z Zabbix) Exec() CrackResult {
 	req2.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	resp2, _ := crackClt.Do(req2)
+	if err != nil {
+		// 处理请求错误
+		log.Printf("Error making request: %v", err)
+		// 应该在这里返回或处理错误
+		return result
+	}
+
 	defer resp2.Body.Close()
 	if resp2.StatusCode == 302 {
 		result.Result = true

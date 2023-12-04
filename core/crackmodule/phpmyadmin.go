@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"cube/config"
 	"cube/gologger"
+	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -57,6 +58,7 @@ func (p Phpmyadmin) Exec() CrackResult {
 	req.Header.Add("Accept-Charset", "utf-8")
 	resp, err := clt.Do(req)
 	if err != nil {
+		log.Printf("Error making request: %v", err)
 		return result
 	}
 
@@ -97,12 +99,29 @@ func (p Phpmyadmin) Exec() CrackResult {
 	req2.Header.Add("Connection", "close")
 	req2.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	resp2, _ := crackClt.Do(req2)
-	//resp2, _ := crackClt.PostForm(task.Ip, urlValues)
-	//resp2, _ := crackClt.Post(task.Ip, urlValues)
-	defer resp2.Body.Close()
-	if resp2.StatusCode == 302 {
-		result.Result = true
+	resp2, err := crackClt.Do(req2)
+	if err != nil {
+		// 处理请求错误
+		log.Printf("Error making request: %v", err)
+		// 应该在这里返回或处理错误
+		return result
+	}
+
+	if resp2 != nil {
+		defer func() {
+			// 使用 defer 调用匿名函数来处理 Close 的错误
+			if err := resp2.Body.Close(); err != nil {
+				// 处理关闭 resp.Body 时的错误
+				log.Printf("Error closing response body: %v", err)
+			}
+		}()
+
+		if resp2.StatusCode == 302 {
+			result.Result = true
+		}
+	} else {
+		// 如果到这里，说明有严重的错误发生，resp2 应该不为 nil。
+		log.Printf("Response is nil without a preceding error.")
 	}
 
 	return result

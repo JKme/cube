@@ -67,7 +67,7 @@ func (h HttpBasic) Exec() CrackResult {
 				log.Printf("Error closing response body: %v", err)
 			}
 		}()
-		if res.StatusCode != 401 {
+		if res.StatusCode >= 200 && res.StatusCode < 400 {
 			result.Result = true
 		}
 	} else {

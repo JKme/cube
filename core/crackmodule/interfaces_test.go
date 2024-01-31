@@ -42,6 +42,20 @@ func TestMysql_Exec(t *testing.T) {
 
 }
 
+func TestPhpmyadmin_Exec(t *testing.T) {
+	c := Crack{
+		Ip:   "http://127.0.0.1:8080",
+		Port: "3306",
+		Auth: Auth{
+			User:     "root",
+			Password: "root",
+		},
+		Name: "phpmyadmin",
+	}
+	task := c.NewICrack()
+	task.Exec()
+}
+
 func TestParsePluginOpt(t *testing.T) {
 	//l := ParsePluginOpt("smb")
 	//fmt.Println(l)

@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"cube/config"
 	"cube/gologger"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
@@ -49,7 +50,7 @@ func (p Phpmyadmin) Exec() CrackResult {
 	}
 	clt := http.Client{Transport: tr}
 	if !strings.HasPrefix(p.Ip, "http") {
-		gologger.Errorf("Invalid URL, eg: http://%s", p.Ip)
+		gologger.Errorf("Invalid URL, eg: https://%s", p.Ip)
 	}
 	req, _ := http.NewRequest("GET", p.Ip, nil)
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1468.0 Safari/537.36")
@@ -78,9 +79,9 @@ func (p Phpmyadmin) Exec() CrackResult {
 	host, _ := url.Parse(p.Ip)
 	jar.SetCookies(host, resp.Cookies())
 	crackClt := http.Client{
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			return http.ErrUseLastResponse
-		},
+		//CheckRedirect: func(req *http.Request, via []*http.Request) error {
+		//	return http.ErrUseLastResponse
+		//},
 		Jar:       jar,
 		Transport: tr}
 
@@ -107,6 +108,14 @@ func (p Phpmyadmin) Exec() CrackResult {
 		return result
 	}
 
+	body2, err := ioutil.ReadAll(resp2.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// body是一个byte slice，通常我们转换成string来处理
+	//fmt.Println(string(body2))
+
 	if resp2 != nil {
 		defer func() {
 			// 使用 defer 调用匿名函数来处理 Close 的错误
@@ -115,10 +124,12 @@ func (p Phpmyadmin) Exec() CrackResult {
 				log.Printf("Error closing response body: %v", err)
 			}
 		}()
-
-		if resp2.StatusCode == 302 {
+		if strings.Contains(string(body2), "li_pma_wiki") {
 			result.Result = true
 		}
+		//if resp2.StatusCode == 302 {
+		//	result.Result = true
+		//}
 	} else {
 		// 如果到这里，说明有严重的错误发生，resp2 应该不为 nil。
 		log.Printf("Response is nil without a preceding error.")
